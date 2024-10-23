@@ -47,14 +47,15 @@ public class UserServices {
     @Autowired
     private PasswordResetTokenRepository resetTokenRepository;
 
-    public ResponseEntity<Void> create(@Valid CreateUserRequestDTO data) {
+    public ResponseEntity<UserModel> create(@Valid CreateUserRequestDTO data) {
         userValidation.validateName(data);
         userValidation.validateEmail(data);
         String encryptedPassword = passwordEncoder.encode(data.password());
         UserModel newUser = new UserModel(data.name(), data.email(), encryptedPassword, data.role());
         userRepository.save(newUser);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
+
 
     public Page<UserModel> findAll(String search, int page) {
         int size = 8;
@@ -68,6 +69,7 @@ public class UserServices {
         }
     }
 
+
     public List<UserModel> findAllWithoutPagination(String search) {
         if (Objects.equals(search, "")) {
             return userRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
@@ -76,9 +78,11 @@ public class UserServices {
         }
     }
 
+
     public Optional<UserModel> findById(int id) {
         return userRepository.findById(id);
     }
+
 
     public ResponseEntity<Object> update(int id, @Valid UpdateUserRequestDTO updateUserRequestDTO) {
         Optional<UserModel> response = userRepository.findById(id);
@@ -104,6 +108,7 @@ public class UserServices {
         userRepository.delete(response.get());
         return ResponseEntity.status(HttpStatus.OK).body("User deleted successfully");
     }
+
 
     public String createPasswordResetToken(String email) {
         Optional<UserModel> userOptional = Optional.ofNullable(userRepository.findByEmail(email));
@@ -165,6 +170,4 @@ public class UserServices {
         }
         return null;
     }
-
-
 }

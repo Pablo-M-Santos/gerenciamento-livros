@@ -1,6 +1,7 @@
 package com.locadora.locadoraLivro.Users.Validation;
 
 import com.locadora.locadoraLivro.Exceptions.CustomValidationException;
+import com.locadora.locadoraLivro.Renters.DTOs.CreateRenterRequestDTO;
 import com.locadora.locadoraLivro.Users.DTOs.CreateUserRequestDTO;
 import com.locadora.locadoraLivro.Users.DTOs.UpdateUserRequestDTO;
 import com.locadora.locadoraLivro.Users.models.UserModel;
@@ -16,6 +17,15 @@ import java.util.Optional;
 public class UserValidation {
 
     private final UserRepository userRepository;
+
+    public void create(CreateUserRequestDTO data){
+        validateName(data);
+        validateEmail(data);
+    }
+    public void update(UpdateUserRequestDTO data, int id){
+        validateNameUpdate(data, id);
+        validateUpdateEmail(data, id);
+    }
 
     // Validações de Nome
     public void validateName(CreateUserRequestDTO data) {
@@ -74,4 +84,11 @@ public class UserValidation {
             }
         }
     }
+
+    public void validatePassword(CreateUserRequestDTO data) {
+        if (data.password() == null || data.password().trim().isEmpty()) {
+            throw new CustomValidationException("Senha não pode ser nula ou vazia");
+        }
+    }
+
 }

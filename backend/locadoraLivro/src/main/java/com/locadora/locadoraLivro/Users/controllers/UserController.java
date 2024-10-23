@@ -4,6 +4,7 @@ import com.locadora.locadoraLivro.Users.DTOs.CreateUserRequestDTO;
 import com.locadora.locadoraLivro.Users.DTOs.UpdateUserRequestDTO;
 import com.locadora.locadoraLivro.Users.DTOs.UserResponseDTO;
 import com.locadora.locadoraLivro.Users.mappers.UserMapper;
+import com.locadora.locadoraLivro.Users.models.UserModel;
 import com.locadora.locadoraLivro.Users.services.UserServices;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class UserController {
     UserServices userServices;
 
     @PostMapping("/user")
-    public ResponseEntity<Void> create(@RequestBody @Valid CreateUserRequestDTO data) {
+    public ResponseEntity<UserModel> create(@RequestBody @Valid CreateUserRequestDTO data) {
         return userServices.create(data);
     }
 
