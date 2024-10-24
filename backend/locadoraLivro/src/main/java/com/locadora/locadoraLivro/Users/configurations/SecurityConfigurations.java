@@ -51,7 +51,10 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.DELETE, "/renter/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/book/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/rent/{id}").hasRole("ADMIN")
-                        
+
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .cors(withDefaults())

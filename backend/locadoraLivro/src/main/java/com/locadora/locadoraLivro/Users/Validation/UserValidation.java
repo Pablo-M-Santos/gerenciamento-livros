@@ -27,7 +27,7 @@ public class UserValidation {
         validateUpdateEmail(data, id);
     }
 
-    // Validações de Nome
+    // Criação validações de Nome
     public void validateName(CreateUserRequestDTO data) {
         if (data.name() == null || data.name().trim().isEmpty()) {
             throw new CustomValidationException("O nome de usuário não pode estar vazio.");
@@ -38,6 +38,7 @@ public class UserValidation {
         }
     }
 
+    // Atualização validações de Nome
     public void validateNameUpdate(UpdateUserRequestDTO data, int id) {
         Optional<UserModel> userOptional = userRepository.findById(id);
 
@@ -54,7 +55,7 @@ public class UserValidation {
         }
     }
 
-    // Validações de Email
+    // Criação validações de email
     public void validateEmail(CreateUserRequestDTO data) {
         if (data.email() == null || data.email().trim().isEmpty()) {
             throw new CustomValidationException("O e-mail não pode estar vazio.");
@@ -69,6 +70,7 @@ public class UserValidation {
         }
     }
 
+    // Atualização validações do email
     public void validateUpdateEmail(UpdateUserRequestDTO data, int id) {
         Optional<UserModel> userOptional = userRepository.findById(id);
 
@@ -84,11 +86,4 @@ public class UserValidation {
             }
         }
     }
-
-    public void validatePassword(CreateUserRequestDTO data) {
-        if (data.password() == null || data.password().trim().isEmpty()) {
-            throw new CustomValidationException("Senha não pode ser nula ou vazia");
-        }
-    }
-
 }

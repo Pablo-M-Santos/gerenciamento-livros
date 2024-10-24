@@ -10,10 +10,11 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:9000")
+@RequestMapping("/user")
 public class UserController {
 
     @Autowired
@@ -22,12 +23,13 @@ public class UserController {
     @Autowired
     UserServices userServices;
 
-    @PostMapping("/user")
+    @PostMapping
     public ResponseEntity<UserModel> create(@RequestBody @Valid CreateUserRequestDTO data) {
         return userServices.create(data);
     }
 
-    @GetMapping("/user")
+
+    @GetMapping
     public ResponseEntity<Object> getAll(String search, @RequestParam(required = false) Integer page){
         if (page == null) {
             return ResponseEntity.status(HttpStatus.OK).body(userMapper.toUserResponseList(userServices.findAllWithoutPagination(search)));
@@ -35,17 +37,17 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userServices.findAll(search, page).map(userMapper::toUserResponse));
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> getById(@PathVariable(value = "id") int id) {
         return ResponseEntity.status(HttpStatus.OK).body(userMapper.toUserResponse(userServices.findById(id).get()));
     }
 
-    @PutMapping("/user/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Object> update(@PathVariable(value="id") int id, @RequestBody @Valid UpdateUserRequestDTO updateUserRequestDTO){
         return userServices.update(id, updateUserRequestDTO);
     }
 
-    @DeleteMapping("/user/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Object> delete(@PathVariable(value="id") int id){
         return userServices.delete(id);
     }
