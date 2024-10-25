@@ -43,7 +43,7 @@ public class BookModel {
     @JoinColumn(name = "publisher_id")
     private PublisherModel publisher;
 
-    public BookModel(String name, String author, LocalDate launchDate, int totalQuantity, PublisherModel publisher) {
+    public BookModel(int totalQuantity) {
         this.name = name;
         this.author = author;
         this.launchDate = launchDate;

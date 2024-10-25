@@ -1,4 +1,4 @@
-package com.locadora.locadoraLivro.Users.Services;
+package com.locadora.locadoraLivro.Users.controllers.Services;
 
 import com.locadora.locadoraLivro.Exceptions.CustomValidationException;
 import com.locadora.locadoraLivro.Users.DTOs.CreateUserRequestDTO;
@@ -55,7 +55,7 @@ class UserServicesTest {
         userModel.setId(1);
     }
 
-
+    // Criação do usuário
     @Test
     void shouldCreateUser() {
         String encryptedPassword = "encryptedPassword123";
@@ -84,7 +84,7 @@ class UserServicesTest {
         assertEquals(createUserRequestDTO.role(), savedUser.getRole());
     }
 
-
+    // Email inválido
     @Test
     void shouldThrowExceptionWhenEmailIsInvalidOnCreate() {
         doThrow(new IllegalArgumentException("Invalid email")).when(userValidation).validateEmail(createUserRequestDTO);
@@ -92,7 +92,7 @@ class UserServicesTest {
         assertEquals("Invalid email", exception.getMessage());
     }
 
-
+    // Atualização do usuário
     @Test
     void shouldUpdateUser() {
         when(userRepository.findById(1)).thenReturn(Optional.of(userModel));
@@ -113,7 +113,7 @@ class UserServicesTest {
         assertEquals(UserRoleEnum.ADMIN, updatedUser.getRole());
     }
 
-
+    // Usuário inexistente
     @Test
     void shouldReturnNotFoundWhenUpdatingNonExistentUser() {
         when(userRepository.findById(1)).thenReturn(Optional.empty());
@@ -122,7 +122,7 @@ class UserServicesTest {
         assertEquals("User not found", response.getBody());
     }
 
-
+    // Deletar usuário
     @Test
     void shouldDeleteUser() {
         when(userRepository.findById(1)).thenReturn(Optional.of(userModel));
@@ -132,7 +132,7 @@ class UserServicesTest {
         verify(userRepository, times(1)).delete(userModel);
     }
 
-
+    // Deletar usuário inexistente
     @Test
     void shouldReturnNotFoundWhenDeletingNonExistentUser() {
         when(userRepository.findById(1)).thenReturn(Optional.empty());
@@ -141,7 +141,7 @@ class UserServicesTest {
         assertEquals("User not found", response.getBody());
     }
 
-
+    // Busca pelo ID
     @Test
     void shouldGetUserById() {
         when(userRepository.findById(1)).thenReturn(Optional.of(userModel));
@@ -150,7 +150,7 @@ class UserServicesTest {
         assertEquals(userModel, foundUser.get());
     }
 
-
+    // Id não encontrado
     @Test
     void shouldReturnEmptyWhenUserNotFoundById() {
         when(userRepository.findById(1)).thenReturn(Optional.empty());

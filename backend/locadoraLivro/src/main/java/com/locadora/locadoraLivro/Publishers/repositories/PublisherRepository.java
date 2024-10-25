@@ -1,4 +1,3 @@
-
 package com.locadora.locadoraLivro.Publishers.repositories;
 
 import com.locadora.locadoraLivro.Publishers.models.PublisherModel;
@@ -23,10 +22,15 @@ public interface PublisherRepository extends JpaRepository<PublisherModel, Integ
     PublisherModel findBySite(String site);
     PublisherModel findByTelephone(String telephone);
 
-    @Query("SELECT u FROM PublisherModel u WHERE LOWER(REPLACE(u.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:name, ' ', ''), '%')) AND u.isDeleted = false")
-    List<PublisherModel> findAllByName(@Param("name") String name, Sort sort);
+    @Query("SELECT p FROM PublisherModel p WHERE LOWER(REPLACE(p.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:keyword, ' ', ''), '%'))" +
+            " OR LOWER(REPLACE(p.email, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:keyword, ' ', ''), '%'))" +
+            " OR LOWER(REPLACE(p.telephone, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:keyword, ' ', ''), '%'))" +
+            " AND p.isDeleted = false")
+    Page<PublisherModel> findAllByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
-    @Query("SELECT u FROM PublisherModel u WHERE LOWER(REPLACE(u.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:name, ' ', ''), '%')) AND u.isDeleted = false")
-    Page<PublisherModel> findAllByName(@Param("name") String name, Pageable pageable);
+    @Query("SELECT p FROM PublisherModel p WHERE LOWER(REPLACE(p.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:keyword, ' ', ''), '%'))" +
+            " OR LOWER(REPLACE(p.email, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:keyword, ' ', ''), '%'))" +
+            " OR LOWER(REPLACE(p.telephone, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:keyword, ' ', ''), '%'))" +
+            " AND p.isDeleted = false")
+    List<PublisherModel> findAllByKeyword(Sort sort, @Param("keyword") String keyword);
 }
-

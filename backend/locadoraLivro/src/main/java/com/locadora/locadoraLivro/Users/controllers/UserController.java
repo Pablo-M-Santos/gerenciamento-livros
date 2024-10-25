@@ -5,12 +5,12 @@ import com.locadora.locadoraLivro.Users.DTOs.UpdateUserRequestDTO;
 import com.locadora.locadoraLivro.Users.DTOs.UserResponseDTO;
 import com.locadora.locadoraLivro.Users.mappers.UserMapper;
 import com.locadora.locadoraLivro.Users.models.UserModel;
+import com.locadora.locadoraLivro.Users.models.UserRoleEnum;
 import com.locadora.locadoraLivro.Users.services.UserServices;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,11 +30,12 @@ public class UserController {
 
 
     @GetMapping
-    public ResponseEntity<Object> getAll(String search, @RequestParam(required = false) Integer page){
+    public ResponseEntity<Object> getAll(@RequestParam(required = false) String search, @RequestParam(required = false) UserRoleEnum role, @RequestParam(required = false) Integer page) {
         if (page == null) {
-            return ResponseEntity.status(HttpStatus.OK).body(userMapper.toUserResponseList(userServices.findAllWithoutPagination(search)));
+            return ResponseEntity.status(HttpStatus.OK).body(userMapper.toUserResponseList(userServices.findAllWithoutPagination(search, role)));
         }
-        return ResponseEntity.status(HttpStatus.OK).body(userServices.findAll(search, page).map(userMapper::toUserResponse));
+
+        return ResponseEntity.status(HttpStatus.OK).body(userServices.findAll(search, role, page).map(userMapper::toUserResponse));
     }
 
     @GetMapping("/{id}")
@@ -43,12 +44,12 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable(value="id") int id, @RequestBody @Valid UpdateUserRequestDTO updateUserRequestDTO){
+    public ResponseEntity<Object> update(@PathVariable(value = "id") int id, @RequestBody @Valid UpdateUserRequestDTO updateUserRequestDTO) {
         return userServices.update(id, updateUserRequestDTO);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> delete(@PathVariable(value="id") int id){
+    public ResponseEntity<Object> delete(@PathVariable(value = "id") int id) {
         return userServices.delete(id);
     }
 }

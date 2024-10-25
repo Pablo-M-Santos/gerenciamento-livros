@@ -31,10 +31,10 @@ public class PublisherServices {
 
     public ResponseEntity<Void> create(@Valid CreatePublisherRequestDTO data) {
 
-        publisherValidation.validName(data);
-        publisherValidation.validEmail(data);
-        publisherValidation.validTelephone(data);
-        publisherValidation.validSite(data);
+        publisherValidation.validateName(data);
+        publisherValidation.validateEmail(data);
+        publisherValidation.validateTelephone(data);
+        publisherValidation.validateSite(data);
 
         PublisherModel newPublisher = new PublisherModel(data.name(), data.email(), data.telephone(), data.site());
         publisherRepository.save(newPublisher);
@@ -45,12 +45,14 @@ public class PublisherServices {
     public Page<PublisherModel> findAll(String search, int page) {
         int size = 8;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
         if (Objects.equals(search, "")) {
             Page<PublisherModel> publishers = publisherRepository.findAllByIsDeletedFalse(pageable);
-            if (publishers.isEmpty()) throw new ModelNotFoundException();
+            if (publishers.isEmpty()) throw new ModelNotFoundException("No publishers found");
             return publishers;
         } else {
-            Page<PublisherModel> publisherSearch = publisherRepository.findAllByName(search, pageable);
+            Page<PublisherModel> publisherSearch = publisherRepository.findAllByKeyword(search, pageable);
+            if (publisherSearch.isEmpty()) throw new ModelNotFoundException("No publishers found for the given search term");
             return publisherSearch;
         }
     }
@@ -59,9 +61,10 @@ public class PublisherServices {
         if (Objects.equals(search, "")) {
             return publisherRepository.findAllByIsDeletedFalse(Sort.by(Sort.Direction.DESC, "id"));
         } else {
-            return publisherRepository.findAllByName(search, Sort.by(Sort.Direction.DESC, "id"));
+            return publisherRepository.findAllByKeyword(Sort.by(Sort.Direction.DESC, "id"), search);
         }
     }
+
 
     public Optional<PublisherModel> findById(int id) {
         return publisherRepository.findById(id);
@@ -71,10 +74,10 @@ public class PublisherServices {
         Optional<PublisherModel> response = publisherRepository.findById(id);
         if (response.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Publisher not found");
 
-        publisherValidation.validNameUpdate(updatePublisherRecordDTO, id);
-        publisherValidation.validEmailUpdate(updatePublisherRecordDTO, id);
-        publisherValidation.validTelephoneUpdate(updatePublisherRecordDTO, id);
-        publisherValidation.validSiteUpdate(updatePublisherRecordDTO, id);
+        publisherValidation.validateNameUpdate(updatePublisherRecordDTO, id);
+        publisherValidation.validateEmailUpdate(updatePublisherRecordDTO, id);
+        publisherValidation.validateTelephoneUpdate(updatePublisherRecordDTO, id);
+        publisherValidation.validateSiteUpdate(updatePublisherRecordDTO, id);
 
         var publisherModel = response.get();
         BeanUtils.copyProperties(updatePublisherRecordDTO, publisherModel);
@@ -86,7 +89,7 @@ public class PublisherServices {
         Optional<PublisherModel> response = publisherRepository.findById(id);
         if (response.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Publisher not found");
 
-        publisherValidation.validDeletePublisher(id);
+        publisherValidation.validateDeletePublisher(id);
 
         PublisherModel publisher = response.get();
 
@@ -96,4 +99,6 @@ public class PublisherServices {
 
         return ResponseEntity.status(HttpStatus.OK).body("Publisher deleted successfully");
     }
+
+
 }

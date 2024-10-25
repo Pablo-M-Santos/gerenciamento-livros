@@ -7,6 +7,7 @@ import com.locadora.locadoraLivro.Users.Validation.UserValidation;
 import com.locadora.locadoraLivro.Users.mappers.UserMapper;
 import com.locadora.locadoraLivro.Users.models.PasswordResetToken;
 import com.locadora.locadoraLivro.Users.models.UserModel;
+import com.locadora.locadoraLivro.Users.models.UserRoleEnum;
 import com.locadora.locadoraLivro.Users.repositories.PasswordResetTokenRepository;
 import com.locadora.locadoraLivro.Users.repositories.UserRepository;
 import jakarta.validation.Valid;
@@ -57,24 +58,24 @@ public class UserServices {
     }
 
 
-    public Page<UserModel> findAll(String search, int page) {
+    public Page<UserModel> findAll(String search, UserRoleEnum role, int page) {
         int size = 8;
-        Pageable pageable = (Pageable) PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-        if (Objects.equals(search, "")) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        if (Objects.equals(search, "") && role == null) {
             Page<UserModel> users = userRepository.findAll(pageable);
             if (users.isEmpty()) throw new ModelNotFoundException();
             return users;
         } else {
-            return userRepository.findAllByName(search, pageable);
+            return userRepository.findAllByKeywordOrRole(search, role, pageable);
         }
     }
 
-
-    public List<UserModel> findAllWithoutPagination(String search) {
-        if (Objects.equals(search, "")) {
+    public List<UserModel> findAllWithoutPagination(String search, UserRoleEnum role) {
+        if (Objects.equals(search, "") && role == null) {
             return userRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
         } else {
-            return userRepository.findAllByName(search, Sort.by(Sort.Direction.DESC, "id"));
+            return userRepository.findAllByKeyword(search, Sort.by(Sort.Direction.DESC, "id"));
         }
     }
 

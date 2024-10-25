@@ -3,6 +3,7 @@ package com.locadora.locadoraLivro.Renters.DTOs;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Email;
+
 import org.hibernate.validator.constraints.br.CPF;
 
 public record UpdateRenterRequestDTO(

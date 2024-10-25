@@ -6,6 +6,8 @@ import com.locadora.locadoraLivro.Renters.DTOs.UpdateRenterRequestDTO;
 import com.locadora.locadoraLivro.Renters.Validation.RenterValidation;
 import com.locadora.locadoraLivro.Renters.models.RenterModel;
 import com.locadora.locadoraLivro.Renters.repositories.RenterRepository;
+import com.locadora.locadoraLivro.Rents.models.RentStatusEnum;
+import com.locadora.locadoraLivro.Rents.repositories.RentRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +31,13 @@ public class RenterServices {
     private RenterRepository renterRepository;
 
     @Autowired
+    private RentRepository rentRepository;
+
+    @Autowired
     private RenterValidation renterValidation;
 
     public ResponseEntity<Void> create(@Valid CreateRenterRequestDTO data){
-        renterValidation.validateEmail(data);
-        renterValidation.validateCPF(data);
+        renterValidation.create(data);
 
         RenterModel newRenter = new RenterModel(data.name(), data.email(), data.telephone(), data.address(), data.cpf());
         renterRepository.save(newRenter);
@@ -70,8 +74,7 @@ public class RenterServices {
         Optional<RenterModel> response = renterRepository.findById(id);
         if (response.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Renter not found");
 
-        renterValidation.validateUpdateEmail(updateRenterRequestDTO, id);
-        renterValidation.validateCPFUpdate(updateRenterRequestDTO, id);
+        renterValidation.update(updateRenterRequestDTO, id);
 
         RenterModel renterModel = response.get();
         BeanUtils.copyProperties(updateRenterRequestDTO, renterModel);
@@ -79,18 +82,22 @@ public class RenterServices {
         return ResponseEntity.status(HttpStatus.OK).body(renterRepository.save(renterModel));
     }
 
-    public ResponseEntity<Object> delete(int id){
+    public ResponseEntity<Object> delete(int id) {
         Optional<RenterModel> response = renterRepository.findById(id);
         if (response.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Renter not found");
 
         renterValidation.validateDeleteRenter(id);
 
         RenterModel renter = response.get();
-
         renter.setDeleted(true);
 
         renterRepository.save(renter);
 
         return ResponseEntity.status(HttpStatus.OK).body("Renter deleted successfully");
+    }
+
+
+    public boolean hasRentedBooks(int renterId) {
+        return rentRepository.existsByRenterIdAndStatus(renterId, RentStatusEnum.ALUGADO);
     }
 }
