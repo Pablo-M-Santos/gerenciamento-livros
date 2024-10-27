@@ -8,9 +8,11 @@ import com.locadora.locadoraLivro.Renters.repositories.RenterRepository;
 import com.locadora.locadoraLivro.Renters.Validation.RenterValidation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class RenterServicesTest {
 
     @InjectMocks
@@ -36,7 +39,6 @@ class RenterServicesTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         renter = new RenterModel("John Doe", "john@example.com", "123456789", "123 Street", "12345678901");
     }
 

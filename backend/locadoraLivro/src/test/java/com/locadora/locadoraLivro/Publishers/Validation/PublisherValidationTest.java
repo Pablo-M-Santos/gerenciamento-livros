@@ -17,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,8 +41,6 @@ class PublisherValidationTest {
 
     @InjectMocks
     private PublisherValidation publisherValidation;
-
-
 
     private CreatePublisherRequestDTO createPublisherRequestDTO;
     private UpdatePublisherRecordDTO updatePublisherRecordDTO;
@@ -68,10 +67,10 @@ class PublisherValidationTest {
     @Test
     void shouldThrowExceptionWhenNameIsNullOrEmpty() {
         CreatePublisherRequestDTO nullNameDTO = new CreatePublisherRequestDTO(null, "publisher@example.com", "123456789", "www.publisher.com");
-        assertThrows(CustomValidationException.class, () -> publisherValidation.create(nullNameDTO), "The name cannot be empty or contain only spaces.");
+        assertThrows(CustomValidationException.class, () -> publisherValidation.create(nullNameDTO), "O nome não pode estar vazio ou conter apenas espaços.");
 
         CreatePublisherRequestDTO emptyNameDTO = new CreatePublisherRequestDTO("", "publisher@example.com", "123456789", "www.publisher.com");
-        assertThrows(CustomValidationException.class, () -> publisherValidation.create(emptyNameDTO), "The name cannot be empty or contain only spaces.");
+        assertThrows(CustomValidationException.class, () -> publisherValidation.create(emptyNameDTO), "O nome não pode estar vazio ou conter apenas espaços.");
     }
 
     // Email em uso
@@ -85,10 +84,10 @@ class PublisherValidationTest {
     @Test
     void shouldThrowExceptionWhenEmailIsNullOrEmpty() {
         CreatePublisherRequestDTO nullEmailDTO = new CreatePublisherRequestDTO("Publisher Name", null, "123456789", "www.publisher.com");
-        assertThrows(CustomValidationException.class, () -> publisherValidation.create(nullEmailDTO), "Email cannot be empty.");
+        assertThrows(CustomValidationException.class, () -> publisherValidation.create(nullEmailDTO), "O e-mail não pode ficar vazio.");
 
         CreatePublisherRequestDTO emptyEmailDTO = new CreatePublisherRequestDTO("Publisher Name", "", "123456789", "www.publisher.com");
-        assertThrows(CustomValidationException.class, () -> publisherValidation.create(emptyEmailDTO), "Email cannot be empty.");
+        assertThrows(CustomValidationException.class, () -> publisherValidation.create(emptyEmailDTO), "O e-mail não pode ficar vazio.");
     }
 
     // Telefone em uso
@@ -226,7 +225,8 @@ class PublisherValidationTest {
     @Test
     public void testDeleteBooksAreRented() {
         when(publisherRepository.findById(1)).thenReturn(Optional.of(existingPublisher));
-        BookModel book = new BookModel(1);
+        PublisherModel publisher = new PublisherModel("Publisher Name", "publisher@example.com", "123456789", "www.publisher.com");
+        BookModel book = new BookModel("Book Name", "Author Name", LocalDate.now(), 10, publisher);
         when(bookRepository.findByPublisherId(1)).thenReturn(List.of(book));
         when(rentRepository.existsByBookIdAndStatus(book.getId(), RentStatusEnum.ALUGADO)).thenReturn(true);
 
@@ -236,5 +236,6 @@ class PublisherValidationTest {
 
         assertEquals("Não é possível excluir o editor. Existem livros atualmente alugados.", thrown.getMessage());
     }
+
 
 }

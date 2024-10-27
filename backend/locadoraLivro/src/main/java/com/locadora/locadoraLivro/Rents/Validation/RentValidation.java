@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Component
@@ -30,44 +31,58 @@ public class RentValidation {
     @Autowired
     RentRepository rentRepository;
 
-    public void validateRenterId(CreateRentRequestDTO data){
-        if (renterRepository.findById(data.renterId()).isEmpty()){
+    public void create(CreateRentRequestDTO data) {
+        validateRenterId(data);
+        validateBookId(data);
+        validateDeadLine(data);
+        validateRentRepeated(data);
+        validateRentLate(data);
+    }
+
+    public void update(UpdateRentRecordDTO data, int id) {
+        validateRenterIdUpdate(data);
+        validateBookIdUpdate(data);
+        validateDeadLineUpdate(data, id);
+    }
+
+    public void validateRenterId(CreateRentRequestDTO data) {
+        if (renterRepository.findById(data.renterId()).isEmpty()) {
             throw new CustomValidationException("Locatário não encontrado.");
         }
 
         RenterModel renter = renterRepository.findById(data.renterId()).get();
 
-        if (renter.isDeleted()){
+        if (renter.isDeleted()) {
             throw new CustomValidationException("Locatário não encontrado.");
         }
     }
 
-    public void validateRenterIdUpdate(UpdateRentRecordDTO data){
-        if (renterRepository.findById(data.renterId()).isEmpty()){
+    public void validateRenterIdUpdate(UpdateRentRecordDTO data) {
+        if (renterRepository.findById(data.renterId()).isEmpty()) {
             throw new CustomValidationException("Locatário não encontrado.");
         }
     }
 
-    public void validateBookId(CreateRentRequestDTO data){
-        if (bookRepository.findById(data.bookId()).isEmpty()){
+    public void validateBookId(CreateRentRequestDTO data) {
+        if (bookRepository.findById(data.bookId()).isEmpty()) {
             throw new CustomValidationException("Livro não encontrado.");
         }
 
         BookModel book = bookRepository.findById(data.bookId()).get();
 
-        if (book.isDeleted()){
+        if (book.isDeleted()) {
             throw new CustomValidationException("Livro não encontrado.");
         }
     }
 
-    public void validateBookIdUpdate(UpdateRentRecordDTO data){
-        if (bookRepository.findById(data.bookId()).isEmpty()){
+    public void validateBookIdUpdate(UpdateRentRecordDTO data) {
+        if (bookRepository.findById(data.bookId()).isEmpty()) {
             throw new CustomValidationException("Livro não encontrado.");
         }
     }
 
-    public void validateDeadLine(CreateRentRequestDTO data){
-        if (data.deadLine().isAfter(LocalDate.now().plusDays(30))){
+    public void validateDeadLine(CreateRentRequestDTO data) {
+        if (data.deadLine().isAfter(LocalDate.now().plusDays(30))) {
             throw new CustomValidationException("O prazo não pode ser superior a 30 dias.");
         } else if (data.deadLine().isBefore(LocalDate.now())) {
             throw new CustomValidationException("O prazo não pode estar no passado.");
@@ -76,7 +91,7 @@ public class RentValidation {
 
     public void validateDeadLineUpdate(UpdateRentRecordDTO data, int id) {
         RentModel rentPass = rentRepository.findById(id).get();
-        if (!Objects.equals(rentPass.getDeadLine(), data.deadLine())){
+        if (!Objects.equals(rentPass.getDeadLine(), data.deadLine())) {
             if (data.deadLine().isAfter(LocalDate.now().plusDays(30))) {
                 throw new CustomValidationException("O prazo não pode ser superior a 30 dias a partir de hoje.");
             } else if (data.deadLine().isBefore(LocalDate.now())) {
@@ -85,33 +100,39 @@ public class RentValidation {
         }
     }
 
-    public void validateBookTotalQuantity(BookModel data){
-        if (data.getTotalQuantity() <= 0){
+    public void validateBookTotalQuantity(BookModel data) {
+        if (data.getTotalQuantity() <= 0) {
             throw new CustomValidationException("Não há livros disponíveis.");
         }
     }
 
-    public void validateRentRepeated(CreateRentRequestDTO data){
-        if (rentRepository.existsByRenterIdAndBookIdAndStatus(data.renterId(), data.bookId(), RentStatusEnum.ALUGADO)){
+    public void validateRentRepeated(CreateRentRequestDTO data) {
+        if (rentRepository.existsByRenterIdAndBookIdAndStatus(data.renterId(), data.bookId(), RentStatusEnum.ALUGADO)) {
             throw new CustomValidationException("O locatário já alugou este livro.");
         }
     }
 
-    public void validateRentLate(CreateRentRequestDTO data){
-        if (rentRepository.existsByRenterIdAndStatus(data.renterId(), RentStatusEnum.ATRASADO)){
+    public void validateRentLate(CreateRentRequestDTO data) {
+        if (rentRepository.existsByRenterIdAndStatus(data.renterId(), RentStatusEnum.ATRASADO)) {
             throw new CustomValidationException("O locatário tem aluguel atrasado.");
         }
     }
 
-    public void deliveredValidate(int id){
-        RentModel rent = rentRepository.findById(id).get();
-        if (rent.getStatus() == RentStatusEnum.ENTREGUE || rent.getStatus() == RentStatusEnum.ENTREGUE_COM_ATRASO || rent.getStatus() == RentStatusEnum.NO_PRAZO){
+    public void deliveredValidate(int id) {
+        Optional<RentModel> rentOptional = rentRepository.findById(id);
+
+        RentModel rent = rentOptional.orElseThrow(() -> new CustomValidationException("Aluguel não encontrado para o ID: " + id));
+
+        if (rent.getStatus() == RentStatusEnum.ENTREGUE ||
+                rent.getStatus() == RentStatusEnum.ENTREGUE_COM_ATRASO ||
+                rent.getStatus() == RentStatusEnum.NO_PRAZO) {
             throw new CustomValidationException("O aluguel já foi devolvido.");
         }
     }
 
-    public void setRentStatus(RentModel rent){
-        if (rent.getDevolutionDate() == null){
+
+    public void setRentStatus(RentModel rent) {
+        if (rent.getDevolutionDate() == null) {
 
             if (rent.getDeadLine().isBefore(LocalDate.now())) {
                 rent.setStatus(RentStatusEnum.ATRASADO);

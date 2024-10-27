@@ -41,26 +41,27 @@ public class BookServices {
     BookValidation bookValidation;
 
     public ResponseEntity<Void> create(@Valid CreateBookRequestDTO data) {
-
-        bookValidation.validLaunchDate(data);
-        bookValidation.validTotalQuantity(data);
-
-        PublisherModel publisher = publisherRepository.findById(data.publisherId())
-                .orElseThrow(() -> new IllegalArgumentException("Publisher not found"));
+        bookValidation.create(data);
         bookValidation.validPublisherExist(data);
 
-        BookModel newBook = new BookModel(data.totalQuantity());
+        PublisherModel publisher = publisherRepository.findById(data.publisherId())
+                .orElseThrow(() -> new ModelNotFoundException("Publisher not found"));
+
+        BookModel newBook = new BookModel(data.name(), data.author(), data.launchDate(), data.totalQuantity(), publisher);
+
         bookRepository.save(newBook);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    public Page<BookModel> findAll(String search, int page){
+
+
+    public Page<BookModel> findAll(String search, int page) {
         int size = 8;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-        if (Objects.equals(search, "")){
+        if (Objects.equals(search, "")) {
             Page<BookModel> books = bookRepository.findAllByIsDeletedFalse(pageable);
-            if(books.isEmpty()) throw new ModelNotFoundException();
+            if (books.isEmpty()) throw new ModelNotFoundException();
 
             for (BookModel book : books) {
                 List<RentModel> totalRented = rentRepository.findAllByBookIdAndStatus(book.getId(), RentStatusEnum.ALUGADO);
@@ -76,16 +77,15 @@ public class BookServices {
         }
     }
 
-    public Optional<BookModel> findById(int id){
+    public Optional<BookModel> findById(int id) {
         return bookRepository.findById(id);
     }
 
-    public ResponseEntity<Object> update(int id, @Valid UpdateBookRecordDTO updateBookRecordDTO){
+    public ResponseEntity<Object> update(int id, @Valid UpdateBookRecordDTO updateBookRecordDTO) {
         Optional<BookModel> response = bookRepository.findById(id);
         if (response.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book not found");
 
-        bookValidation.validTotalQuantityUpdate(updateBookRecordDTO);
-        bookValidation.validLaunchDateUpdate(updateBookRecordDTO);
+        bookValidation.update(updateBookRecordDTO, id);
 
         PublisherModel publisher = publisherRepository.findById(updateBookRecordDTO.publisherId())
                 .orElseThrow(() -> new IllegalArgumentException("Publisher not found"));
@@ -101,16 +101,12 @@ public class BookServices {
         return ResponseEntity.status(HttpStatus.OK).body(bookModel);
     }
 
-    public ResponseEntity<Object> delete(int id){
+    public ResponseEntity<Object> delete(int id) {
         Optional<BookModel> response = bookRepository.findById(id);
         if (response.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book not found");
-
         bookValidation.validDeleteBook(id);
-
         BookModel book = response.get();
-
         book.setDeleted(true);
-
         bookRepository.save(book);
 
         return ResponseEntity.status(HttpStatus.OK).body("Book deleted successfully");

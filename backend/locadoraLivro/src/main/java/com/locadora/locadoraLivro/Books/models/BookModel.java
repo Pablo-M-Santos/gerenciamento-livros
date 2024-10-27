@@ -43,7 +43,7 @@ public class BookModel {
     @JoinColumn(name = "publisher_id")
     private PublisherModel publisher;
 
-    public BookModel(int totalQuantity) {
+    public BookModel(String name, String author, LocalDate launchDate, int totalQuantity, PublisherModel publisher) {
         this.name = name;
         this.author = author;
         this.launchDate = launchDate;
@@ -52,4 +52,5 @@ public class BookModel {
         this.totalInUse = 0;
         this.isDeleted = false;
     }
+
 }

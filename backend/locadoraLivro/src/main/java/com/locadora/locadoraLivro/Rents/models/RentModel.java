@@ -42,11 +42,12 @@ public class RentModel {
     @Column(length = 19, nullable = false)
     private RentStatusEnum status;
 
-    public RentModel(RenterModel renter, BookModel book, LocalDate deadLine){
+    public RentModel(RenterModel renter, BookModel book, LocalDate deadLine, LocalDate localDate) {
         this.renter = renter;
         this.book = book;
         this.deadLine = deadLine;
         this.rentDate = LocalDate.now();
         this.status = null;
     }
+
 }

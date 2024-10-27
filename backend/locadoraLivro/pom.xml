@@ -86,7 +86,13 @@
 			<artifactId>java-jwt</artifactId>
 			<version>4.4.0</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>com.locadora</groupId>
+            <artifactId>locadoraLivro</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<plugins>
