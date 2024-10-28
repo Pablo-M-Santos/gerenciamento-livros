@@ -1,6 +1,5 @@
-package com.locadora.locadoraLivro.Users.controllers.Services;
+package com.locadora.locadoraLivro.Users.services;
 
-import com.locadora.locadoraLivro.Exceptions.CustomValidationException;
 import com.locadora.locadoraLivro.Users.DTOs.CreateUserRequestDTO;
 import com.locadora.locadoraLivro.Users.DTOs.UpdateUserRequestDTO;
 import com.locadora.locadoraLivro.Users.Validation.UserValidation;
@@ -8,7 +7,6 @@ import com.locadora.locadoraLivro.Users.models.UserModel;
 import com.locadora.locadoraLivro.Users.models.UserRoleEnum;
 import com.locadora.locadoraLivro.Users.repositories.PasswordResetTokenRepository;
 import com.locadora.locadoraLivro.Users.repositories.UserRepository;
-import com.locadora.locadoraLivro.Users.services.UserServices;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

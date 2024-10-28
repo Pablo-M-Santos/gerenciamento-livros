@@ -1,17 +1,15 @@
 package com.locadora.locadoraLivro.Renters.services;
 
-import com.locadora.locadoraLivro.Exceptions.ModelNotFoundException;
 import com.locadora.locadoraLivro.Renters.DTOs.CreateRenterRequestDTO;
 import com.locadora.locadoraLivro.Renters.DTOs.UpdateRenterRequestDTO;
+import com.locadora.locadoraLivro.Renters.Validation.RenterValidation;
 import com.locadora.locadoraLivro.Renters.models.RenterModel;
 import com.locadora.locadoraLivro.Renters.repositories.RenterRepository;
-import com.locadora.locadoraLivro.Renters.Validation.RenterValidation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -20,14 +18,12 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RenterServicesTest {
-
-    @InjectMocks
-    private RenterServices renterServices;
 
     @Mock
     private RenterRepository renterRepository;
@@ -35,11 +31,14 @@ class RenterServicesTest {
     @Mock
     private RenterValidation renterValidation;
 
+    @InjectMocks
+    private RenterServices renterServices;
+
     private RenterModel renter;
 
     @BeforeEach
     void setUp() {
-        renter = new RenterModel("John Doe", "john@example.com", "123456789", "123 Street", "12345678901");
+            renter = new RenterModel("John Doe", "john@example.com", "123456789", "123 Street", "12345678901");
     }
 
     // Testa a criação do locatário

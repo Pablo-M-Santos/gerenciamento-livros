@@ -28,7 +28,6 @@ public class UserController {
         return userServices.create(data);
     }
 
-
     @GetMapping
     public ResponseEntity<Object> getAll(@RequestParam(required = false) String search, @RequestParam(required = false) UserRoleEnum role, @RequestParam(required = false) Integer page) {
         if (page == null) {

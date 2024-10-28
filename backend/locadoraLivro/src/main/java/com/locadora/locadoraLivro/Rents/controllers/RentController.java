@@ -4,6 +4,7 @@ import com.locadora.locadoraLivro.Rents.DTOs.CreateRentRequestDTO;
 import com.locadora.locadoraLivro.Rents.DTOs.RentResponseDTO;
 import com.locadora.locadoraLivro.Rents.mappers.RentMapper;
 import com.locadora.locadoraLivro.Rents.DTOs.UpdateRentRecordDTO;
+import com.locadora.locadoraLivro.Rents.models.RentModel;
 import com.locadora.locadoraLivro.Rents.services.RentServices;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,8 @@ public class RentController {
 
     @GetMapping("/rent/{id}")
     public ResponseEntity<RentResponseDTO> getById(@PathVariable(value = "id") int id) {
-        return ResponseEntity.status(HttpStatus.OK).body(rentMapper.toRentResponse(rentServices.findById(id).get()));
+        RentModel rentModel = rentServices.findById(id);
+        return ResponseEntity.ok(rentMapper.toRentResponse(rentModel));
     }
 
     @PutMapping("/rent/{id}")
