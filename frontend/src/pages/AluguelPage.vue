@@ -2,7 +2,7 @@
     <div class="content">
       <!-- Button cadastrar -->
       <div class="containerButton">
-        <q-btn style="width: 200px; background-color: #008080; color: white;" v-if="userRole === 'ADMIN'"
+        <q-btn style="width: 200px; background-color: #008080; color: white;" v-if="userRole === 'ADMIN'" itemid="cadastroBtnAluguel"
           @click="openRegisterDialog">
           <div class="buttonCadastrar">
             CADASTRAR ALUGUEL
@@ -10,17 +10,19 @@
         </q-btn>
       </div>
 
-      <!-- Barra de Pesquisa -->
-      <div class="container">
-        <q-form @submit="getRows(search)" class="pesquisa">
-          <q-input filled v-model="search" placeholder="Pesquisar Aluguel" class="pesquisa" @input="onSearch"
-            @keyup.enter="performSearch">
-            <template v-slot:prepend>
-              <q-icon v-if="search !== ''" @click="search = '', getRows(search)" name="search" />
-            </template>
-          </q-input>
-        </q-form>
-      </div>
+       <!-- Barra de Pesquisa -->
+    <div class="container">
+      <q-input v-model="search" placeholder="Pesquisar Aluguel" class="q-ml-sm col pesquisa"
+        @keyup.enter="performSearch">
+        <template v-slot:append>
+          <q-icon v-if="search !== ''" name="close" @click="search = '', getRows(search)" class="cursor-pointer" />
+        </template>
+        <template v-slot:after>
+          <q-btn @click="getRows(search)" round dense flat icon="search" />
+        </template>
+      </q-input>
+    </div>
+
 
       <!-- Modal Cadastro -->
       <q-dialog v-model="showModalCadastro">
@@ -33,17 +35,17 @@
 
               <q-select v-model="newRent.renterId" label="Selecione o Locatário" filled use-input input-debounce="0"
                 :options="renterOptions" @filter="filterPublisher" option-label="name" option-value="id" emit-value
-                map-options class="q-mb-md" :rules="[val => !!val || 'É obrigatório selecionar um locatário']" />
+                map-options class="q-mb-md" :rules="[val => !!val || 'É obrigatório selecionar um locatário']" itemid="cadastrarLocatarioAluguel" />
 
               <q-select v-model="newRent.bookId" label="Selecione o Livro" filled use-input input-debounce="0"
                 :options="bookOptions" @filter="filterBook" option-label="name" option-value="id" emit-value map-options
-                class="q-mb-md" :rules="[val => !!val || 'É obrigatório selecionar um livro']" />
+                class="q-mb-md" :rules="[val => !!val || 'É obrigatório selecionar um livro']" itemid="cadastrarLivroAluguel" />
 
               <q-input v-model="newRent.deadLine" label="Prazo final" type="date" :min="today" :max="maxReturnDate"
-                :rules="[val => !!val || 'É obrigatório informar um prazo']" />
+                :rules="[val => !!val || 'É obrigatório informar um prazo']"  itemid="cadastrarDataAluguel"/>
 
               <div class="button-container">
-                <q-btn type="submit" label="CADASTRAR" class="center-width q-mt-md" />
+                <q-btn type="submit" label="CADASTRAR" class="center-width q-mt-md" itemid="BtnCadastrarAluguel" />
               </div>
             </q-form>
           </q-card-section>
@@ -60,14 +62,14 @@
             <q-form @submit.prevent="editRent">
               <q-select v-model="rentToEdit.renterId" label="Selecione o Locatário" filled use-input input-debounce="0"
                 :options="renterOptions" @filter="filterPublisher" option-label="name" option-value="id" emit-value
-                map-options class="q-mb-md" :rules="[val => !!val || 'É obrigatório selecionar um locatário']" />
+                map-options class="q-mb-md" :rules="[val => !!val || 'É obrigatório selecionar um locatário']" itemid="editarLocatarioAluguel" />
 
               <q-select v-model="rentToEdit.bookId" label="Selecione o Livro" filled use-input input-debounce="0"
                 :options="bookOptions" @filter="filterBook" option-label="name" option-value="id" emit-value map-options
-                class="q-mb-md" :rules="[val => !!val || 'É obrigatório selecionar um livro']" />
+                class="q-mb-md" :rules="[val => !!val || 'É obrigatório selecionar um livro']"  itemid="editarLivroAluguel" />
 
               <q-input v-model="rentToEdit.deadLine" label="Prazo final" type="date"
-                :rules="[val => !!val || 'É obrigatório informar um prazo']" />
+                :rules="[val => !!val || 'É obrigatório informar um prazo']" itemid="editarDataAluguel" />
 
               <div class="button-container">
                 <q-btn type="submit" label="SALVAR" class="center-width q-mt-md" />
@@ -97,78 +99,19 @@
 
       <!-- Tabela de livros -->
       <div class="table-container">
-        <q-table class="custom-table" :pagination="pagination" :rows="paginatedRows" :columns="columns" row-key="id">
-
-          <template v-slot:header-cell-renterName="props">
-            <q-th v-bind="props">
-              Locatário
-              <q-icon name="keyboard_arrow_up" @click="sortRowsAscByRenterName" class="cursor-pointer" size="20px" />
-              <q-icon name="keyboard_arrow_down" @click="sortRowsDescByRenterName" class="cursor-pointer" size="20px" />
-            </q-th>
-          </template>
-          <template v-slot:body-cell-renterName="props">
-            <q-td :props="props" style="vertical-align: middle;">
-              <div>{{ props.row.renter.name }}</div>
-            </q-td>
-          </template>
-
-          <template v-slot:header-cell-bookName="props">
-            <q-th v-bind="props">
-              Livro
-              <q-icon name="keyboard_arrow_up" @click="sortRowsAscByBookName" class="cursor-pointer" size="20px" />
-              <q-icon name="keyboard_arrow_down" @click="sortRowsDescByBookName" class="cursor-pointer" size="20px" />
-            </q-th>
-          </template>
-          <template v-slot:body-cell-bookName="props">
-            <q-td :props="props" style="vertical-align: middle;">
-              <div>{{ props.row.book.name }}</div>
-            </q-td>
-          </template>
-
-          <template v-slot:header-cell-deadLineDate="props">
-            <q-th v-bind="props">
-              Alugado
-              <q-icon name="keyboard_arrow_up" @click="sortRowsAscByDeadLineDate" class="cursor-pointer" size="20px" />
-              <q-icon name="keyboard_arrow_down" @click="sortRowsDescByDeadLineDate" class="cursor-pointer"
-                size="20px" />
-            </q-th>
-          </template>
-          <template v-slot:body-cell-deadLineDate="props">
-            <q-td :props="props" style="vertical-align: middle;">
-              <div>{{ props.row.deadLine }}</div>
-            </q-td>
-          </template>
-
-          <template v-slot:header-cell-rentDate="props">
-            <q-th v-bind="props">
-              Data de Aluguel
-              <q-icon name="keyboard_arrow_up" @click="sortRowsAscByRentDate" class="cursor-pointer" size="20px" />
-              <q-icon name="keyboard_arrow_down" @click="sortRowsDescByRentDate" class="cursor-pointer" size="20px" />
-            </q-th>
-          </template>
-          <template v-slot:body-cell-rentDate="props">
-            <q-td :props="props" style="vertical-align: middle;">
-              <div>{{ props.row.rentDate }}</div>
-            </q-td>
-          </template>
-
-          <template v-slot:body-cell-status="props">
-            <q-td :props="props" style="vertical-align: middle;">
-              <div>{{ formatStatus(props.row.status) }}</div>
-            </q-td>
-          </template>
+        <q-table class="custom-table" :pagination="pagination" :rows="paginatedRows" :columns="columns" row-key="id" hide-bottom>
 
           <template v-slot:body-cell-actions="props">
             <q-td :props="props" style="vertical-align: middle;">
               <q-btn flat color="accent"
                 v-if="userRole === 'ADMIN' && props.row.status !== 'ENTREGUE' && props.row.status !== 'ENTREGUE_COM_ATRASO' && props.row.status !== 'NO_PRAZO'"
-                @click="showReturnModal(props.row)" icon="check" aria-label="Confirm"><q-tooltip class="bg-accent"
+                @click="showReturnModal(props.row)" icon="check" aria-label="Confirm" :itemid="'confirmar' + '-' + props.row.id"><q-tooltip class="bg-accent"
                   :ffset="[10, 10]">
                   Devolução de Livro
                 </q-tooltip></q-btn>
               <q-btn flat color="secondary"
                 v-if="userRole === 'ADMIN' && props.row.status !== 'ENTREGUE' && props.row.status !== 'ENTREGUE_COM_ATRASO' && props.row.status !== 'NO_PRAZO'"
-                @click="editRow(props.row)" icon="edit" aria-label="Edit"><q-tooltip class="bg-secondary"
+                @click="editRow(props.row)" icon="edit" aria-label="Edit" :itemid="'edit' + '-' + props.row.id"><q-tooltip class="bg-secondary"
                   :ffset="[10, 10]">
                   Editar Aluguel
                 </q-tooltip></q-btn>
@@ -251,7 +194,8 @@ const editRow = (row) => {
 };
 
 const performSearch = () => {
-  onSearch();
+  console.log("Executando pesquisa para:", search.value);
+  getRows(search.value);
 };
 
 const editRent = () => {
