@@ -5,7 +5,6 @@ import com.locadora.locadoraLivro.Renters.DTOs.CreateRenterRequestDTO;
 import com.locadora.locadoraLivro.Renters.DTOs.UpdateRenterRequestDTO;
 import com.locadora.locadoraLivro.Renters.models.RenterModel;
 import com.locadora.locadoraLivro.Renters.repositories.RenterRepository;
-import com.locadora.locadoraLivro.Renters.services.RenterServices;
 import com.locadora.locadoraLivro.Rents.models.RentStatusEnum;
 import com.locadora.locadoraLivro.Rents.repositories.RentRepository;
 import lombok.AllArgsConstructor;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 @AllArgsConstructor
 @Component
@@ -26,51 +24,54 @@ public class RenterValidation {
     @Autowired
     private RentRepository rentRepository;
 
-    public void create(CreateRenterRequestDTO data){
+    public void create(CreateRenterRequestDTO data) {
         validateName(data);
         validateEmail(data);
         validateCPF(data);
     }
 
-    public void update(UpdateRenterRequestDTO data, int id){
+    public void update(UpdateRenterRequestDTO data, int id) {
         validateUpdateName(data);
         validateUpdateEmail(data, id);
         validateCPFUpdate(data, id);
     }
 
-    private void validateName(CreateRenterRequestDTO data){
-        if (data.name() == "" || data.name() == null){
+    private void validateName(CreateRenterRequestDTO data) {
+        if (data.name() == "" || data.name() == null) {
             throw new CustomValidationException("O nome não pode estar vazio.");
-        };
+        }
+        ;
     }
 
-    private void validateUpdateName(UpdateRenterRequestDTO data){
-        if (data.name() == "" || data.name() == null){
+    private void validateUpdateName(UpdateRenterRequestDTO data) {
+        if (data.name() == "" || data.name() == null) {
             throw new CustomValidationException("O nome não pode estar vazio.");
-        };
+        }
+        ;
     }
 
-    private void validateEmail(CreateRenterRequestDTO data){
-        if (data.email() == "" || data.email() == null){
+    private void validateEmail(CreateRenterRequestDTO data) {
+        if (data.email() == "" || data.email() == null) {
             throw new CustomValidationException("O email não pode estar vazio.");
-        };
+        }
+        ;
 
-        if (renterRepository.findByEmailAndIsDeletedFalse(data.email()) != null){
+        if (renterRepository.findByEmailAndIsDeletedFalse(data.email()) != null) {
             throw new CustomValidationException("Este email já está em uso.");
         }
     }
 
-    private void validateUpdateEmail(UpdateRenterRequestDTO data, int id){
+    private void validateUpdateEmail(UpdateRenterRequestDTO data, int id) {
         RenterModel renter = renterRepository.findById(id).get();
 
-        if (!Objects.equals(renter.getEmail(), data.email())){
+        if (!Objects.equals(renter.getEmail(), data.email())) {
             if (renterRepository.findByEmailAndIsDeletedFalse(data.email()) != null) {
                 throw new CustomValidationException("E-mail já em uso.");
             }
         }
     }
 
-    private void validateCPF(CreateRenterRequestDTO data){
+    private void validateCPF(CreateRenterRequestDTO data) {
         if (data.cpf() != null && !data.cpf().isBlank()) {
             CPFValidator cpfValidator = new CPFValidator();
             cpfValidator.initialize(null);
@@ -85,11 +86,11 @@ public class RenterValidation {
         }
     }
 
-    private void validateCPFUpdate(UpdateRenterRequestDTO data, int id){
+    private void validateCPFUpdate(UpdateRenterRequestDTO data, int id) {
         RenterModel renter = renterRepository.findById(id).get();
 
         if (data.cpf() != null && !data.cpf().isBlank()) {
-            if (!Objects.equals(renter.getCpf(), data.cpf())){
+            if (!Objects.equals(renter.getCpf(), data.cpf())) {
                 CPFValidator cpfValidator = new CPFValidator();
                 cpfValidator.initialize(null);
 
@@ -104,7 +105,7 @@ public class RenterValidation {
         }
     }
 
-    public void validateDeleteRenter(int id){
+    public void validateDeleteRenter(int id) {
         if (rentRepository.existsByRenterIdAndStatus(id, RentStatusEnum.RENTED)) {
             throw new CustomValidationException("Não é possível excluir o locatário. Existem livros atualmente alugados.");
         }

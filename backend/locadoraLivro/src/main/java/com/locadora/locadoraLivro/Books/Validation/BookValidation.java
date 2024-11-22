@@ -2,6 +2,7 @@ package com.locadora.locadoraLivro.Books.Validation;
 
 import com.locadora.locadoraLivro.Books.DTOs.CreateBookRequestDTO;
 import com.locadora.locadoraLivro.Books.DTOs.UpdateBookRecordDTO;
+import com.locadora.locadoraLivro.Books.models.BookModel;
 import com.locadora.locadoraLivro.Books.repositories.BookRepository;
 import com.locadora.locadoraLivro.Exceptions.CustomValidationException;
 import com.locadora.locadoraLivro.Publishers.models.PublisherModel;
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
 
 @AllArgsConstructor
 @Component
@@ -27,89 +30,65 @@ public class BookValidation {
     @Autowired
     PublisherRepository publisherRepository;
 
-    public void create(CreateBookRequestDTO data) {
-        validName(data);
-        validAuthor(data);
+    public void create (CreateBookRequestDTO data){
+        validCreateBook(data);
         validLaunchDate(data);
         validTotalQuantity(data);
         validPublisherExist(data);
     }
 
-    public void update(UpdateBookRecordDTO data, int id) {
-        validNameUpdate(data, id);
-        validAuthorUpdate(data, id);
-        validLaunchDateUpdate(data, id);
-        validTotalQuantityUpdate(data, id);
+    public void update (UpdateBookRecordDTO data){
+        validTotalQuantityUpdate(data);
+        validLaunchDateUpdate(data);
     }
 
-    public void validName(CreateBookRequestDTO data) {
-        if (data.name() == null || data.name().trim().isEmpty()) {
-            throw new CustomValidationException("O nome do livro não pode ser vazio ou nulo");
-        }
-    }
+    private void validPublisherExist(CreateBookRequestDTO data){
+        PublisherModel publisher = publisherRepository.findById(data.publisherId()).get();
 
-    public void validNameUpdate(UpdateBookRecordDTO data, int id) {
-        if (data.name() == null || data.name().trim().isEmpty()) {
-            throw new CustomValidationException("O nome do livro não pode ser vazio ou nulo");
+        if (publisher.isDeleted()){
+            throw new CustomValidationException("A editora não existe");
         }
     }
 
-    public void validAuthor(CreateBookRequestDTO data) {
-        if (data.author() == null || data.author().trim().isEmpty()) {
-            throw new CustomValidationException("O autor do livro não pode ser vazio ou nulo");
+    private void validLaunchDate(CreateBookRequestDTO data){
+        if (data.launchDate().isAfter(LocalDate.now())){
+            throw new CustomValidationException("A data de lançamento não pode ser no futuro.");
         }
     }
 
-    public void validAuthorUpdate(UpdateBookRecordDTO data, int id) {
-        if (data.author() == null || data.author().trim().isEmpty()) {
-            throw new CustomValidationException("O autor do livro não pode ser vazio ou nulo");
+    private void validLaunchDateUpdate(UpdateBookRecordDTO data){
+        if (data.launchDate().isAfter(LocalDate.now())){
+            throw new CustomValidationException("A data de lançamento não pode ser no futuro.");
         }
     }
 
-    public void validLaunchDate(CreateBookRequestDTO data) {
-        if (data.launchDate() == null) {
-            throw new CustomValidationException("A data de lançamento não pode ser nula");
-        }
-        if (data.launchDate().isAfter(LocalDate.now())) {
-            throw new CustomValidationException("A data de lançamento não pode ser no futuro");
+    private void validTotalQuantity(CreateBookRequestDTO data){
+        if (data.totalQuantity() <= 0){
+            throw new CustomValidationException("A quantidade total não pode ser inferior a 1.");
         }
     }
 
-    public void validLaunchDateUpdate(UpdateBookRecordDTO data, int id) {
-        if (data.launchDate() == null) {
-            throw new CustomValidationException("A data de lançamento não pode ser nula");
-        }
-        if (data.launchDate().isAfter(LocalDate.now())) {
-            throw new CustomValidationException("A data de lançamento não pode ser no futuro");
+    private void validTotalQuantityUpdate(UpdateBookRecordDTO data){
+        if (data.totalQuantity() < 0){
+            throw new CustomValidationException("A quantidade total não pode ser inferior a 1.");
         }
     }
 
-    public void validTotalQuantity(CreateBookRequestDTO data) {
-        if (data.totalQuantity() < 1) {
-            throw new CustomValidationException("A quantidade total deve ser maior ou igual a 1");
-        }
-    }
-
-    public void validTotalQuantityUpdate(UpdateBookRecordDTO data, int id) {
-        if (data.totalQuantity() < 1) {
-            throw new CustomValidationException("A quantidade total deve ser maior ou igual a 1");
-        }
-    }
-
-
-    public void validPublisherExist(CreateBookRequestDTO data) {
-        PublisherModel publisher = publisherRepository.findById(data.publisherId()).orElseThrow(() -> new CustomValidationException("O editor não existe"));
-
-        if (publisher.isDeleted()) {
-            throw new CustomValidationException("O editor não existe");
-        }
-    }
-
-
-    public void validDeleteBook(int id) {
-        boolean hasActiveRent = rentRepository.existsByBookIdAndStatus(id, RentStatusEnum.LATE);
+    public void validDeleteBook(int id){
+        boolean hasActiveRent = rentRepository.existsByBookIdAndStatus(id, RentStatusEnum.RENTED);
         if (hasActiveRent) {
-            throw new CustomValidationException("O livro não pode ser excluído porque possui uma locação ativa");
+            throw new CustomValidationException("O livro não pode ser excluído porque tem uma locação ativa.");
+        }
+    }
+
+    private void validCreateBook(CreateBookRequestDTO data){
+        List<BookModel> books = bookRepository.findAllByNameAndIsDeletedFalse(data.name());
+        if (books != null){
+            for (BookModel book: books){
+                if (Objects.equals(data.name(), book.getName()) && Objects.equals(data.author(), book.getAuthor()) && Objects.equals(data.publisherId(), book.getPublisher().getId())){
+                    throw new CustomValidationException("Este livro já está cadastrado.");
+                }
+            }
         }
     }
 }

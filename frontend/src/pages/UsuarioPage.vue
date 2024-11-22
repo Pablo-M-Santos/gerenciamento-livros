@@ -12,7 +12,7 @@
 
     <!-- Barra de Pesquisa -->
     <q-form @submit="getRows(srch)" class="q-ml-sm col container">
-      <q-input v-model="srch" label="Pesquisar..." class="q-ml-sm col" input-style="min-width: 100%"
+      <q-input v-model="srch" label="Pesquisar Usuário" class="q-ml-sm col" input-style="min-width: 100%"
         itemid="searchInput">
         <template v-slot:append>
           <q-icon v-if="srch !== ''" name="close" @click="srch = '', getRows(srch)" class="cursor-pointer"
@@ -313,7 +313,7 @@ const filterLabel = ref('Filtrar');
 
 const permissionFilter = (permission, label) => {
   console.log('Filtro selecionado:', permission);
-  roleFilter.value = permission; 
+  roleFilter.value = permission;
   filterLabel.value = label;
   getRows();
 };

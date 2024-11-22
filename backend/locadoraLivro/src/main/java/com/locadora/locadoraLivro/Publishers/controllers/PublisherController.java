@@ -27,30 +27,26 @@ public class PublisherController {
     }
 
     @GetMapping("/publisher")
-    public ResponseEntity<Object> getAll(String search, @RequestParam(required = false) Integer page) {
+    public ResponseEntity<Object> getAll(String search, @RequestParam(required = false) Integer page){
         if (page == null) {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(publisherMapper.toPublisherResponseList(publisherServices.findAllWithoutPagination(search)));
+            return ResponseEntity.status(HttpStatus.OK).body(publisherMapper.toPublisherResponseList(publisherServices.findAllWithoutPagination(search)));
         } else {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(publisherServices.findAll(search, page).map(publisherMapper::toPublisherResponse));
+            return ResponseEntity.status(HttpStatus.OK).body(publisherServices.findAll(search, page).map(publisherMapper::toPublisherResponse));
         }
     }
 
     @GetMapping("/publisher/{id}")
-    public ResponseEntity<PublisherResponseDTO> getById(@PathVariable(value = "id") int id) {
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(publisherMapper.toPublisherResponse(publisherServices.findById(id).get()));
+    public ResponseEntity<PublisherResponseDTO> getById(@PathVariable(value = "id") int id){
+        return ResponseEntity.status(HttpStatus.OK).body(publisherMapper.toPublisherResponse(publisherServices.findById(id).get()));
     }
 
     @PutMapping("/publisher/{id}")
-    public ResponseEntity<Object> update(@PathVariable(value = "id") int id,
-                                         @RequestBody @Valid UpdatePublisherRecordDTO updatePublisherRecordDTO) {
+    public ResponseEntity<Object> update(@PathVariable(value = "id") int id, @RequestBody @Valid UpdatePublisherRecordDTO updatePublisherRecordDTO){
         return publisherServices.update(id, updatePublisherRecordDTO);
     }
 
     @DeleteMapping("/publisher/{id}")
-    public ResponseEntity<Object> delete(@PathVariable(value = "id") int id) {
+    public ResponseEntity<Object> delete(@PathVariable(value = "id") int id){
         return publisherServices.delete(id);
     }
 }

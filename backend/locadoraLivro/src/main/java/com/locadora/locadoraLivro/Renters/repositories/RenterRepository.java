@@ -17,16 +17,25 @@ public interface RenterRepository extends JpaRepository<RenterModel, Integer> {
     UserDetails findByName(String name);
     RenterModel findByEmail(String email);
     RenterModel findByEmailAndIsDeletedFalse(String email);
-    RenterModel findByTelephone(String telephone);
     RenterModel findByCpf(String cpf);
     RenterModel findByCpfAndIsDeletedFalse(String cpf);
     Page<RenterModel> findAllByIsDeletedFalse(Pageable pageable);
     List<RenterModel> findAllByIsDeletedFalse(Sort sort);
     List<RenterModel> findAllByEmail(String email);
 
-    @Query("SELECT u FROM RenterModel u WHERE LOWER(REPLACE(u.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:name, ' ', ''), '%')) AND u.isDeleted = false")
-    List<RenterModel> findAllByName(@Param("name") String name, Sort sort);
+    @Query("SELECT u FROM RenterModel u WHERE " +
+            "(LOWER(REPLACE(u.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
+            "OR LOWER(REPLACE(u.email, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
+            "OR LOWER(REPLACE(u.cpf, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
+            "OR LOWER(REPLACE(u.telephone, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%'))) " +
+            "AND u.isDeleted = false")
+    List<RenterModel> findAllByName(@Param("searchTerm") String searchTerm, Sort sort);
 
-    @Query("SELECT u FROM RenterModel u WHERE LOWER(REPLACE(u.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:name, ' ', ''), '%')) AND u.isDeleted = false")
-    Page<RenterModel> findAllByName(@Param("name") String name, Pageable pageable);
+    @Query("SELECT u FROM RenterModel u WHERE " +
+            "(LOWER(REPLACE(u.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
+            "OR LOWER(REPLACE(u.email, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
+            "OR LOWER(REPLACE(u.cpf, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
+            "OR LOWER(REPLACE(u.telephone, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%'))) " +
+            "AND u.isDeleted = false")
+    Page<RenterModel> findAllByName(@Param("searchTerm") String searchTerm, Pageable pageable);
 }

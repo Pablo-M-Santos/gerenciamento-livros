@@ -19,18 +19,25 @@ public interface PublisherRepository extends JpaRepository<PublisherModel, Integ
     Page<PublisherModel> findAllByIsDeletedFalse(Pageable pageable);
     List<PublisherModel> findAllByIsDeletedFalse(Sort sort);
     PublisherModel findByEmail(String email);
+    PublisherModel findByEmailAndIsDeletedFalse(String email);
     PublisherModel findBySite(String site);
+    PublisherModel findBySiteAndIsDeletedFalse(String site);
     PublisherModel findByTelephone(String telephone);
+    PublisherModel findByTelephoneAndIsDeletedFalse(String telephone);
 
-    @Query("SELECT p FROM PublisherModel p WHERE LOWER(REPLACE(p.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:keyword, ' ', ''), '%'))" +
-            " OR LOWER(REPLACE(p.email, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:keyword, ' ', ''), '%'))" +
-            " OR LOWER(REPLACE(p.telephone, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:keyword, ' ', ''), '%'))" +
-            " AND p.isDeleted = false")
-    Page<PublisherModel> findAllByKeyword(@Param("keyword") String keyword, Pageable pageable);
+    @Query("SELECT u FROM PublisherModel u WHERE " +
+            "(LOWER(REPLACE(u.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
+            "OR LOWER(REPLACE(u.email, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
+            "OR LOWER(REPLACE(u.site, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
+            "OR LOWER(REPLACE(u.telephone, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%'))) " +
+            "AND u.isDeleted = false")
+    List<PublisherModel> findAllByName(@Param("searchTerm") String searchTerm, Sort sort);
 
-    @Query("SELECT p FROM PublisherModel p WHERE LOWER(REPLACE(p.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:keyword, ' ', ''), '%'))" +
-            " OR LOWER(REPLACE(p.email, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:keyword, ' ', ''), '%'))" +
-            " OR LOWER(REPLACE(p.telephone, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:keyword, ' ', ''), '%'))" +
-            " AND p.isDeleted = false")
-    List<PublisherModel> findAllByKeyword(Sort sort, @Param("keyword") String keyword);
+    @Query("SELECT u FROM PublisherModel u WHERE " +
+            "(LOWER(REPLACE(u.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
+            "OR LOWER(REPLACE(u.email, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
+            "OR LOWER(REPLACE(u.site, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
+            "OR LOWER(REPLACE(u.telephone, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%'))) " +
+            "AND u.isDeleted = false")
+    Page<PublisherModel> findAllByName(@Param("searchTerm") String searchTerm, Pageable pageable);
 }

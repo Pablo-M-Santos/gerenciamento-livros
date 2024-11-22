@@ -41,27 +41,24 @@ public class BookServices {
     BookValidation bookValidation;
 
     public ResponseEntity<Void> create(@Valid CreateBookRequestDTO data) {
+
         bookValidation.create(data);
-        bookValidation.validPublisherExist(data);
 
         PublisherModel publisher = publisherRepository.findById(data.publisherId())
-                .orElseThrow(() -> new ModelNotFoundException("Publisher not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Editora não encontrada."));
 
         BookModel newBook = new BookModel(data.name(), data.author(), data.launchDate(), data.totalQuantity(), publisher);
-
         bookRepository.save(newBook);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-
-
-    public Page<BookModel> findAll(String search, int page) {
-        int size = 8;
+    public Page<BookModel> findAll(String search, int page){
+        int size = 5;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-        if (Objects.equals(search, "")) {
+        if (Objects.equals(search, "")){
             Page<BookModel> books = bookRepository.findAllByIsDeletedFalse(pageable);
-            if (books.isEmpty()) throw new ModelNotFoundException();
+            if(books.isEmpty()) throw new ModelNotFoundException();
 
             for (BookModel book : books) {
                 List<RentModel> totalRented = rentRepository.findAllByBookIdAndStatus(book.getId(), RentStatusEnum.RENTED);
@@ -77,18 +74,18 @@ public class BookServices {
         }
     }
 
-    public Optional<BookModel> findById(int id) {
+    public Optional<BookModel> findById(int id){
         return bookRepository.findById(id);
     }
 
-    public ResponseEntity<Object> update(int id, @Valid UpdateBookRecordDTO updateBookRecordDTO) {
+    public ResponseEntity<Object> update(int id, @Valid UpdateBookRecordDTO updateBookRecordDTO){
         Optional<BookModel> response = bookRepository.findById(id);
-        if (response.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book not found");
+        if (response.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Livro não encontrado.");
 
-        bookValidation.update(updateBookRecordDTO, id);
+        bookValidation.update(updateBookRecordDTO);
 
         PublisherModel publisher = publisherRepository.findById(updateBookRecordDTO.publisherId())
-                .orElseThrow(() -> new IllegalArgumentException("Publisher not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Editora não encontrada."));
 
         var bookModel = response.get();
         bookModel.setName(updateBookRecordDTO.name());
@@ -101,15 +98,18 @@ public class BookServices {
         return ResponseEntity.status(HttpStatus.OK).body(bookModel);
     }
 
-    public ResponseEntity<Object> delete(int id) {
+    public ResponseEntity<Object> delete(int id){
         Optional<BookModel> response = bookRepository.findById(id);
-        if (response.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book not found");
+        if (response.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Livro não encontrado.");
+
         bookValidation.validDeleteBook(id);
+
         BookModel book = response.get();
+
         book.setDeleted(true);
+
         bookRepository.save(book);
 
-        return ResponseEntity.status(HttpStatus.OK).body("Book deleted successfully");
+        return ResponseEntity.status(HttpStatus.OK).body("Livro excluído com sucesso.");
     }
 }
-

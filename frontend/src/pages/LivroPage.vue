@@ -11,16 +11,19 @@
     </div>
 
     <!-- Barra de Pesquisa -->
-    <div class="container">
-      <q-form @submit="getRows(search)" class="pesquisa">
-        <q-input filled v-model="search" placeholder="Pesquisar editora" class="pesquisa" @input="onSearch"
-          @keyup.enter="performSearch">
-          <template v-slot:prepend>
-            <q-icon v-if="search !== ''" @click="search = '', getRows(search)" name="search" />
-          </template>
-        </q-input>
-      </q-form>
-    </div>
+    <q-form @submit="getRows(srch)" class="q-ml-sm col container">
+      <q-input v-model="srch" label="Pesquisar Livro" class="q-ml-sm col" input-style="min-width: 100%"
+        itemid="searchInput">
+        <template v-slot:append>
+          <q-icon v-if="srch !== ''" name="close" @click="srch = '', getRows(srch)" class="cursor-pointer"
+            itemid="closeSearchBtn" />
+        </template>
+
+        <template v-slot:after>
+          <q-btn @click="getRows(srch)" round dense flat icon="search" itemid="searchBtn" />
+        </template>
+      </q-input>
+    </q-form>
 
     <!-- Modal Cadastro -->
     <q-dialog v-model="showModalCadastro">
@@ -38,7 +41,7 @@
               :rules="[val => !!val || 'Autor é obrigatório']" />
 
             <q-input v-model="bookToCreate.totalQuantity" label="Quantidade" type="number" filled lazy-rules
-              :rules="[val => val  >= 1 || 'É necessário ter pelo menos 1']" />
+              :rules="[val => val >= 1 || 'É necessário ter pelo menos 1']" />
 
             <q-input v-model="bookToCreate.launchDate" label="Data de lançamento" type="date" :max="today"
               mask="####-##-##" fill-mask filled lazy-rules
@@ -135,60 +138,10 @@
 
     <!-- Tabela de livros -->
     <div class="table-container">
-      <q-table class="custom-table" :pagination="pagination" :rows="paginatedRows" :columns="columns" row-key="id">
+      <q-table class="custom-table" :pagination="pagination" :rows="paginatedRows" :columns="columns" row-key="id"
+        hide-bottom>
 
-        <template v-slot:header-cell-title="props">
-          <q-th v-bind="props">
-            Título
-            <q-icon name="keyboard_arrow_up" @click="sortRowsAscBy" class="cursor-pointer" size="20px" />
-            <q-icon name="keyboard_arrow_down" @click="sortRowsDescBy" class="cursor-pointer" size="20px" />
-          </q-th>
-        </template>
-        <template v-slot:body-cell-title="props">
-          <q-td :props="props" style="vertical-align: middle;">
-            <div>{{ props.row.name }}</div>
-          </q-td>
-        </template>
 
-        <template v-slot:header-cell-author="props">
-          <q-th v-bind="props">
-            Autor
-            <q-icon name="keyboard_arrow_up" @click="sortRowsAscBy" class="cursor-pointer" size="20px" />
-            <q-icon name="keyboard_arrow_down" @click="sortRowsDescBy" class="cursor-pointer" size="20px" />
-          </q-th>
-        </template>
-        <template v-slot:body-cell-author="props">
-          <q-td :props="props" style="vertical-align: middle;">
-            <div>{{ props.row.author }}</div>
-          </q-td>
-        </template>
-
-        <template v-slot:header-cell-totalQuantity="props">
-          <q-th v-bind="props">
-            Disponiveis
-            <q-icon name="keyboard_arrow_up" @click="sortRowsAscByTotalQuantity" class="cursor-pointer" size="20px" />
-            <q-icon name="keyboard_arrow_down" @click="sortRowsDescByTotalQuantity" class="cursor-pointer"
-              size="20px" />
-          </q-th>
-        </template>
-        <template v-slot:body-cell-totalQuantity="props">
-          <q-td :props="props" style="vertical-align: middle;">
-            <div>{{ props.row.totalQuantity }}</div>
-          </q-td>
-        </template>
-
-        <template v-slot:header-cell-totalInUse="props">
-          <q-th v-bind="props">
-            Alugados
-            <q-icon name="keyboard_arrow_up" @click="sortRowsAscBy" class="cursor-pointer" size="20px" />
-            <q-icon name="keyboard_arrow_down" @click="sortRowsDescBy" class="cursor-pointer" size="20px" />
-          </q-th>
-        </template>
-        <template v-slot:body-cell-totalInUse="props">
-          <q-td :props="props" style="vertical-align: middle;">
-            <div>{{ props.row.totalInUse }}</div>
-          </q-td>
-        </template>
 
         <template v-slot:body-cell-actions="props">
           <q-td clas :props="props" style="vertical-align: middle;">
@@ -251,28 +204,14 @@ const currentPage = ref(1);
 const maxRowsPerPage = 10;
 
 const columns = [
-  { name: 'title', required: true, label: 'Título', align: 'center', field: row => row.name, format: val => `${val}` },
-  { name: 'author', align: 'center', label: 'Autor', field: 'author' },
-  { name: 'totalQuantity', align: 'center', label: 'Disponíveis', field: 'totalQuantity' },
-  { name: 'totalInUse', align: 'center', label: 'Alugados', field: 'totalInUse' },
+  { name: 'title', required: true, label: 'Título', align: 'center', field: row => row.name, format: val => `${val}`, sortable: true },
+  { name: 'author', align: 'center', label: 'Autor', field: 'author', sortable: true },
+  { name: 'totalQuantity', align: 'center', label: 'Disponíveis', field: 'totalQuantity', sortable: true },
+  { name: 'totalInUse', align: 'center', label: 'Alugados', field: 'totalInUse', sortable: true },
   { name: 'actions', align: 'center', label: 'Ações', field: 'actions' },
 ];
 
-const sortRowsAscBy = () => {
-  rows.value.sort((a, b) => a.name.localeCompare(b.name));
-};
 
-const sortRowsDescBy = () => {
-  rows.value.sort((a, b) => b.name.localeCompare(a.name));
-};
-
-const sortRowsAscByTotalQuantity = () => {
-  rows.value.sort((a, b) => a.totalQuantity - b.totalQuantity);
-};
-
-const sortRowsDescByTotalQuantity = () => {
-  rows.value.sort((a, b) => b.totalQuantity - a.totalQuantity);
-};
 
 const pagination = ref({
   page: 1,
@@ -431,17 +370,18 @@ const confirmDelete = () => {
         });
       })
       .catch(error => {
-        console.error("Erro ao excluir livro:", error);
-        Notify.create({
-          color: 'red',
-          textColor: 'white',
-          icon: 'error',
-          message: 'Erro ao excluir livro!',
-          position: 'top'
-        });
+        if (error.response.status == 403) {
+          showNotification('negative', "Você não tem permissao!");
+        } else {
+          showNotification('negative', error.response.data.error);
+        }
+
+        console.log("Erro ao deletar livro", error.response.status);
       });
   }
 };
+
+
 
 const cancelDelete = () => {
   showModalExcluir.value = false;

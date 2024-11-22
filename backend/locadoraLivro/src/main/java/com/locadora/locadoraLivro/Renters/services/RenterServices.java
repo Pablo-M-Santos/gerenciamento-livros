@@ -6,8 +6,6 @@ import com.locadora.locadoraLivro.Renters.DTOs.UpdateRenterRequestDTO;
 import com.locadora.locadoraLivro.Renters.Validation.RenterValidation;
 import com.locadora.locadoraLivro.Renters.models.RenterModel;
 import com.locadora.locadoraLivro.Renters.repositories.RenterRepository;
-import com.locadora.locadoraLivro.Rents.models.RentStatusEnum;
-import com.locadora.locadoraLivro.Rents.repositories.RentRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +16,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Objects;
@@ -31,12 +28,9 @@ public class RenterServices {
     private RenterRepository renterRepository;
 
     @Autowired
-    private RentRepository rentRepository;
-
-    @Autowired
     private RenterValidation renterValidation;
 
-    public ResponseEntity<Void> create(@Valid CreateRenterRequestDTO data){
+    public ResponseEntity<Void> create(@Valid CreateRenterRequestDTO data) {
         renterValidation.create(data);
 
         RenterModel newRenter = new RenterModel(data.name(), data.email(), data.telephone(), data.address(), data.cpf());
@@ -46,9 +40,9 @@ public class RenterServices {
     }
 
     public Page<RenterModel> findAll(String search, int page) {
-        int size = 8;
+        int size = 5;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-        if (Objects.equals(search, "")){
+        if (Objects.equals(search, "")) {
             Page<RenterModel> renters = renterRepository.findAllByIsDeletedFalse(pageable);
             if (renters.isEmpty()) throw new ModelNotFoundException();
             return renters;
@@ -70,9 +64,9 @@ public class RenterServices {
         return renterRepository.findById(id);
     }
 
-    public ResponseEntity<Object> update(int id, @Valid UpdateRenterRequestDTO updateRenterRequestDTO){
+    public ResponseEntity<Object> update(int id, @Valid UpdateRenterRequestDTO updateRenterRequestDTO) {
         Optional<RenterModel> response = renterRepository.findById(id);
-        if (response.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Renter not found");
+        if (response.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Locatário não encontrado.");
 
         renterValidation.update(updateRenterRequestDTO, id);
 
@@ -84,20 +78,16 @@ public class RenterServices {
 
     public ResponseEntity<Object> delete(int id) {
         Optional<RenterModel> response = renterRepository.findById(id);
-        if (response.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Renter not found");
+        if (response.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Locatário não encontrado.");
 
         renterValidation.validateDeleteRenter(id);
 
         RenterModel renter = response.get();
+
         renter.setDeleted(true);
 
         renterRepository.save(renter);
 
-        return ResponseEntity.status(HttpStatus.OK).body("Renter deleted successfully");
-    }
-
-
-    public boolean hasRentedBooks(int renterId) {
-        return rentRepository.existsByRenterIdAndStatus(renterId, RentStatusEnum.RENTED);
+        return ResponseEntity.status(HttpStatus.OK).body("Locatário excluído com sucesso.");
     }
 }

@@ -11,16 +11,19 @@
       </div>
 
       <!-- Barra de Pesquisa -->
-      <div class="container">
-        <q-form @submit="getRows(search)" class="pesquisa">
-          <q-input filled v-model="search" placeholder="Pesquisar editora" class="pesquisa" @input="onSearch"
-            @keyup.enter="performSearch">
-            <template v-slot:prepend>
-              <q-icon v-if="search !== ''" @click="search = '', getRows(search)" name="search" />
-            </template>
-          </q-input>
-        </q-form>
-      </div>
+      <q-form @submit="getRows(srch)" class="q-ml-sm col container">
+        <q-input v-model="srch" label="Pesquisar Editora" class="q-ml-sm col" input-style="min-width: 100%"
+          itemid="searchInput">
+          <template v-slot:append>
+            <q-icon v-if="srch !== ''" name="close" @click="srch = '', getRows(srch)" class="cursor-pointer"
+              itemid="closeSearchBtn" />
+          </template>
+
+          <template v-slot:after>
+            <q-btn @click="getRows(srch)" round dense flat icon="search" itemid="searchBtn" />
+          </template>
+        </q-input>
+      </q-form>
 
       <!-- Modal Cadastro -->
       <q-dialog v-model="showModalCadastro">
@@ -41,9 +44,8 @@
               <q-input filled v-model="newPublisher.email" label="Email" type="email" required lazy-rules
                 :rules="[val => !!val || 'Email é obrigatório', val => /^.+@gmail\.com$/.test(val) || 'O e-mail deve ser um endereço Gmail válido']" />
 
-              <q-input filled v-model="newPublisher.site" label="Site" lazy-rules :rules="[
-                val => !!val || 'O site é obrigatório',
-                val => /^https:\/\/.+/.test(val) || 'O site deve começar com https://'
+              <q-input filled v-model="newPublisher.site" label="Site " lazy-rules :rules="[
+                val => !val || /^https:\/\/.+/.test(val) || 'O site deve começar com https://'
               ]" />
 
               <div class="button-container">
@@ -72,9 +74,8 @@
               <q-input filled v-model="editPublisher.email" label="Email" type="email" required lazy-rules
                 :rules="[val => !!val || 'Email é obrigatório', val => /^.+@gmail\.com$/.test(val) || 'O e-mail deve ser um endereço Gmail válido']" />
 
-              <q-input filled v-model="editPublisher.site" label="Site" lazy-rules :rules="[
-                val => !!val || 'O site é obrigatório',
-                val => /^https:\/\/.+/.test(val) || 'O site deve começar com https://'
+              <q-input filled v-model="editPublisher.site" label="Site " lazy-rules :rules="[
+                val => !val || /^https:\/\/.+/.test(val) || 'O site deve começar com https://'
               ]" />
               <div class="button-container">
                 <q-btn type="submit" label="ATUALIZAR" @click="saveEdit" class="center-width q-mt-md" />
@@ -126,47 +127,8 @@
 
       <!-- Table -->
       <div class="table-container">
-        <q-table class="custom-table" :pagination="pagination"  :rows="paginatedRows" :columns="columns" row-key="id">
-
-          <template v-slot:header-cell-name="props">
-            <q-th v-bind="props">
-              Nome da Editora
-              <q-icon name="keyboard_arrow_up" @click="sortRowsAscByName" class="cursor-pointer" size="20px" />
-              <q-icon name="keyboard_arrow_down" @click="sortRowsDescByName" class="cursor-pointer" size="20px" />
-            </q-th>
-          </template>
-          <template v-slot:body-cell-name="props">
-            <q-td :props="props" style="vertical-align: middle;">
-              <div>{{ props.row.name }}</div>
-            </q-td>
-          </template>
-
-          <template v-slot:header-cell-email="props">
-            <q-th v-bind="props">
-              Email
-              <q-icon name="keyboard_arrow_up" @click="sortRowsAscByEmail" class="cursor-pointer" size="20px" />
-              <q-icon name="keyboard_arrow_down" @click="sortRowsDescByEmail" class="cursor-pointer" size="20px" />
-            </q-th>
-          </template>
-          <template v-slot:body-cell-email="props">
-            <q-td :props="props" style="vertical-align: middle;">
-              <div>{{ props.row.email }}</div>
-            </q-td>
-          </template>
-
-          <template v-slot:header-cell-telephone="props">
-            <q-th v-bind="props">
-              Telefone
-              <q-icon name="keyboard_arrow_up" @click="sortRowsAscByEmail" class="cursor-pointer" size="20px" />
-              <q-icon name="keyboard_arrow_down" @click="sortRowsDescByEmail" class="cursor-pointer" size="20px" />
-            </q-th>
-          </template>
-          <template v-slot:body-cell-telephone="props">
-            <q-td :props="props" style="vertical-align: middle;">
-              <div>{{ props.row.telephone }}</div>
-            </q-td>
-          </template>
-
+        <q-table class="custom-table" :pagination="pagination" :rows="paginatedRows" :columns="columns" row-key="id"
+          hide-bottom>
           <template v-slot:body-cell-actions="props">
             <q-td :props="props" class="text-center">
               <q-btn flat color="primary" @click="showDetails(props.row)" icon="visibility" aria-label="View"><q-tooltip
@@ -219,9 +181,9 @@ const editPublisher = ref([]);
 
 
 const columns = [
-  { name: 'name', required: true, label: 'Nome da Editora', align: 'center', field: row => row.name, format: val => `${val}` },
-  { name: 'email', align: 'center', label: 'Email', field: 'email' },
-  { name: 'telephone', align: 'center', label: 'Telephone', field: 'telephone' },
+  { name: 'name', required: true, label: 'Nome da Editora', align: 'center', field: row => row.name, format: val => `${val}`, sortable: true },
+  { name: 'email', required: true, label: 'Email', align: 'center', field: row => row.email, format: val => `${val}`, sortable: true },
+  { name: 'telephone', required: true, label: 'Telefone', align: 'center', field: row => row.telephone, format: val => `${val}`, sortable: true },
   { name: 'actions', align: 'center', label: 'Ações', field: 'actions' },
 ];
 const rows = ref([]);
@@ -230,22 +192,6 @@ const pagination = ref({
   page: 1,
   rowsPerPage: 8,
 });
-
-const sortRowsAscByName = () => {
-  rows.value = [...rows.value].sort((a, b) => a.name.localeCompare(b.name));
-};
-
-const sortRowsDescByName = () => {
-  rows.value = [...rows.value].sort((a, b) => b.name.localeCompare(a.name));
-};
-
-const sortRowsAscByEmail = () => {
-  rows.value = [...rows.value].sort((a, b) => a.email.localeCompare(b.email));
-};
-
-const sortRowsDescByEmail = () => {
-  rows.value = [...rows.value].sort((a, b) => b.email.localeCompare(a.email));
-};
 
 
 
@@ -293,8 +239,8 @@ const performSearch = () => {
   onSearch();
 };
 
-const getRows = (search = '') => {
-  api.get('/publisher', { params: { search: search, page: page.value } })
+const getRows = (srch = '') => {
+  api.get('/publisher', { params: { search: srch, page: page.value } })
     .then(response => {
       if (Array.isArray(response.data.content)) {
         rows.value = response.data.content;
@@ -302,6 +248,7 @@ const getRows = (search = '') => {
         console.error('A resposta da API não é um array:', response.data);
         rows.value = [];
       }
+      console.log('Resposta da API:', response.data);
     })
     .catch(error => {
       console.error("Erro ao obter dados:", error);

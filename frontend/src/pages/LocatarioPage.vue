@@ -9,16 +9,19 @@
     </div>
 
     <!-- Barra de Pesquisa -->
-    <div class="container">
-      <q-form @submit="getRows(search)" class="pesquisa">
-        <q-input filled v-model="search" placeholder="Pesquisar locatário" class="pesquisa" @input="onSearch"
-          @keyup.enter="performSearch">
-          <template v-slot:prepend>
-            <q-icon v-if="search !== ''" @click="search = '', getRows(search)" name="search" />
-          </template>
-        </q-input>
-      </q-form>
-    </div>
+    <q-form @submit="getRows(srch)" class="q-ml-sm col container">
+      <q-input v-model="srch" label="Pesquisar Locatário" class="q-ml-sm col" input-style="min-width: 100%"
+        itemid="searchInput">
+        <template v-slot:append>
+          <q-icon v-if="srch !== ''" name="close" @click="srch = '', getRows(srch)" class="cursor-pointer"
+            itemid="closeSearchBtn" />
+        </template>
+
+        <template v-slot:after>
+          <q-btn @click="getRows(srch)" round dense flat icon="search" itemid="searchBtn" />
+        </template>
+      </q-input>
+    </q-form>
 
     <!-- Modal Cadastro -->
     <q-dialog v-model="showModalCadastro">
@@ -138,46 +141,8 @@
 
     <!-- Table -->
     <div class="table-container">
-      <q-table class="custom-table" :pagination="pagination" :rows="paginatedRows" :columns="columns" row-key="email">
-        <template v-slot:header-cell-name="props">
-          <q-th v-bind="props">
-            Nome do Locatário
-            <q-icon name="keyboard_arrow_up" @click="sortRowsAscByName" class="cursor-pointer" size="20px" />
-            <q-icon name="keyboard_arrow_down" @click="sortRowsDescByName" class="cursor-pointer" size="20px" />
-          </q-th>
-        </template>
-        <template v-slot:body-cell-name="props">
-          <q-td :props="props" style="vertical-align: middle;">
-            <div>{{ props.row.name }}</div>
-          </q-td>
-        </template>
-
-        <template v-slot:header-cell-email="props">
-          <q-th v-bind="props">
-            Email
-            <q-icon name="keyboard_arrow_up" @click="sortRowsAscByEmail" class="cursor-pointer" size="20px" />
-            <q-icon name="keyboard_arrow_down" @click="sortRowsDescByEmail" class="cursor-pointer" size="20px" />
-          </q-th>
-        </template>
-        <template v-slot:body-cell-email="props">
-          <q-td :props="props" style="vertical-align: middle;">
-            <div>{{ props.row.email }}</div>
-          </q-td>
-        </template>
-
-        <template v-slot:header-cell-telephone="props">
-          <q-th v-bind="props">
-            Telefone
-            <q-icon name="keyboard_arrow_up" @click="sortRowsAscByTelephone" class="cursor-pointer" size="20px" />
-            <q-icon name="keyboard_arrow_down" @click="sortRowsDescByTelephone" class="cursor-pointer" size="20px" />
-          </q-th>
-        </template>
-        <template v-slot:body-cell-telephone="props">
-          <q-td :props="props" style="vertical-align: middle;">
-            <div>{{ props.row.telephone }}</div>
-          </q-td>
-        </template>
-
+      <q-table class="custom-table" :pagination="pagination" :rows="paginatedRows" :columns="columns" row-key="id"
+        hide-bottom>
         <template v-slot:body-cell-actions="props">
           <q-td :props="props" class="text-center">
             <q-btn flat color="primary" @click="showDetails(props.row)" icon="visibility" aria-label="View"><q-tooltip
@@ -401,8 +366,13 @@ const confirmDelete = () => {
         showModalExcluir.value = false;
       })
       .catch(error => {
-        console.error('Erro ao excluir:', error);
-        showNotification('negative', 'Erro ao excluir locatário!');
+        if (error.response.status == 403) {
+          showNotification('negative', "Você não tem permissao!");
+        } else {
+          showNotification('negative', error.response.data.error);
+        }
+
+        console.log("Erro ao deletar locatário", error.response.status);
       });
   }
 };

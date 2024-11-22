@@ -11,17 +11,52 @@
     </div>
 
     <!-- Barra de Pesquisa -->
-    <div class="container">
-      <q-input v-model="search" placeholder="Pesquisar Aluguel" class="q-ml-sm col pesquisa"
-        @keyup.enter="performSearch">
+    <q-form @submit="getRows(srch)" class="q-ml-sm col container">
+      <q-input v-model="srch" label="Pesquisar Aluguel" class="q-ml-sm col" input-style="min-width: 100%"
+        itemid="searchInput">
         <template v-slot:append>
-          <q-icon v-if="search !== ''" name="close" @click="search = '', getRows(search)" class="cursor-pointer" />
+          <q-icon v-if="srch !== ''" name="close" @click="srch = '', getRows(srch)" class="cursor-pointer"
+            itemid="closeSearchBtn" />
         </template>
+
         <template v-slot:after>
-          <q-btn @click="getRows(search)" round dense flat icon="search" />
+          <q-btn @click="getRows(srch)" round dense flat icon="search" itemid="searchBtn" />
         </template>
       </q-input>
-    </div>
+      <q-btn-dropdown color="teal-9" :label="filterLabel" icon="filter_list" itemid="filterBtn">
+        <q-list>
+          <q-item clickable v-close-popup @click="statusFilter('RENTED', 'Alugados')" itemid="filterAlugadosBtn">
+            <q-item-section>
+              <q-item-label>Alugados</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item clickable v-close-popup @click="statusFilter('LATE', 'Atrasados')" itemid="filterAtrasadosBtn">
+            <q-item-section>
+              <q-item-label>Atrasados</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item clickable v-close-popup @click="statusFilter('IN_TIME', 'Devolvidos no prazo')" itemid="filterNoPrazoBtn">
+            <q-item-section>
+              <q-item-label>Devolvido no prazo</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item clickable v-close-popup @click="statusFilter('DELIVERED_WITH_DELAY', 'Devolvido fora prazo')" itemid="filterForaDoPrazoBtn">
+            <q-item-section>
+              <q-item-label>Devolvido fora prazo</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item clickable v-close-popup @click="statusFilter('', 'Todos')" itemid="filterTodosBtn">
+            <q-item-section>
+              <q-item-label>Todos</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-btn-dropdown>
+    </q-form>
 
 
     <!-- Modal Cadastro -->
@@ -171,6 +206,8 @@ const rentToEdit = ref({
   deadLine: '',
 });
 
+const filterLabel = ref('Filtrar');
+
 const rows = ref([])
 const columns = computed(() => {
   const baseColumns = [
@@ -316,6 +353,8 @@ const confirmReturn = () => {
     })
 }
 
+
+
 const showReturnModal = (row) => {
   if (row.status === "ENTREGUE" || row.status === "ENTREGUE_COM_ATRASO" || row.status === "NO_PRAZO") {
     showNotification('negative', "Este aluguel já foi devolvido.")
@@ -349,11 +388,13 @@ const onSearch = () => {
 
 const statusFiltered = ref('');
 
-const statusFilter = (rentStatus) => {
-  console.log(rentStatus);
+const statusFilter = (rentStatus, label) => {
+  console.log('Filtro selecionado:', rentStatus);
   statusFiltered.value = rentStatus;
+  filterLabel.value = label;
   getRows();
 }
+
 
 const traduzirStatus = (status) => {
   switch (status) {
