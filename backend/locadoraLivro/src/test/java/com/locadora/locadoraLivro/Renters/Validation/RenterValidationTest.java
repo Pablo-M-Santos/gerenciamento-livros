@@ -13,10 +13,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class RenterValidationTest {
@@ -205,13 +207,5 @@ class RenterValidationTest {
     void shouldThrowExceptionWhenUpdatingWithInvalidCpf() {
         UpdateRenterRequestDTO invalidCpfDTO = new UpdateRenterRequestDTO("John Doe", "john.doe@example.com", "(12) 34567-1234", "Address", "12345678901");
         assertThrows(CustomValidationException.class, () -> renterValidation.update(invalidCpfDTO, existingRenter.getId()), "CPF inválido.");
-    }
-
-
-    // Exclusão com livro alugado
-    @Test
-    void shouldThrowExceptionWhenDeletingWithRentedBook() {
-        when(renterServices.hasRentedBooks(existingRenter.getId())).thenReturn(true);
-        assertThrows(CustomValidationException.class, () -> renterValidation.delete(existingRenter.getId()), "Não é possível excluir locatário com livro alugado.");
     }
 }

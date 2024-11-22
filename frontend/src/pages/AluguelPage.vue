@@ -1,139 +1,139 @@
-  <template>
-    <div class="content">
-      <!-- Button cadastrar -->
-      <div class="containerButton">
-        <q-btn style="width: 200px; background-color: #008080; color: white;" v-if="userRole === 'ADMIN'"
-          itemid="cadastroBtnAluguel" @click="openRegisterDialog">
-          <div class="buttonCadastrar">
-            CADASTRAR ALUGUEL
-          </div>
-        </q-btn>
-      </div>
-
-      <!-- Barra de Pesquisa -->
-      <div class="container">
-        <q-input v-model="search" placeholder="Pesquisar Aluguel" class="q-ml-sm col pesquisa"
-          @keyup.enter="performSearch">
-          <template v-slot:append>
-            <q-icon v-if="search !== ''" name="close" @click="search = '', getRows(search)" class="cursor-pointer" />
-          </template>
-          <template v-slot:after>
-            <q-btn @click="getRows(search)" round dense flat icon="search" />
-          </template>
-        </q-input>
-      </div>
-
-
-      <!-- Modal Cadastro -->
-      <q-dialog v-model="showModalCadastro">
-        <q-card class="modal-card">
-          <q-card-section>
-            <div class="titulo-cadastro">Cadastro de Aluguel</div>
-          </q-card-section>
-          <q-card-section>
-            <q-form @submit.prevent="rentAction()">
-
-              <q-select itemid="renterInput" filled v-model="selectedRenter" use-input hide-selected fill-input
-                input-debounce="0" :options="renters" option-label="name" @filter="rentersFilter"
-                @update:model-value="onItemClickRent" label="Locatário" required="true" />
-
-
-              <q-select itemid="bookInput" filled v-model="selectedBook" use-input hide-selected fill-input
-                input-debounce="0" :options="books" option-label="name" @filter="booksFilter"
-                @update:model-value="onItemClickBook" label="Livro" required="true" />
-
-              <q-input v-model="bookToRent.deadLine" label="Devolução" type="date" :min="today" :max="maxReturnDate"
-                required filled itemid="deliveryInput" />
-
-
-              <div class="button-container">
-                <q-btn type="submit" label="CADASTRAR" class="center-width q-mt-md" itemid="BtnCadastrarAluguel" />
-              </div>
-            </q-form>
-          </q-card-section>
-        </q-card>
-      </q-dialog>
-
-      <!-- Modal Edição -->
-      <q-dialog v-model="showModalEdicao">
-        <q-card class="modal-card">
-          <q-card-section>
-            <div class="titulo-cadastro">Editar Aluguel</div>
-          </q-card-section>
-          <q-card-section>
-            <q-form @submit.prevent="editRent">
-              <q-select v-model="rentToEdit.renterId" label="Selecione o Locatário" filled use-input input-debounce="0"
-                :options="renterOptions" @filter="filterPublisher" option-label="name" option-value="id" emit-value
-                map-options class="q-mb-md" :rules="[val => !!val || 'É obrigatório selecionar um locatário']"
-                itemid="editarLocatarioAluguel" />
-
-              <q-select v-model="rentToEdit.bookId" label="Selecione o Livro" filled use-input input-debounce="0"
-                :options="bookOptions" @filter="filterBook" option-label="name" option-value="id" emit-value map-options
-                class="q-mb-md" :rules="[val => !!val || 'É obrigatório selecionar um livro']"
-                itemid="editarLivroAluguel" />
-
-              <q-input v-model="rentToEdit.deadLine" label="Prazo final" type="date"
-                :rules="[val => !!val || 'É obrigatório informar um prazo']" itemid="editarDataAluguel" />
-
-              <div class="button-container">
-                <q-btn type="submit" label="SALVAR" class="center-width q-mt-md" />
-              </div>
-            </q-form>
-          </q-card-section>
-        </q-card>
-      </q-dialog>
-
-
-
-      <!-- Modal Devolução -->
-      <q-dialog v-model="showModalDevolucao">
-        <q-card class="modal-card-confirmacao">
-          <q-card-section class="text-center">
-            <div class="circulo">
-              <i class="fa-solid fa-exclamation"></i>
-            </div>
-            <h3 class="titulo-confirmacao">Tem certeza que deseja devolver?</h3>
-          </q-card-section>
-          <q-card-actions class="button-confirmacao">
-            <q-btn label="SIM" color="secondary" @click="confirmReturn" class="q-mr-sm" />
-            <q-btn label="NÃO" color="negative" @click="cancelReturn" />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
-
-      <!-- Tabela de livros -->
-      <div class="table-container">
-        <q-table class="custom-table" :pagination="pagination" :rows="paginatedRows" :columns="columns" row-key="id"
-          hide-bottom>
-
-          <template v-slot:body-cell-actions="props">
-            <q-td :props="props" style="vertical-align: middle;">
-              <q-btn flat color="accent"
-                v-if="userRole === 'ADMIN' && props.row.status !== 'ENTREGUE' && props.row.status !== 'ENTREGUE_COM_ATRASO' && props.row.status !== 'NO_PRAZO'"
-                @click="showReturnModal(props.row)" icon="check" aria-label="Confirm"
-                :itemid="'confirmar' + '-' + props.row.id"><q-tooltip class="bg-accent" :ffset="[10, 10]">
-                  Devolução de Livro
-                </q-tooltip></q-btn>
-              <q-btn flat color="secondary"
-                v-if="userRole === 'ADMIN' && props.row.status !== 'ENTREGUE' && props.row.status !== 'ENTREGUE_COM_ATRASO' && props.row.status !== 'NO_PRAZO'"
-                @click="editRow(props.row)" icon="edit" aria-label="Edit"
-                :itemid="'edit' + '-' + props.row.id"><q-tooltip class="bg-secondary" :ffset="[10, 10]">
-                  Editar Aluguel
-                </q-tooltip></q-btn>
-            </q-td>
-          </template>
-        </q-table>
-      </div>
-      <div class="row justify-center q-my-md">
-        <q-btn :disable="page.value <= 0" @click="prevPage" class="q-mx-sm">
-          <q-icon name="chevron_left" />
-        </q-btn>
-        <q-btn :disable="page.value >= totalPages - 1" @click="nextPage" class="q-mx-sm">
-          <q-icon name="chevron_right" />
-        </q-btn>
-      </div>
+<template>
+  <div class="content">
+    <!-- Button cadastrar -->
+    <div class="containerButton">
+      <q-btn style="width: 200px; background-color: #008080; color: white;" v-if="userRole === 'ADMIN'"
+        itemid="cadastroBtnAluguel" @click="openRegisterDialog">
+        <div class="buttonCadastrar">
+          CADASTRAR ALUGUEL
+        </div>
+      </q-btn>
     </div>
-  </template>
+
+    <!-- Barra de Pesquisa -->
+    <div class="container">
+      <q-input v-model="search" placeholder="Pesquisar Aluguel" class="q-ml-sm col pesquisa"
+        @keyup.enter="performSearch">
+        <template v-slot:append>
+          <q-icon v-if="search !== ''" name="close" @click="search = '', getRows(search)" class="cursor-pointer" />
+        </template>
+        <template v-slot:after>
+          <q-btn @click="getRows(search)" round dense flat icon="search" />
+        </template>
+      </q-input>
+    </div>
+
+
+    <!-- Modal Cadastro -->
+    <q-dialog v-model="showModalCadastro">
+      <q-card class="modal-card">
+        <q-card-section>
+          <div class="titulo-cadastro">Cadastro de Aluguel</div>
+        </q-card-section>
+        <q-card-section>
+          <q-form @submit.prevent="saveNewRent">
+
+            <q-select v-model="newRent.renterId" label="Selecione o Locatário" filled use-input input-debounce="0"
+              :options="renterOptions" @filter="filterPublisher" option-label="name" option-value="id" emit-value
+              map-options class="q-mb-md" :rules="[val => !!val || 'É obrigatório selecionar um locatário']"
+              itemid="cadastrarLocatarioAluguel" />
+
+            <q-select v-model="newRent.bookId" label="Selecione o Livro" filled use-input input-debounce="0"
+              :options="bookOptions" @filter="filterBook" option-label="name" option-value="id" emit-value map-options
+              class="q-mb-md" :rules="[val => !!val || 'É obrigatório selecionar um livro']"
+              itemid="cadastrarLivroAluguel" />
+
+            <q-input v-model="newRent.deadLine" label="Prazo final" type="date" :min="today" :max="maxReturnDate"
+              :rules="[val => !!val || 'É obrigatório informar um prazo']" itemid="cadastrarDataAluguel" />
+
+            <div class="button-container">
+              <q-btn type="submit" label="CADASTRAR" class="center-width q-mt-md" itemid="BtnCadastrarAluguel" />
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <!-- Modal Edição -->
+    <q-dialog v-model="showModalEdicao">
+      <q-card class="modal-card">
+        <q-card-section>
+          <div class="titulo-cadastro">Editar Aluguel</div>
+        </q-card-section>
+        <q-card-section>
+          <q-form @submit.prevent="editRent">
+            <q-select v-model="rentToEdit.renterId" label="Selecione o Locatário" filled use-input input-debounce="0"
+              :options="renterOptions" @filter="filterPublisher" option-label="name" option-value="id" emit-value
+              map-options class="q-mb-md" :rules="[val => !!val || 'É obrigatório selecionar um locatário']"
+              itemid="editarLocatarioAluguel" />
+
+            <q-select v-model="rentToEdit.bookId" label="Selecione o Livro" filled use-input input-debounce="0"
+              :options="bookOptions" @filter="filterBook" option-label="name" option-value="id" emit-value map-options
+              class="q-mb-md" :rules="[val => !!val || 'É obrigatório selecionar um livro']"
+              itemid="editarLivroAluguel" />
+
+            <q-input v-model="rentToEdit.deadLine" label="Prazo final" type="date" :min="today" :max="maxReturnDate"
+              :rules="[val => !!val || 'É obrigatório informar um prazo']" itemid="editarDataAluguel" />
+
+            <div class="button-container">
+              <q-btn type="submit" label="SALVAR" class="center-width q-mt-md" />
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+
+
+    <!-- Modal Devolução -->
+    <q-dialog v-model="showModalDevolucao">
+      <q-card class="modal-card-confirmacao">
+        <q-card-section class="text-center">
+          <div class="circulo">
+            <i class="fa-solid fa-exclamation"></i>
+          </div>
+          <h3 class="titulo-confirmacao">Tem certeza que deseja devolver?</h3>
+        </q-card-section>
+        <q-card-actions class="button-confirmacao">
+          <q-btn label="SIM" color="secondary" @click="confirmReturn" class="q-mr-sm" />
+          <q-btn label="NÃO" color="negative" @click="cancelReturn" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- Tabela de livros -->
+    <div class="table-container">
+      <q-table class="custom-table" :pagination="pagination" :rows="paginatedRows" :columns="columns" row-key="id"
+        hide-bottom>
+
+        <template v-slot:body-cell-actions="props">
+          <q-td :props="props" style="vertical-align: middle;">
+            <q-btn flat color="accent"
+              v-if="userRole === 'ADMIN' && props.row.status !== 'DELIVERED_WITH_DELAY' && props.row.status !== 'IN_TIME'"
+              @click="showReturnModal(props.row)" icon="check" aria-label="Confirm"
+              :itemid="'confirmar' + '-' + props.row.id"><q-tooltip class="bg-accent" :ffset="[10, 10]">
+                Devolução de Livro
+              </q-tooltip></q-btn>
+            <q-btn flat color="secondary"
+              v-if="userRole === 'ADMIN' && props.row.status !== 'DELIVERED_WITH_DELAY' && props.row.status !== 'IN_TIME'"
+              @click="editRow(props.row)" icon="edit" aria-label="Edit" :itemid="'edit' + '-' + props.row.id"><q-tooltip
+                class="bg-secondary" :ffset="[10, 10]">
+                Editar Aluguel
+              </q-tooltip></q-btn>
+          </q-td>
+        </template>
+      </q-table>
+    </div>
+    <div class="row justify-center q-my-md">
+      <q-btn :disable="page.value <= 0" @click="prevPage" class="q-mx-sm">
+        <q-icon name="chevron_left" />
+      </q-btn>
+      <q-btn :disable="page.value >= totalPages - 1" @click="nextPage" class="q-mx-sm">
+        <q-icon name="chevron_right" />
+      </q-btn>
+    </div>
+  </div>
+</template>
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
@@ -174,12 +174,11 @@ const rentToEdit = ref({
 const rows = ref([])
 const columns = computed(() => {
   const baseColumns = [
-    { name: 'renter.name', align: 'center', label: 'Locatário', field: row => row.renter.name, sortable: true },
-    { name: 'book.name', align: 'center', label: 'Livro', field: row => row.book.name, sortable: true },
-    { name: 'rentDate', align: 'center', label: 'Alugado', field: 'rentDate', sortable: true },
-    { name: 'deadLine', align: 'center', label: 'Devolução', field: 'deadLine', sortable: true },
-    { name: 'status', align: 'center', label: 'Status', field: row => traduzirStatus(row.status), sortable: true },
-    { name: 'actions', align: 'center', label: 'Ações', field: 'actions' }
+    { name: 'renter.name', align: 'center', label: 'Locatário', field: row => row.renter.name, },
+    { name: 'book.name', align: 'center', label: 'Livro', field: row => row.book.name, },
+    { name: 'rentDate', align: 'center', label: 'Data de Aluguel', field: row => formatDate(row.rentDate), },
+    { name: 'deadLine', align: 'center', label: 'Data de Devolução', field: row => formatDate(row.deadLine), },
+    { name: 'status', align: 'center', label: 'Status', field: row => traduzirStatus(row.status), },
   ];
 
   if (userRole.value === 'ADMIN') {
@@ -190,35 +189,14 @@ const columns = computed(() => {
 });
 
 
-const srch = ref('');
-const statusFiltered = ref('');
-const sortBy = ref('');
-const sortDesc = ref(false);
-
-const handleSort = (colName) => {
-  if (sortBy.value === colName) {
-    sortDesc.value = !sortDesc.value;
-  } else {
-    sortBy.value = colName;
-    sortDesc.value = false;
-  }
-};
-
-const sortedRows = computed(() => {
-  const sorted = [...rows.value];
-  if (sortBy.value) {
-    sorted.sort((a, b) => {
-      const aVal = typeof a[sortBy.value] === 'string' ? a[sortBy.value].toLowerCase() : a[sortBy.value];
-      const bVal = typeof b[sortBy.value] === 'string' ? b[sortBy.value].toLowerCase() : b[sortBy.value];
-
-      if (aVal < bVal) return sortDesc.value ? 1 : -1;
-      if (aVal > bVal) return sortDesc.value ? -1 : 1;
-      return 0;
-    });
-  }
-  return sorted;
-});
-
+function formatDate(date) {
+  if (!date) return '';
+  const d = new Date(date);
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+}
 
 const editRow = (row) => {
   rentToEdit.value = {
@@ -267,37 +245,7 @@ const openRegisterDialog = () => {
   newRent.value = { renterId: '', bookId: '', deadLine: '' }
   showModalCadastro.value = true
 }
-const sortRowsAscByRenterName = () => {
-  rows.value.sort((a, b) => a.renterName.localeCompare(b.renterName));
-};
 
-const sortRowsDescByRenterName = () => {
-  rows.value.sort((a, b) => b.renterName.localeCompare(a.renterName));
-};
-
-const sortRowsAscByBookName = () => {
-  rows.value.sort((a, b) => a.bookName.localeCompare(b.bookName));
-};
-
-const sortRowsDescByBookName = () => {
-  rows.value.sort((a, b) => b.bookName.localeCompare(a.bookName));
-};
-
-const sortRowsAscByDeadLineDate = () => {
-  rows.value.sort((a, b) => new Date(a.deadLineDate) - new Date(b.deadLineDate));
-};
-
-const sortRowsDescByDeadLineDate = () => {
-  rows.value.sort((a, b) => new Date(b.deadLineDate) - new Date(a.deadLineDate));
-};
-
-const sortRowsAscByRentDate = () => {
-  rows.value.sort((a, b) => new Date(a.rentDate) - new Date(b.rentDate));
-};
-
-const sortRowsDescByRentDate = () => {
-  rows.value.sort((a, b) => new Date(b.rentDate) - new Date(a.rentDate));
-};
 
 
 const saveNewRent = () => {
@@ -399,21 +347,13 @@ const formatStatus = (status) => {
 const onSearch = () => {
 }
 
-const getRows = (srch = '', status = statusFiltered.value) => {
-  api.get('/rent', { params: { search: srch, page: page.value, status: status } })
-    .then(response => {
-      if (Array.isArray(response.data.content)) {
-        rows.value = response.data.content;
-      } else {
-        console.error('A resposta da API não é um array:', response.data);
-        rows.value = [];
-      }
-      console.log('Resposta da API:', response.data);
-    })
-    .catch(error => {
-      console.error("Erro ao obter dados:", error);
-    });
-};
+const statusFiltered = ref('');
+
+const statusFilter = (rentStatus) => {
+  console.log(rentStatus);
+  statusFiltered.value = rentStatus;
+  getRows();
+}
 
 const traduzirStatus = (status) => {
   switch (status) {
@@ -429,6 +369,21 @@ const traduzirStatus = (status) => {
     case 'DELIVERED_WITH_DELAY':
       return 'Devolvido fora prazo';
   }
+};
+
+const getRows = (srch = '', status = statusFiltered.value) => {
+  api.get('/rent', { params: { search: srch, page: page.value, status: status } })
+    .then(response => {
+      if (Array.isArray(response.data.content)) {
+        rows.value = response.data.content;
+      } else {
+        console.error('A resposta da API não é um array:', response.data);
+        rows.value = [];
+      }
+    })
+    .catch(error => {
+      console.error("Erro ao obter dados:", error);
+    });
 };
 
 const totalPages = computed(() => Math.ceil(rows.value.length / rowsPerPage));
@@ -448,6 +403,36 @@ const prevPage = () => {
 const nextPage = () => {
   page.value++;
   getRows(search.value);
+};
+const renters = ref([])
+const books = ref([])
+
+const getBooks = (search = '') => {
+  api.get('/book', { params: { search: search, page: page.value } })
+    .then(response => {
+      if (Array.isArray(response.data)) {
+        books.value = response.data;
+      } else {
+        books.value = [];
+      }
+    })
+    .catch(error => {
+      console.error("Erro ao obter dados do Livro:", error);
+    });
+};
+
+const getRenters = (search = '') => {
+  api.get('/renter', { params: { search: search } })
+    .then(response => {
+      if (Array.isArray(response.data)) {
+        renters.value = response.data;
+      } else {
+        renters.value = [];
+      }
+    })
+    .catch(error => {
+      console.error("Erro ao obter dados do locatário:", error);
+    });
 };
 
 
@@ -515,118 +500,12 @@ const userRole = ref('');
 
 onMounted(() => {
   userRole.value = localStorage.getItem('role')
-  getRows();
-  getRenters();
+  getRows()
+  getBooks()
+  getRenters()
+  loadRenter()
+  loadBook()
 });
-
-
-
-
-// Teste do Aluguel
-
-const rentAction = () => {
-  if (!newRent.value.renterId || !newRent.value.bookId || !newRent.value.deadLine) {
-    showNotification('negative', 'Todos os campos são obrigatórios!');
-    return;
-  }
-
-  api.post('/rent/create', newRent.value, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
-    },
-  })
-    .then(response => {
-      showNotification('positive', 'Aluguel cadastrado com sucesso!');
-      showModalCadastro.value = false;
-      getRows();
-    })
-    .catch(error => {
-      console.error('Erro ao cadastrar aluguel:', error.response?.data || error.message);
-      showNotification('negative', error.response?.data?.message || 'Você não tem permissão para essa ação!');
-    });
-};
-
-
-const idRenter = ref('')
-const idBook = ref('')
-
-const bookToRent = ref({
-  renterId: idRenter,
-  bookId: idBook,
-  deadLine: 'Escolha uma data',
-});
-
-
-const renters = ref([]);
-
-const getRenters = (srch = '') => {
-  api.get('/renter', { params: { search: srch } })
-    .then(response => {
-      renters.value = response.data;
-    })
-    .catch(error => {
-      console.log(error);
-    });
-};
-
-
-const rentersFilter = (val, update, abort) => {
-  if (val === '') {
-    update(() => {
-      getRenters();
-    });
-  } else {
-    update(() => {
-      const needle = val.toLowerCase();
-      renters.value = renters.value.filter(renter =>
-        renter.name.toLowerCase().includes(needle)
-      );
-    });
-  }
-};
-
-const onItemClickRent = (renterItem) => {
-  bookToRent.value.renterId = renterItem.id;
-};
-
-
-const books = ref([]);
-
-const getBooks = (srch = '') => {
-  api.get('/book', { params: { search: srch, page: page.value } })
-    .then(response => {
-      if (Array.isArray(response.data.content)) {
-        books.value = response.data.content;
-        console.log(response.data)
-      } else {
-        console.error('A resposta da API não é um array:', response.data);
-        rows.value = [];
-      }
-    })
-    .catch(error => {
-      console.error("Erro ao obter dados:", error);
-    });
-};
-
-const booksFilter = (val, update, abort) => {
-  if (val === '') {
-    update(() => {
-      getBooks();
-    });
-  } else {
-    update(() => {
-      const needle = val.toLowerCase();
-      books.value = books.value.filter(book =>
-        book.name.toLowerCase().includes(needle)
-      );
-    });
-  }
-};
-
-const onItemClickBook = (bookItem) => {
-  bookToRent.value.bookId = bookItem.id;
-};
-
 </script>
 
 

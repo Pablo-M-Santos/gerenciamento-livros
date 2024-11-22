@@ -1,9 +1,9 @@
 package com.locadora.locadoraLivro.Rents.models;
 
 public enum RentStatusEnum {
-    ATRASADO,
-    ALUGADO,
-    ENTREGUE,
-    ENTREGUE_COM_ATRASO,
-    NO_PRAZO
+    LATE,
+    RENTED,
+    DELIVERED,
+    DELIVERED_WITH_DELAY,
+    IN_TIME
 }

@@ -11,13 +11,19 @@
     </div>
 
     <!-- Barra de Pesquisa -->
-    <div class="container">
-      <q-input filled v-model="search" placeholder="Pesquisar Usuário" class="pesquisa" @keyup.enter="performSearch">
-        <template v-slot:prepend>
-          <q-icon v-if="search !== ''" @click="search = ''; getRows(search)" name="search" />
+    <q-form @submit="getRows(srch)" class="q-ml-sm col container">
+      <q-input v-model="srch" label="Pesquisar..." class="q-ml-sm col" input-style="min-width: 100%"
+        itemid="searchInput">
+        <template v-slot:append>
+          <q-icon v-if="srch !== ''" name="close" @click="srch = '', getRows(srch)" class="cursor-pointer"
+            itemid="closeSearchBtn" />
+        </template>
+
+        <template v-slot:after>
+          <q-btn @click="getRows(srch)" round dense flat icon="search" itemid="searchBtn" />
         </template>
       </q-input>
-    </div>
+    </q-form>
 
 
     <!-- Modal Cadastro -->
@@ -115,34 +121,8 @@
 
     <!-- Tabela de usuários -->
     <div class="table-container">
-      <q-table class="custom-table" :rows="paginatedRows" :columns="columns" row-key="email"
+      <q-table class="custom-table" :rows="paginatedRows" :columns="columns" row-key="email" hide-bottom
         :footer-props="{ show: false }">
-        <template v-slot:header-cell-name="props">
-          <q-th v-bind="props">
-            Nome do usuário
-            <q-icon name="keyboard_arrow_up" @click="sortRowsAscByName" class="cursor-pointer" size="20px" />
-            <q-icon name="keyboard_arrow_down" @click="sortRowsDescByName" class="cursor-pointer" size="20px" />
-          </q-th>
-        </template>
-        <template v-slot:body-cell-name="props">
-          <q-td :props="props" style="vertical-align: middle;">
-            <div>{{ props.row.name }}</div>
-          </q-td>
-        </template>
-
-        <template v-slot:header-cell-email="props">
-          <q-th v-bind="props">
-            Email
-            <q-icon name="keyboard_arrow_up" @click="sortRowsAscByEmail" class="cursor-pointer" size="20px" />
-            <q-icon name="keyboard_arrow_down" @click="sortRowsDescByEmail" class="cursor-pointer" size="20px" />
-          </q-th>
-        </template>
-        <template v-slot:body-cell-email="props">
-          <q-td :props="props" style="vertical-align: middle;">
-            <div>{{ props.row.email }}</div>
-          </q-td>
-        </template>
-
         <template v-slot:body-cell-role="props">
           <q-td :props="props" style="vertical-align: middle;">
             <div>{{ mapRole(props.row.role) }}</div>
@@ -155,10 +135,10 @@
                 Visualizar detalhes
               </q-tooltip></q-btn>
             <q-btn v-if="props.row.id !== adminId && userRole === 'ADMIN'" flat color="secondary"
-              @click="editRow(props.row)" icon="edit" aria-label="Edit"><q-tooltip
-                  class="bg-secondary" :ffset="[10, 10]">
-                  Editar Usuário
-                </q-tooltip></q-btn>
+              @click="editRow(props.row)" icon="edit" aria-label="Edit"><q-tooltip class="bg-secondary"
+                :ffset="[10, 10]">
+                Editar Usuário
+              </q-tooltip></q-btn>
           </q-td>
         </template>
       </q-table>
@@ -307,6 +287,13 @@ const paginatedRows = computed(() => {
   return filteredRows.value.slice(start, start + maxRowsPerPage);
 });
 
+const roleFilter = ref('')
+
+const permissionFilter = (permission) => {
+  console.log(permission);
+  roleFilter.value = permission;
+  getRows();
+}
 
 const submitFormCadastro = () => {
   if (!userCreate.value.role) {

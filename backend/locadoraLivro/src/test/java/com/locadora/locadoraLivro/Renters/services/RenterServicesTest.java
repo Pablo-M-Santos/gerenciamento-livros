@@ -38,7 +38,7 @@ class RenterServicesTest {
 
     @BeforeEach
     void setUp() {
-            renter = new RenterModel("John Doe", "john@example.com", "123456789", "123 Street", "12345678901");
+        renter = new RenterModel("John Doe", "john@example.com", "123456789", "123 Street", "12345678901");
     }
 
     // Testa a criação do locatário

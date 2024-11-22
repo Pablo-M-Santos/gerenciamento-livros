@@ -98,6 +98,6 @@ public class RenterServices {
 
 
     public boolean hasRentedBooks(int renterId) {
-        return rentRepository.existsByRenterIdAndStatus(renterId, RentStatusEnum.ALUGADO);
+        return rentRepository.existsByRenterIdAndStatus(renterId, RentStatusEnum.RENTED);
     }
 }

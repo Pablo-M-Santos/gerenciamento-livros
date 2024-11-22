@@ -34,4 +34,16 @@ public interface RentRepository extends JpaRepository<RentModel, Integer> {
             "WHERE LOWER(REPLACE(r.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:search, ' ', ''), '%')) " +
             "OR LOWER(REPLACE(b.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:search, ' ', ''), '%'))")
     Page<RentModel> findAllByRenterNameOrBookName(@Param("search") String search, Pageable pageable);
+
+    @Query("SELECT u FROM RentModel u WHERE LOWER(u.status) = LOWER(:status)")
+    Page<RentModel> findAllByStatus(@Param("status") String status, Pageable pageable);
+
+    @Query("SELECT u FROM RentModel u " +
+            "JOIN u.renter r " +
+            "JOIN u.book b " +
+            "WHERE (LOWER(FUNCTION('REPLACE', r.name, ' ', '')) LIKE LOWER(CONCAT('%', FUNCTION('REPLACE', :search, ' ', ''), '%')) " +
+            "OR LOWER(FUNCTION('REPLACE', b.name, ' ', '')) LIKE LOWER(CONCAT('%', FUNCTION('REPLACE', :search, ' ', ''), '%'))) " +
+            "AND LOWER(u.status) = LOWER(:status)")
+    Page<RentModel> findAllByRenterNameOrBookNameAndStatus(@Param("search") String search, @Param("status") String status, Pageable pageable);
+
 }

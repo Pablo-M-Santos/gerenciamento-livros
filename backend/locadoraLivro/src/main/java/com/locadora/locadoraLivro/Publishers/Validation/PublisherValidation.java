@@ -160,7 +160,7 @@ public class PublisherValidation {
     public void validateDeletePublisher(int id) {
         var books = bookRepository.findByPublisherId(id);
         for (var book : books) {
-            if (rentRepository.existsByBookIdAndStatus(book.getId(), RentStatusEnum.ALUGADO)) {
+            if (rentRepository.existsByBookIdAndStatus(book.getId(), RentStatusEnum.RENTED)) {
                 throw new CustomValidationException("Não é possível excluir o editor. Existem livros atualmente alugados.");
             }
         }

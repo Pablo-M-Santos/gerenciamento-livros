@@ -64,8 +64,8 @@ public class BookServices {
             if (books.isEmpty()) throw new ModelNotFoundException();
 
             for (BookModel book : books) {
-                List<RentModel> totalRented = rentRepository.findAllByBookIdAndStatus(book.getId(), RentStatusEnum.ALUGADO);
-                List<RentModel> totalLate = rentRepository.findAllByBookIdAndStatus(book.getId(), RentStatusEnum.ATRASADO);
+                List<RentModel> totalRented = rentRepository.findAllByBookIdAndStatus(book.getId(), RentStatusEnum.RENTED);
+                List<RentModel> totalLate = rentRepository.findAllByBookIdAndStatus(book.getId(), RentStatusEnum.LATE);
                 book.setTotalInUse(totalRented.size() + totalLate.size());
             }
 

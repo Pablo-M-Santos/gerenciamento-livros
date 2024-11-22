@@ -12,8 +12,8 @@ import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
 @Getter
+@Setter
 @Entity
 @Table(name = "tb_rents")
 public class RentModel {
@@ -39,15 +39,14 @@ public class RentModel {
     private LocalDate rentDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 19, nullable = false)
+    @Column(length = 25, nullable = false)
     private RentStatusEnum status;
 
-    public RentModel(RenterModel renter, BookModel book, LocalDate deadLine, LocalDate localDate) {
+    public RentModel(RenterModel renter, BookModel book, LocalDate deadLine){
         this.renter = renter;
         this.book = book;
         this.deadLine = deadLine;
         this.rentDate = LocalDate.now();
         this.status = null;
     }
-
 }

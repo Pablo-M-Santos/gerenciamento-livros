@@ -32,29 +32,39 @@ public class DashboardServices {
     @Autowired
     private BookRentMapper bookRentMapper;
 
-    public int getNumberOfRentals(int numberOfMonths) {
+    public int getNumberOfRentals(int numberOfMonths){
         List<RentModel> totalRents = rentRepository.findAll();
-        int rentsQuantity = (int) totalRents.stream().filter(rent -> !rent.getRentDate().isBefore(LocalDate.now().minusMonths(numberOfMonths)) && !rent.getRentDate().isAfter(LocalDate.now())).count();
+
+        int rentsQuantity = (int) totalRents.stream()
+                .filter(rent -> !rent.getRentDate().isBefore(LocalDate.now().minusMonths(numberOfMonths))
+                        && !rent.getRentDate().isAfter(LocalDate.now())).count();
+
         return rentsQuantity;
     }
 
-    public int getNumberOfRentalsLate(int numberOfMonths) {
-        List<RentModel> totalRentsLate = rentRepository.findAllByStatus(RentStatusEnum.ATRASADO);
-        int rentsLate = (int) totalRentsLate.stream().filter(rent -> !rent.getRentDate().isBefore(LocalDate.now().minusMonths(numberOfMonths)) && !rent.getRentDate().isAfter(LocalDate.now())).count();
+    public int getNumberOfRentalsLate(int numberOfMonths){
+        List<RentModel> totalRentsLate = rentRepository.findAllByStatus(RentStatusEnum.LATE);
+        int rentsLate = (int) totalRentsLate.stream()
+                .filter(rent -> !rent.getRentDate().isBefore(LocalDate.now().minusMonths(numberOfMonths))
+                        && !rent.getRentDate().isAfter(LocalDate.now())).count();
 
         return rentsLate;
     }
 
-    public int getDeliveredInTime(int numberOfMonths) {
-        List<RentModel> totalRentsInTime = rentRepository.findAllByStatus(RentStatusEnum.NO_PRAZO);
-        int rentsInTime = (int) totalRentsInTime.stream().filter(rent -> !rent.getRentDate().isBefore(LocalDate.now().minusMonths(numberOfMonths)) && !rent.getRentDate().isAfter(LocalDate.now())).count();
+    public int getDeliveredInTime(int numberOfMonths){
+        List<RentModel> totalRentsInTime = rentRepository.findAllByStatus(RentStatusEnum.IN_TIME);
+        int rentsInTime = (int) totalRentsInTime.stream()
+                .filter(rent -> !rent.getRentDate().isBefore(LocalDate.now().minusMonths(numberOfMonths))
+                        && !rent.getRentDate().isAfter(LocalDate.now())).count();
 
         return rentsInTime;
     }
 
-    public int getDeliveredWithDelay(int numberOfMonths) {
-        List<RentModel> totalRentsDeliveredLate = rentRepository.findAllByStatus(RentStatusEnum.ENTREGUE_COM_ATRASO);
-        int rentsWithDelay = (int) totalRentsDeliveredLate.stream().filter(rent -> !rent.getRentDate().isBefore(LocalDate.now().minusMonths(numberOfMonths)) && !rent.getRentDate().isAfter(LocalDate.now())).count();
+    public int getDeliveredWithDelay(int numberOfMonths){
+        List<RentModel> totalRentsDeliveredLate = rentRepository.findAllByStatus(RentStatusEnum.DELIVERED_WITH_DELAY);
+        int rentsWithDelay = (int) totalRentsDeliveredLate.stream()
+                .filter(rent -> !rent.getRentDate().isBefore(LocalDate.now().minusMonths(numberOfMonths))
+                        && !rent.getRentDate().isAfter(LocalDate.now())).count();
 
         return rentsWithDelay;
     }
@@ -68,7 +78,7 @@ public class DashboardServices {
 
         for (RenterModel renter : renters) {
             List<RentModel> rents = rentRepository.findAllByRenterId(renter.getId());
-            List<RentModel> rentsActive = rentRepository.findAllByRenterIdAndStatus(renter.getId(), RentStatusEnum.ALUGADO);
+            List<RentModel> rentsActive = rentRepository.findAllByRenterIdAndStatus(renter.getId(), RentStatusEnum.RENTED);
             renterRentList.add(new RentsperRenterResponseDTO(renter.getName(), rents.size(), rentsActive.size()));
         }
 

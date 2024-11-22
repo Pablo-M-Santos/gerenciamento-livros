@@ -8,8 +8,6 @@ import com.locadora.locadoraLivro.Publishers.models.PublisherModel;
 import com.locadora.locadoraLivro.Publishers.repositories.PublisherRepository;
 import com.locadora.locadoraLivro.Rents.models.RentStatusEnum;
 import com.locadora.locadoraLivro.Rents.repositories.RentRepository;
-import com.locadora.locadoraLivro.Users.DTOs.CreateUserRequestDTO;
-import com.locadora.locadoraLivro.Users.DTOs.UpdateUserRequestDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -100,8 +98,7 @@ public class BookValidation {
 
 
     public void validPublisherExist(CreateBookRequestDTO data) {
-        PublisherModel publisher = publisherRepository.findById(data.publisherId())
-                .orElseThrow(() -> new CustomValidationException("O editor não existe"));
+        PublisherModel publisher = publisherRepository.findById(data.publisherId()).orElseThrow(() -> new CustomValidationException("O editor não existe"));
 
         if (publisher.isDeleted()) {
             throw new CustomValidationException("O editor não existe");
@@ -110,7 +107,7 @@ public class BookValidation {
 
 
     public void validDeleteBook(int id) {
-        boolean hasActiveRent = rentRepository.existsByBookIdAndStatus(id, RentStatusEnum.ALUGADO);
+        boolean hasActiveRent = rentRepository.existsByBookIdAndStatus(id, RentStatusEnum.LATE);
         if (hasActiveRent) {
             throw new CustomValidationException("O livro não pode ser excluído porque possui uma locação ativa");
         }
