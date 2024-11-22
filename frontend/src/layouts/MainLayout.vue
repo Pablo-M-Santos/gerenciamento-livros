@@ -35,7 +35,7 @@
         <q-item-label header>
           <q-img class="logo" src="../assets/logo.png" />
         </q-item-label>
-        <q-item v-for="link in linksList" :key="link.title" :to="link.route" clickable>
+        <q-item v-for="link in linksList" :key="link.title" :to="link.route" clickable :itemid="'menu-item-' + link.title.toLowerCase().replace(' ', '-')">
           <q-item-section avatar>
             <q-icon :name="link.icon" />
           </q-item-section>
@@ -49,7 +49,7 @@
       <q-separator />
 
       <q-list class="drawer-footer logout-item">
-        <q-item clickable @click="handleLogout">
+        <q-item clickable @click="handleLogout" itemid="logoutBtn">
           <q-item-section avatar>
             <q-icon name="logout" />
           </q-item-section>
