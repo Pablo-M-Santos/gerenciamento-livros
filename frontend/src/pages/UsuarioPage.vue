@@ -23,6 +23,27 @@
           <q-btn @click="getRows(srch)" round dense flat icon="search" itemid="searchBtn" />
         </template>
       </q-input>
+      <q-btn-dropdown color="teal-9" :label="filterLabel" icon="filter_list" itemid="filterBtn">
+        <q-list>
+          <q-item clickable v-close-popup @click="permissionFilter('ADMIN', 'Administrador')" itemid="filterEditorBtn">
+            <q-item-section>
+              <q-item-label>Administrador</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item clickable v-close-popup @click="permissionFilter('USER', 'Locatário')" itemid="filterLeitorBtn">
+            <q-item-section>
+              <q-item-label>Locatário</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item clickable v-close-popup @click="permissionFilter('', 'Todos')" itemid="filterTodosBtn">
+            <q-item-section>
+              <q-item-label>Todos</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-btn-dropdown>
     </q-form>
 
 
@@ -43,8 +64,7 @@
               val => /.+@.+\..+/.test(val) || 'Email inválido']" />
 
             <q-input filled :type="isPwd ? 'password' : 'text'" v-model="userCreate.password" required label="Senha"
-              prepend-icon="fa-solid fa-lock" lazy-rules
-              :rules="[val => !!val || 'Senha é obrigatório', val => val.length >= 8 || 'A senha deve ter pelo menos 8 caracteres']">
+              prepend-icon="fa-solid fa-lock" lazy-rules :rules="[val => !!val || 'Senha é obrigatório']">
               <template v-slot:append>
                 <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer"
                   @click="isPwd = !isPwd"></q-icon>
@@ -213,11 +233,11 @@ const openRegisterDialog = () => {
 };
 
 const columns = [
-  { name: 'name', required: true, label: 'Nome do usuário', align: 'center', field: row => row.name, format: val => `${val}` },
-  { name: 'email', align: 'center', label: 'Email', field: 'email', },
-  { name: 'role', align: 'center', label: 'Permissão', field: 'role' },
-  { name: 'actions', align: 'center', label: 'Ações', field: 'actions' }
-];
+  { name: 'name', required: true, label: 'Nome do usuário', align: 'center', field: row => row.name, format: val => `${val}`, sortable: true },
+  { name: 'email', required: true, label: 'Email do usuário', align: 'center', field: row => row.email, format: val => `${val}`, sortable: true },
+  { name: 'role', align: 'center', label: 'Permissão', field: row => traduzirRole(row.role), sortable: true },
+  { name: 'actions', align: 'center', label: 'Ações', field: 'actions', sortable: true },
+]
 
 const rows = ref([]);
 
@@ -235,14 +255,15 @@ const prevPage = () => {
   }
 };
 
+
 const nextPage = () => {
   page.value++;
   getRows(search.value);
 };
 
 
-const getRows = (search = '') => {
-  api.get('/user', { params: { search: search, page: page.value } })
+const getRows = (srch = '', role = roleFilter.value) => {
+  api.get('/user', { params: { search: srch, page: page.value, role: role } })
     .then(response => {
       rows.value = response.data.content;
     })
@@ -288,12 +309,14 @@ const paginatedRows = computed(() => {
 });
 
 const roleFilter = ref('')
+const filterLabel = ref('Filtrar');
 
-const permissionFilter = (permission) => {
-  console.log(permission);
-  roleFilter.value = permission;
+const permissionFilter = (permission, label) => {
+  console.log('Filtro selecionado:', permission);
+  roleFilter.value = permission; 
+  filterLabel.value = label;
   getRows();
-}
+};
 
 const submitFormCadastro = () => {
   if (!userCreate.value.role) {

@@ -4,10 +4,8 @@ import com.locadora.locadoraLivro.Exceptions.ModelNotFoundException;
 import com.locadora.locadoraLivro.Users.DTOs.CreateUserRequestDTO;
 import com.locadora.locadoraLivro.Users.DTOs.UpdateUserRequestDTO;
 import com.locadora.locadoraLivro.Users.Validation.UserValidation;
-import com.locadora.locadoraLivro.Users.mappers.UserMapper;
 import com.locadora.locadoraLivro.Users.models.PasswordResetToken;
 import com.locadora.locadoraLivro.Users.models.UserModel;
-import com.locadora.locadoraLivro.Users.models.UserRoleEnum;
 import com.locadora.locadoraLivro.Users.repositories.PasswordResetTokenRepository;
 import com.locadora.locadoraLivro.Users.repositories.UserRepository;
 import jakarta.validation.Valid;
@@ -33,57 +31,61 @@ public class UserServices {
     private UserRepository userRepository;
 
     @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
     private UserValidation userValidation;
 
-
-    @Autowired
-    private UserValidation userEmailValidation;
-
     @Autowired
     private PasswordResetTokenRepository resetTokenRepository;
 
-    public ResponseEntity<UserModel> create(@Valid CreateUserRequestDTO data) {
-        userValidation.validateName(data);
-        userValidation.validateEmail(data);
+    public ResponseEntity<Void> create(@Valid CreateUserRequestDTO data) {
+
+        userValidation.create(data);
+
         String encryptedPassword = passwordEncoder.encode(data.password());
         UserModel newUser = new UserModel(data.name(), data.email(), encryptedPassword, data.role());
         userRepository.save(newUser);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-
-    public Page<UserModel> findAll(String search, UserRoleEnum role, int page) {
-        int size = 8;
+    public Page<UserModel> findAll(String search, int page) {
+        int size = 5;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-
-        if (Objects.equals(search, "") && role == null) {
+        if (Objects.equals(search, "")) {
             Page<UserModel> users = userRepository.findAll(pageable);
             if (users.isEmpty()) throw new ModelNotFoundException();
             return users;
         } else {
-            return userRepository.findAllByKeywordOrRole(search, role, pageable);
+            return userRepository.findAllByName(search, pageable);
         }
     }
 
-    public List<UserModel> findAllWithoutPagination(String search, UserRoleEnum role) {
-        if (Objects.equals(search, "") && role == null) {
+    public Page<UserModel> findAllByRole(String search, int page, String role) {
+        int size = 5;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        if (Objects.equals(search, "")) {
+            Page<UserModel> users = userRepository.findAllByRole(role, pageable);
+            if (users.isEmpty()) throw new ModelNotFoundException();
+            return users;
+        } else {
+            return userRepository.findAllByRoleAndSearch(role, search, pageable);
+        }
+    }
+
+    public List<UserModel> findAllWithoutPagination(String search) {
+        if (Objects.equals(search, "")) {
             return userRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
         } else {
-            return userRepository.findAllByKeyword(search, Sort.by(Sort.Direction.DESC, "id"));
+            return userRepository.findAllByName(search, Sort.by(Sort.Direction.DESC, "id"));
         }
     }
-
 
     public Optional<UserModel> findById(int id) {
         return userRepository.findById(id);
     }
-
 
     public ResponseEntity<Object> update(int id, @Valid UpdateUserRequestDTO updateUserRequestDTO) {
         Optional<UserModel> response = userRepository.findById(id);
@@ -91,8 +93,9 @@ public class UserServices {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
         var userModel = response.get();
-        userValidation.validateNameUpdate(updateUserRequestDTO, id);
-        userValidation.validateUpdateEmail(updateUserRequestDTO, id);
+
+        userValidation.update(updateUserRequestDTO, id);
+
         userModel.setName(updateUserRequestDTO.name());
         userModel.setEmail(updateUserRequestDTO.email());
         userModel.setRole(updateUserRequestDTO.role());

@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/user")
 public class UserController {
 
     @Autowired
@@ -23,32 +22,36 @@ public class UserController {
     @Autowired
     UserServices userServices;
 
-    @PostMapping
-    public ResponseEntity<UserModel> create(@RequestBody @Valid CreateUserRequestDTO data) {
+    @PostMapping("/user")
+    public ResponseEntity<Void> create(@RequestBody @Valid CreateUserRequestDTO data) {
         return userServices.create(data);
     }
 
-    @GetMapping
-    public ResponseEntity<Object> getAll(@RequestParam(required = false) String search, @RequestParam(required = false) UserRoleEnum role, @RequestParam(required = false) Integer page) {
+    @GetMapping("/user")
+    public ResponseEntity<Object> getAll(String search, @RequestParam(required = false) Integer page, @RequestParam(required = false) String role){
         if (page == null) {
-            return ResponseEntity.status(HttpStatus.OK).body(userMapper.toUserResponseList(userServices.findAllWithoutPagination(search, role)));
+            return ResponseEntity.status(HttpStatus.OK).body(userMapper.toUserResponseList(userServices.findAllWithoutPagination(search)));
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(userServices.findAll(search, role, page).map(userMapper::toUserResponse));
+        if (!role.isEmpty() && role != null){
+            return ResponseEntity.status(HttpStatus.OK).body(userServices.findAllByRole(search, page, role).map(userMapper::toUserResponse));
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(userServices.findAll(search, page).map(userMapper::toUserResponse));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/user/{id}")
     public ResponseEntity<UserResponseDTO> getById(@PathVariable(value = "id") int id) {
         return ResponseEntity.status(HttpStatus.OK).body(userMapper.toUserResponse(userServices.findById(id).get()));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable(value = "id") int id, @RequestBody @Valid UpdateUserRequestDTO updateUserRequestDTO) {
+    @PutMapping("/user/{id}")
+    public ResponseEntity<Object> update(@PathVariable(value="id") int id, @RequestBody @Valid UpdateUserRequestDTO updateUserRequestDTO){
         return userServices.update(id, updateUserRequestDTO);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> delete(@PathVariable(value = "id") int id) {
+    @DeleteMapping("/user/{id}")
+    public ResponseEntity<Object> delete(@PathVariable(value="id") int id){
         return userServices.delete(id);
     }
 }

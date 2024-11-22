@@ -16,10 +16,6 @@ public class UserValidation {
 
     private final UserRepository userRepository;
 
-    private boolean isValidEmailFormat(String email) {
-        return email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
-    }
-
     public void create(CreateUserRequestDTO data) {
         validateName(data);
         validateEmail(data);
@@ -30,43 +26,50 @@ public class UserValidation {
         validateUpdateEmail(data, id);
     }
 
-    public void validateName(CreateUserRequestDTO data) {
-        if (data.name() == null || data.name().isEmpty()) {
+    private void validateName(CreateUserRequestDTO data) {
+        if (data.name() == "" || data.name() == null) {
             throw new CustomValidationException("O nome de usuário não pode estar vazio.");
         }
+
         if (userRepository.findByName(data.name()) != null) {
-            throw new CustomValidationException("Nome de usuário já em uso");
+            throw new CustomValidationException("Nome do usuário em uso");
         }
     }
 
-    public void validateNameUpdate(UpdateUserRequestDTO data, int id) {
+    private void validateNameUpdate(UpdateUserRequestDTO data, int id) {
         UserModel userModel = userRepository.findById(id).get();
+
+        if (data.name() == "" || data.name() == null) {
+            throw new CustomValidationException("O nome de usuário não pode estar vazio.");
+        }
 
         if (!Objects.equals(userModel.getName(), data.name())) {
             if (userRepository.findByName(data.name()) != null) {
-                throw new CustomValidationException("Nome de usuário já em uso");
+                throw new CustomValidationException("Nome do usuário em uso");
             }
         }
     }
 
-    public void validateEmail(CreateUserRequestDTO data) {
-        if (data.email() == null || data.email().isEmpty()) {
-            throw new CustomValidationException("O e-mail não pode estar vazio.");
+    private void validateEmail(CreateUserRequestDTO data) {
+        if (data.email() == "" || data.email() == null) {
+            throw new CustomValidationException("O email não pode estar vazio.");
         }
-        if (!isValidEmailFormat(data.email())) {
-            throw new CustomValidationException("Formato de e-mail inválido.");
-        }
+
         if (userRepository.findByEmail(data.email()) != null) {
-            throw new CustomValidationException("E-mail já em uso");
+            throw new CustomValidationException("Email já em uso.");
         }
     }
 
-    public void validateUpdateEmail(UpdateUserRequestDTO data, int id) {
+    private void validateUpdateEmail(UpdateUserRequestDTO data, int id) {
         UserModel userModel = userRepository.findById(id).get();
+
+        if (data.email() == "" || data.email() == null) {
+            throw new CustomValidationException("O email não pode estar vazio.");
+        }
 
         if (!Objects.equals(userModel.getEmail(), data.email())) {
             if (userRepository.findByEmail(data.email()) != null) {
-                throw new CustomValidationException("E-mail já em uso");
+                throw new CustomValidationException("Email já em uso.");
             }
         }
     }
