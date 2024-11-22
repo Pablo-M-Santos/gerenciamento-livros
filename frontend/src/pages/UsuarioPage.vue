@@ -2,7 +2,7 @@
   <div class="content">
     <!-- Button cadastrar -->
     <div class="containerButton">
-      <q-btn style="width: 200px; background-color: #008080; color: white;" v-if="userRole === 'ADMIN'"
+      <q-btn style="width: 200px; background-color: #008080; color: white;" v-if="userRole === 'ADMIN'" itemid="cadastroBtnUsuario"
         @click="openRegisterDialog">
         <div class="buttonCadastrar">
           CADASTRAR USUÁRIO
@@ -57,14 +57,14 @@
         <q-card-section>
           <q-form @submit="submitFormCadastro">
             <q-input filled v-model="userCreate.name" label="Nome" required lazy-rules :rules="[
-              val => !!val || 'Nome é obrigatório']" />
+              val => !!val || 'Nome é obrigatório']"  itemid="cadastroNomeUsuario"/>
 
             <q-input filled v-model="userCreate.email" label="Email" type="email" required lazy-rules :rules="[
               val => !!val || 'Email é obrigatório',
-              val => /.+@.+\..+/.test(val) || 'Email inválido']" />
+              val => /.+@.+\..+/.test(val) || 'Email inválido']" itemid="cadastrarEmailUsuario" />
 
             <q-input filled :type="isPwd ? 'password' : 'text'" v-model="userCreate.password" required label="Senha"
-              prepend-icon="fa-solid fa-lock" lazy-rules :rules="[val => !!val || 'Senha é obrigatório']">
+              prepend-icon="fa-solid fa-lock" lazy-rules :rules="[val => !!val || 'Senha é obrigatório']" itemid="cadastrarSenhaUsuario">
               <template v-slot:append>
                 <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer"
                   @click="isPwd = !isPwd"></q-icon>
@@ -73,14 +73,14 @@
 
             <div class="q-mt-md checkbox">
               <q-radio v-model="userCreate.role" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="ADMIN"
-                label="Editor" :error="roleError" :error-message="roleErrorMessage" />
+                label="Editor" :error="roleError" :error-message="roleErrorMessage" itemid="cadastrarAdministradorUsuario" />
               <q-radio v-model="userCreate.role" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="USER"
-                label="Locatário" :error="roleError" :error-message="roleErrorMessage" />
+                label="Locatário" :error="roleError" :error-message="roleErrorMessage" itemid="cadastrarLocatarioUsuario" />
             </div>
 
 
             <div class="button-container">
-              <q-btn type="submit" label="CADASTRAR" class="center-width q-mt-md" />
+              <q-btn type="submit" label="CADASTRAR" class="center-width q-mt-md" itemid="BtnCadastrarUsuario" />
             </div>
           </q-form>
         </q-card-section>
@@ -97,20 +97,20 @@
         <q-card-section>
           <q-form @submit.prevent="submitFormEditar">
             <q-input filled v-model="formEditar.name" label="Nome" required lazy-rules
-              :rules="[val => !!val || 'Nome é obrigatório']" />
+              :rules="[val => !!val || 'Nome é obrigatório']" itemid="editarNomeUsuario" />
 
             <q-input filled v-model="formEditar.email" label="Email" type="email" required lazy-rules
-              :rules="[val => !!val || 'Email é obrigatório', val => /.+@.+\..+/.test(val) || 'Email inválido']" />
+              :rules="[val => !!val || 'Email é obrigatório', val => /.+@.+\..+/.test(val) || 'Email inválido']"  itemid="emailNomeUsuario"/>
 
             <div class="q-mt-md checkbox">
               <q-radio v-model="formEditar.role" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="ADMIN"
                 label="Editor" />
               <q-radio v-model="formEditar.role" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="USER"
-                label="Locatário" />
+                label="Locatário" itemid="editarLocatarioUsuario" />
             </div>
 
             <div class="button-container">
-              <q-btn type="submit" label="ATUALIZAR" class="center-width q-mt-md" />
+              <q-btn type="submit" label="ATUALIZAR" class="center-width q-mt-md" itemid="BtnEditarUsuario" />
             </div>
           </q-form>
         </q-card-section>
@@ -134,7 +134,7 @@
           </div>
         </q-card-section>
         <q-card-actions class="button-sobre">
-          <q-btn label="Fechar" @click="showModalSobre = false" />
+          <q-btn label="Fechar" @click="showModalSobre = false" itemid="BtnSobreUsuario" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -150,12 +150,12 @@
         </template>
         <template v-slot:body-cell-actions="props">
           <q-td :props="props" style="vertical-align: middle;">
-            <q-btn flat color="primary" @click="showDetails(props.row)" icon="visibility" aria-label="View"><q-tooltip
+            <q-btn flat color="primary" @click="showDetails(props.row)" icon="visibility" aria-label="View" :itemid="'visibility' + '-' + props.row.name"><q-tooltip
                 class="bg-primary" :ffset="[10, 10]">
                 Visualizar detalhes
               </q-tooltip></q-btn>
-            <q-btn v-if="props.row.id !== adminId && userRole === 'ADMIN'" flat color="secondary"
-              @click="editRow(props.row)" icon="edit" aria-label="Edit"><q-tooltip class="bg-secondary"
+            <q-btn v-if="props.row.id !== adminId && userRole === 'ADMIN'" flat color="secondary" :itemid="'edit' + '-' + props.row.name"
+              @click="editRow(props.row)" icon="edit" aria-label="Edit" ><q-tooltip class="bg-secondary"
                 :ffset="[10, 10]">
                 Editar Usuário
               </q-tooltip></q-btn>

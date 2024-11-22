@@ -38,7 +38,6 @@ Login
 Click Item In Menu
     [Arguments]    ${menu_item}
     ${itemid}=    Set Variable    menu-item-${menu_item.lower().replace(" ", "-")}
-    Log    ${itemid}  # Para depuração, verifique o ID gerado
     Click Element    css=[itemid=${itemid}]
 
 Teste de Sidebar
