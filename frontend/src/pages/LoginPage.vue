@@ -10,12 +10,12 @@
             <q-form @submit="onSubmit" @reset="onReset">
               <div class="input">
                 <q-input filled v-model="email" label="Email" prepend-icon="bx bx-envelope" lazy-rules
-                  :rules="[val => !!val || 'Email é obrigatório', val && val.length > 3 || 'Email precisa ser válido']" />
+                  :rules="[val => !!val || 'Email é obrigatório', val && val.length > 3 || 'Email precisa ser válido']" itemid="emailInput" />
               </div>
               <div class="input" id="input-2">
                 <q-input filled :type="isPwd ? 'password' : 'text'" v-model="password" label="Senha"
                   prepend-icon="fa-solid fa-lock" lazy-rules
-                  :rules="[val => !!val || 'Senha é obrigatório', val && val.length === 8 || 'A senha deve ter exatamente 8 dígitos']">
+                  :rules="[val => !!val || 'Senha é obrigatório', val && val.length === 8 || 'A senha deve ter exatamente 8 dígitos']" itemid="passwordInput">
                   <template v-slot:append>
                     <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer"
                       @click="isPwd = !isPwd"></q-icon>
@@ -23,7 +23,7 @@
                 </q-input>
               </div>
               <div class="button">
-                <q-btn type="submit" label="ENTRAR" class="q-mt-md login-button" color="primary" rounded />
+                <q-btn type="submit" label="ENTRAR" class="q-mt-md login-button" color="primary" rounded  itemid="loginBtn"/>
               </div>
               <div class="button q-mt-sm">
                 <router-link to="/recuperar-senha">Esqueceu sua senha?</router-link>

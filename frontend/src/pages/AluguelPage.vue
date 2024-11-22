@@ -111,7 +111,7 @@
               :rules="[val => !!val || 'É obrigatório informar um prazo']" itemid="editarDataAluguel" />
 
             <div class="button-container">
-              <q-btn type="submit" label="SALVAR" class="center-width q-mt-md" />
+              <q-btn type="submit" label="SALVAR" class="center-width q-mt-md" itemid="BtnEditarAluguel" />
             </div>
           </q-form>
         </q-card-section>
@@ -130,7 +130,7 @@
           <h3 class="titulo-confirmacao">Tem certeza que deseja devolver?</h3>
         </q-card-section>
         <q-card-actions class="button-confirmacao">
-          <q-btn label="SIM" color="secondary" @click="confirmReturn" class="q-mr-sm" />
+          <q-btn label="SIM" color="secondary" @click="confirmReturn" class="q-mr-sm"  itemid="BtnEntregaAluguel"/>
           <q-btn label="NÃO" color="negative" @click="cancelReturn" />
         </q-card-actions>
       </q-card>

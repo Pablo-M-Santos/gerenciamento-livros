@@ -2,7 +2,7 @@
   <div class="content">
     <!-- Button cadastrar -->
     <div class="containerButton">
-      <q-btn style="width: 200px; background-color: #008080; color: white;" v-if="userRole === 'ADMIN'"
+      <q-btn style="width: 200px; background-color: #008080; color: white;" v-if="userRole === 'ADMIN'" itemid="cadastroBtnLivro"
         @click="openRegisterDialog">
         <div class="buttonCadastrar">
           CADASTRAR LIVRO
@@ -35,24 +35,24 @@
         <q-card-section>
           <q-form @submit.prevent="registerAction">
             <q-input v-model="bookToCreate.name" label="Título do livro" filled lazy-rules
-              :rules="[val => !!val || 'Título do Livro é obrigatório']" />
+              :rules="[val => !!val || 'Título do Livro é obrigatório']"  itemid="cadastroTituloLivro"/>
 
             <q-input v-model="bookToCreate.author" label="Autor" filled lazy-rules
-              :rules="[val => !!val || 'Autor é obrigatório']" />
+              :rules="[val => !!val || 'Autor é obrigatório']" itemid="cadastroAutorLivro" />
 
             <q-input v-model="bookToCreate.totalQuantity" label="Quantidade" type="number" filled lazy-rules
-              :rules="[val => val >= 1 || 'É necessário ter pelo menos 1']" />
+              :rules="[val => val >= 1 || 'É necessário ter pelo menos 1']"  itemid="cadastrarQuantidadeLivro"/>
 
             <q-input v-model="bookToCreate.launchDate" label="Data de lançamento" type="date" :max="today"
               mask="####-##-##" fill-mask filled lazy-rules
-              :rules="[val => val && val.length >= 6 || 'Adicione uma data válida']" />
+              :rules="[val => val && val.length >= 6 || 'Adicione uma data válida']" itemid="cadastrarDataLivro" />
 
             <q-select v-model="bookToCreate.publisherId" label="Selecione a editora" filled use-input input-debounce="0"
               :options="publisherOptions" @filter="filterPublisher" option-label="name" option-value="id" emit-value
               map-options />
 
             <div class="button-container">
-              <q-btn type="submit" label="CADASTRAR" class="center-width q-mt-md" />
+              <q-btn type="submit" label="CADASTRAR" class="center-width q-mt-md" itemid="BtnCadastrarLivro" />
             </div>
           </q-form>
         </q-card-section>
@@ -69,24 +69,24 @@
         <q-card-section>
           <q-form>
             <q-input v-model="bookToEdit.name" label="Título do livro" filled lazy-rules
-              :rules="[val => !!val || 'Título do Livro é obrigatório']" />
+              :rules="[val => !!val || 'Título do Livro é obrigatório']"  itemid="editarTituloLivro"/>
 
             <q-input v-model="bookToEdit.author" label="Autor" filled lazy-rules
-              :rules="[val => val && val.length > 3 || 'É necessário ter mais de três caracteres']" />
+              :rules="[val => val && val.length > 3 || 'É necessário ter mais de três caracteres']"  itemid="editarAutorLivro"/>
 
             <q-input v-model="bookToEdit.totalQuantity" label="Quantidade" type="number" filled lazy-rules
-              :rules="[val => !!val || 'Autor é obrigatório']" />
+              :rules="[val => !!val || 'Quantidade é obrigatório']"  itemid="editarQuantidadeLivro"/>
 
             <q-input v-model="bookToEdit.launchDate" label="Data de lançamento" type="date" :max="today"
               mask="####-##-##" fill-mask filled lazy-rules
-              :rules="[val => val && val.length >= 6 || 'Adicione uma data válida']" />
+              :rules="[val => val && val.length >= 6 || 'Adicione uma data válida']" itemid="editarDataLivro" />
 
             <q-select v-model="bookToEdit.publisherId" label="Selecione a editora" filled use-input input-debounce="0"
               :options="publisherOptions" @filter="filterPublisher" option-label="name" option-value="id" emit-value
               map-options />
 
             <div class="button-container">
-              <q-btn type="submit" label="ATUALIZAR" @click="saveEdit" class="center-width q-mt-md" />
+              <q-btn type="submit" label="ATUALIZAR" @click="saveEdit" class="center-width q-mt-md" itemid="BtnEditarLivro" />
             </div>
           </q-form>
         </q-card-section>
@@ -113,7 +113,7 @@
           </div>
         </q-card-section>
         <q-card-actions class="button-sobre">
-          <q-btn label="Fechar" @click="showModalSobre = false" />
+          <q-btn label="Fechar" @click="showModalSobre = false" itemid="BtnSobreLivro"/>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -130,7 +130,7 @@
         </q-card-section>
 
         <q-card-actions class="button-exclusao">
-          <q-btn label="SIM" color="negative" @click="confirmDelete" class="q-mr-sm" />
+          <q-btn label="SIM" color="negative" @click="confirmDelete" class="q-mr-sm"  itemid="BtnExcluirLivro"/>
           <q-btn label="NÃO" color="secondary" @click="cancelDelete" />
         </q-card-actions>
       </q-card>
@@ -145,15 +145,15 @@
 
         <template v-slot:body-cell-actions="props">
           <q-td clas :props="props" style="vertical-align: middle;">
-            <q-btn flat color="primary" @click="showDetails(props.row)" icon="visibility" aria-label="View"><q-tooltip
+            <q-btn flat color="primary" @click="showDetails(props.row)" icon="visibility" aria-label="View" :itemid="'visibility' + '-' + props.row.name"><q-tooltip
                 class="bg-primary" :ffset="[10, 10]">
                 Visualizar detalhes
               </q-tooltip></q-btn>
-            <q-btn flat color="secondary" v-if="userRole === 'ADMIN'" @click="editRow(props.row)" icon="edit"
+            <q-btn flat color="secondary" v-if="userRole === 'ADMIN'" @click="editRow(props.row)" icon="edit" :itemid="'edit' + '-' + props.row.name"
               aria-label="Edit"><q-tooltip class="bg-secondary" :ffset="[10, 10]">
                 Editar Livro
               </q-tooltip></q-btn>
-            <q-btn flat color="negative" v-if="userRole === 'ADMIN'" @click="showDeleteModal(props.row)" icon="delete"
+            <q-btn flat color="negative" v-if="userRole === 'ADMIN'" @click="showDeleteModal(props.row)" icon="delete" :itemid="'delete' + '-' + props.row.name"
               aria-label="Delete"><q-tooltip class="bg-negative" :ffset="[10, 10]">
                 Excluir Livro
               </q-tooltip></q-btn>
