@@ -67,7 +67,7 @@ const onSubmit = () => {
       return;
     }
 
-    axios.post('http://localhost:8040/api/forgot', {
+    axios.post('http://localhost:8000/api/forgot', {
       email: email.value
     }, {
       headers: {
@@ -89,7 +89,7 @@ const onSubmit = () => {
       return;
     }
 
-    axios.post('http://localhost:8040/api/reset-password/validate', {
+    axios.post('http://localhost:8000/api/reset-password/validate', {
       token: token.value
     }, {
       headers: {
