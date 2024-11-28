@@ -2,12 +2,11 @@ import { boot } from "quasar/wrappers";
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.VITE_BASE_URL || "http://localhost:8000",
+  baseURL: process.env.VITE_BASE_URL || "http://localhost:8040",
   headers: {
     "Content-Type": "application/json"
   }
 });
-
 
 const token = localStorage.getItem("authToken");
 if (token) {

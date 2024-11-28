@@ -295,11 +295,22 @@ const saveNewRenter = async () => {
     newRenter.value = { name: '', email: '', telephone: '', address: '', cpf: '' };
     showModalCadastro.value = false;
     getRows();
-  } catch {
+  } catch (error) {
+    let errorMessage = 'Erro ao criar locatário!';
+
+    if (error.response) {
+      if (error.response.status === 400) {
+        errorMessage = Object.values(error.response.data).join(', ') || errorMessage;
+      } else if (error.response.data.message) {
+        errorMessage = error.response.data.message;
+      }
+    }
+
     console.error('Erro ao criar novo locatário:', error.response ? error.response.data : error.message);
     showNotification('negative', errorMessage);
   }
 };
+
 
 
 

@@ -28,12 +28,14 @@ public class RenterValidation {
         validateName(data);
         validateEmail(data);
         validateCPF(data);
+        validateTelephone(data.telephone());
     }
 
     public void update(UpdateRenterRequestDTO data, int id) {
         validateUpdateName(data);
         validateUpdateEmail(data, id);
         validateCPFUpdate(data, id);
+        validateTelephone(data.telephone());
     }
 
     private void validateName(CreateRenterRequestDTO data) {
@@ -104,6 +106,28 @@ public class RenterValidation {
             }
         }
     }
+
+    private void validateTelephone(String telephone) {
+        if (telephone == null || telephone.isBlank()) {
+            throw new CustomValidationException("O telefone não pode estar vazio.");
+        }
+
+        if (renterRepository.findByTelephoneAndIsDeletedFalse(telephone) != null) {
+            throw new CustomValidationException("Telefone já está em uso.");
+        }
+    }
+
+    private void validateUpdateTelephone(String telephone, int id) {
+        if (telephone == null || telephone.isBlank()) {
+            throw new CustomValidationException("O telefone não pode estar vazio.");
+        }
+
+        RenterModel existingRenter = renterRepository.findByTelephoneAndIsDeletedFalse(telephone);
+        if (existingRenter != null && existingRenter.getId() != id) {
+            throw new CustomValidationException("Telefone já está em uso.");
+        }
+    }
+
 
     public void validateDeleteRenter(int id) {
         if (rentRepository.existsByRenterIdAndStatus(id, RentStatusEnum.RENTED)) {
