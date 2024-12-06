@@ -10,7 +10,7 @@
 
 Para acessar o sistema, utilize as seguintes credenciais:
 
-- **Nome de usuário:** `admin@gmail.com`
+- **Email de usuário:** `admin@gmail.com`
 - **Senha:** `12345678`
 ## 🌳 Projeto
 
