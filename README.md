@@ -1,37 +1,42 @@
-# 📚 Book Rental Platform
-This project is part of a training program at WDA, related to an internship in the IT course. The primary goal is to create a platform for managing a book rental service, offering an intuitive and efficient experience
+<h1 align="center">
+  💻<br>Locadora -  Pablo Santos
+</h1>
 
+![Resultado do projeto](./src/assets/locadora-api.png)
 
-## ⚙ Technologies Used
-Front-end:
-  - Visual Studio Code
-  - FIGMA
-  - HTML
-  - Css
-  - JavaScript
-  - Vue 
-  - QUASAR
+<h4 align="center"><a href="https://locadora-api-wda.vercel.app/#/">Clique aqui para acessar minha locadora</a></h4><br>
 
-Back-end:
-  - IntelliJ IDEA 
-  - Spring Boot
-  - PostgreSQL 
+## 👤 Credenciais para acesso
 
-## Instalação
+Para acessar o sistema, utilize as seguintes credenciais:
 
-Instale my-project com npm
+- **Nome de usuário:** `admin@gmail.com`
+- **Senha:** `12345678`
+## 🌳 Projeto
 
-Clone the Repository
-```bash
-git clone -b developer https://gitlab.com/gitlabWDA/locadora-pablo.git
+A **Locadora** é um sistema desenvolvido para gerenciar e otimizar a administração de uma locadora de livros. O objetivo principal é fornecer um conjunto de ferramentas que permita o controle eficiente de livros, locatários, usuários e outros aspectos fundamentais para o bom funcionamento da locadora. A aplicação foi construída utilizando tecnologias modernas, garantindo uma experiência fluida e intuitiva para os usuários.
 
-```
-Navigate to the Project Directory
-```bash
-cd locadora-livros
-```
+## 📃 Seções
 
-Build and Start the Project with Docker
-```bash
-docker-compose up --build
-```
+A locadora é composta por 7 seções diferentes:
+
+- Seção Login: Nessa parte o usuário vai fazer o login com suas credenciais;
+- Seção Home: O Usuário tem acesso a dashboards e tabela sobre o gerenciamento de livros o locatários do sistema;
+- Seção Editora: Nessa seção fica todas as editora e suas devidas funcionalidades;
+- Seção Livro: Nessa seção fica todos os livros e suas devidas funções;
+- Seção Locatário: Nessa seção fica todos os locatários suas informações;
+- Seção Aluguel: Nessa seção fica todos os alugueis e seus status de aluguel;
+- Seção Usuário: Nessa parte fica todos os usuários cadastrados no sistema e suas permissões;
+
+## 👨🏽‍💻 Tecnologias utilizadas
+
+Para o desenvolvimento da locadora usei as seguintes tecnologias:
+
+- Visual Studio Code;
+- FIGMA;
+- Vue.js
+- Quasar
+- Java
+- Spring Boot
+- PostgresSQL
+- Robot Framework
