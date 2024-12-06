@@ -2,7 +2,7 @@
   💻<br>Locadora -  Pablo Santos
 </h1>
 
-![Resultado do projeto](./src/assets/locadora-api.png)
+![Resultado do projeto](./frontend/src/assets/locadora.png)
 
 <h4 align="center"><a href="https://locadora-api-wda.vercel.app/#/">Clique aqui para acessar minha locadora</a></h4><br>
 
