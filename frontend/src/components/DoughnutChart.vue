@@ -48,7 +48,6 @@ const getRents = async () => {
     mostRented2.value = response.data[1] || { name: '', totalRents: 0 };
     mostRented3.value = response.data[2] || { name: '', totalRents: 0 };
   } catch (error) {
-    showNotification('negative', "Erro ao obter dados!");
     console.error("Erro ao obter dados:", error);
   }
 };

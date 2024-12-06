@@ -141,7 +141,7 @@
 
     <!-- Tabela de usuários -->
     <div class="table-container">
-      <q-table class="custom-table" :rows="paginatedRows" :columns="columns" row-key="email" hide-bottom
+      <q-table class="custom-table" :pagination="pagination" :rows="paginatedRows" :columns="columns" row-key="email" hide-bottom
         :footer-props="{ show: false }">
         <template v-slot:body-cell-role="props">
           <q-td :props="props" style="vertical-align: middle;">
@@ -183,6 +183,8 @@ const showModalCadastro = ref(false);
 const showModalEditar = ref(false);
 const showModalSobre = ref(false);
 const search = ref('');
+const srch= ref('');
+const totalPages = (0);
 const currentPage = ref(1);
 const maxRowsPerPage = 10;
 const isPwd = ref(true);
@@ -211,21 +213,6 @@ const selectedRow = ref({
 const adminId = 1;
 
 
-const sortRowsAscByName = () => {
-  rows.value.sort((a, b) => a.name.localeCompare(b.name));
-};
-
-const sortRowsDescByName = () => {
-  rows.value.sort((a, b) => b.name.localeCompare(a.name));
-};
-
-const sortRowsAscByEmail = () => {
-  rows.value.sort((a, b) => a.email.localeCompare(b.email));
-};
-
-const sortRowsDescByEmail = () => {
-  rows.value.sort((a, b) => b.email.localeCompare(a.email));
-};
 
 
 const openRegisterDialog = () => {
@@ -346,6 +333,11 @@ const submitFormCadastro = () => {
       showNotification('negative', errorMessage);
     });
 };
+
+const pagination = ref({
+  page: 1,
+  rowsPerPage: 8,
+});
 
 const resetFormCadastro = () => {
   userCreate.value = {

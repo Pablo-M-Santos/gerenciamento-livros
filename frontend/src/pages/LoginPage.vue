@@ -74,7 +74,7 @@ const onSubmit = () => {
         router.push('/main/home');
       })
       .catch(() => {
-        showNotification('negative', "Algo deu errado!");
+        showNotification('negative', "Credenciais Inválidas!");
       });
   } else {
     showNotification('negative', "Por favor, preencha todos os campos corretamente");

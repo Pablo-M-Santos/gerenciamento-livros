@@ -40,7 +40,7 @@ public class RenterServices {
     }
 
     public Page<RenterModel> findAll(String search, int page) {
-        int size = 5;
+        int size = 8;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         if (Objects.equals(search, "")) {
             Page<RenterModel> renters = renterRepository.findAllByIsDeletedFalse(pageable);

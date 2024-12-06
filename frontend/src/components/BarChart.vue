@@ -34,7 +34,6 @@ const getRents = async () => {
     const response = await api.get('/dashboard/rentsQuantity', { params: { numberOfMonths: numberOfMonths.value } });
     rentsQtd.value = response.data;
   } catch (error) {
-    showNotification('negative', "Erro ao obter dados!");
     console.error("Erro ao obter dados:", error);
   }
 };
@@ -44,7 +43,6 @@ const getRentsLate = async () => {
     const response = await api.get('/dashboard/rentsLateQuantity', { params: { numberOfMonths: numberOfMonths.value } });
     late.value = response.data;
   } catch (error) {
-    showNotification('negative', "Erro ao obter dados!");
     console.error("Erro ao obter dados:", error);
   }
 };
@@ -54,7 +52,6 @@ const getRentsDelivered = async () => {
     const response = await api.get('/dashboard/deliveredInTimeQuantity', { params: { numberOfMonths: numberOfMonths.value } });
     delivered.value = response.data;
   } catch (error) {
-    showNotification('negative', "Erro ao obter dados!");
     console.error("Erro ao obter dados:", error);
   }
 };
@@ -64,7 +61,6 @@ const getRentsDelayed = async () => {
     const response = await api.get('/dashboard/deliveredWithDelayQuantity', { params: { numberOfMonths: numberOfMonths.value } });
     delayed.value = response.data;
   } catch (error) {
-    showNotification('negative', "Erro ao obter dados!");
     console.error("Erro ao obter dados:", error);
   }
 };

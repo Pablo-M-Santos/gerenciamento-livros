@@ -40,7 +40,7 @@ public class PublisherServices {
     }
 
     public Page<PublisherModel> findAll(String search, int page) {
-        int size = 5;
+        int size = 8;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         if (Objects.equals(search, "")){
             Page<PublisherModel> publishers = publisherRepository.findAllByIsDeletedFalse(pageable);

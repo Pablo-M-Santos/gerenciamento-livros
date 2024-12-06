@@ -26,7 +26,7 @@ public class UserValidation {
         validateUpdateEmail(data, id);
     }
 
-    private void validateName(CreateUserRequestDTO data) {
+    public void validateName(CreateUserRequestDTO data) {
         if (data.name() == "" || data.name() == null) {
             throw new CustomValidationException("O nome de usuário não pode estar vazio.");
         }
@@ -50,7 +50,7 @@ public class UserValidation {
         }
     }
 
-    private void validateEmail(CreateUserRequestDTO data) {
+    public void validateEmail(CreateUserRequestDTO data) {
         if (data.email() == "" || data.email() == null) {
             throw new CustomValidationException("O email não pode estar vazio.");
         }

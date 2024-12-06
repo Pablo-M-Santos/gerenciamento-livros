@@ -70,7 +70,7 @@ public class DashboardServices {
     }
 
     public Page<RentsperRenterResponseDTO> getRentsPerRenter(int page) {
-        int size = 5;
+        int size = 8;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
         List<RenterModel> renters = renterRepository.findAll();
