@@ -35,7 +35,7 @@ public class RenterModel implements UserDetails{
     @Column(length = 80, nullable = false)
     private String address;
 
-    @Column(length = 14, nullable = false, unique = true)
+    @Column(length = 14, unique = true)
     private String cpf;
 
     @Column(nullable = false)

@@ -2,8 +2,8 @@
   <div class="content">
     <!-- Button cadastrar -->
     <div class="containerButton">
-      <q-btn style="width: 200px; background-color: #008080; color: white;" v-if="userRole === 'ADMIN'" itemid="cadastroBtnLocatario"
-        class="buttonCadastrar" @click="showModalCadastro = true">
+      <q-btn style="width: 200px; background-color: #008080; color: white;" v-if="userRole === 'ADMIN'"
+        itemid="cadastroBtnLocatario" class="buttonCadastrar" @click="showModalCadastro = true">
         CADASTRAR LOCATÁRIO
       </q-btn>
     </div>
@@ -31,27 +31,30 @@
         </q-card-section>
 
         <q-card-section>
-          <q-form>
+          <q-form @submit.prevent="saveNewRenter">
             <div class="form-grid">
               <q-input filled v-model="newRenter.name" label="Nome" required lazy-rules
                 :rules="[val => !!val || 'Nome do Locatário é obrigatório']" itemid="cadastroNomeLocatario" />
 
               <q-input filled v-model="newRenter.email" label="Email" type="email" required lazy-rules
-                :rules="[val => !!val || 'Email é obrigatório', val => /^.+@gmail\.com$/.test(val) || 'O e-mail deve ser um endereço Gmail válido']"  itemid="cadastrarEmailLocatario"/>
+                :rules="[val => !!val || 'Email é obrigatório', val => /^.+@gmail\.com$/.test(val) || 'O e-mail deve ser um endereço Gmail válido']"
+                itemid="cadastrarEmailLocatario" />
 
               <q-input filled v-model="newRenter.telephone" label="Celular" type="tel" required lazy-rules
                 mask="(##) #####-####"
-                :rules="[val => !!val || 'Telefone é obrigatório', val => /^\(\d{2}\) \d{5}-\d{4}$/.test(val) || 'Telefone inválido']"  itemid="cadastroTelefoneLocatario"/>
+                :rules="[val => !!val || 'Telefone é obrigatório', val => /^\(\d{2}\) \d{5}-\d{4}$/.test(val) || 'Telefone inválido']"
+                itemid="cadastroTelefoneLocatario" />
 
               <q-input filled v-model="newRenter.address" label="Endereço" required lazy-rules
-                :rules="[val => !!val || 'Endereço é obrigatório']"  itemid="cadastroEnderecoLocatario"/>
+                :rules="[val => !!val || 'Endereço é obrigatório']" itemid="cadastroEnderecoLocatario" />
 
-              <q-input filled v-model="newRenter.cpf" label="CPF" required lazy-rules mask="###.###.###-##"
-                :rules="[val => !!val || 'CPF é obrigatório', validateCPF]" itemid="cadastrarCPFLocatario" />
+              <q-input filled v-model="newRenter.cpf" label="CPF" lazy-rules mask="###.###.###-##"
+                itemid="cadastrarCPFLocatario" />
             </div>
 
             <div class="button-container">
-              <q-btn type="submit" label="CADASTRAR" @click="saveNewRenter" class="center-width q-mt-md" itemid="BtnCadastrarLocatario" />
+              <q-btn type="submit" label="CADASTRAR" @click="saveNewRenter" class="center-width q-mt-md"
+                itemid="BtnCadastrarLocatario" />
             </div>
           </q-form>
 
@@ -98,24 +101,27 @@
           <q-form>
             <div class="form-grid">
               <q-input filled v-model="formEdit.name" label="Nome" required lazy-rules
-                :rules="[val => !!val || 'Nome do Locatário é obrigatório']"  itemid="editarNomeLocatario"/>
+                :rules="[val => !!val || 'Nome do Locatário é obrigatório']" itemid="editarNomeLocatario" />
 
               <q-input filled v-model="formEdit.email" label="Email" type="email" required lazy-rules
-                :rules="[val => !!val || 'Email é obrigatório', val => /^.+@gmail\.com$/.test(val) || 'O e-mail deve ser um endereço Gmail válido']" itemid="editarEmailLocatario" />
+                :rules="[val => !!val || 'Email é obrigatório', val => /^.+@gmail\.com$/.test(val) || 'O e-mail deve ser um endereço Gmail válido']"
+                itemid="editarEmailLocatario" />
 
               <q-input filled v-model="formEdit.telephone" label="Celular" type="tel" required lazy-rules
                 mask="(##) #####-####"
-                :rules="[val => !!val || 'Telefone é obrigatório', val => /^\(\d{2}\) \d{5}-\d{4}$/.test(val) || 'Telefone inválido']"  itemid="editarTelefoneLocatario"/>
+                :rules="[val => !!val || 'Telefone é obrigatório', val => /^\(\d{2}\) \d{5}-\d{4}$/.test(val) || 'Telefone inválido']"
+                itemid="editarTelefoneLocatario" />
 
               <q-input filled v-model="formEdit.address" label="Endereço" required lazy-rules
-                :rules="[val => !!val || 'Endereço é obrigatório']"  itemid="editarEnderecoLocatario"/>
+                :rules="[val => !!val || 'Endereço é obrigatório']" itemid="editarEnderecoLocatario" />
 
               <q-input filled v-model="formEdit.cpf" label="CPF" required lazy-rules mask="###.###.###-##"
                 :rules="[val => !!val || 'CPF é obrigatório', validateCPF]" itemid="editarCPFLocatario" />
             </div>
 
             <div class="button-container">
-              <q-btn type="submit" label="ATUALIZAR" @click="saveEdit" class="custom-button q-mt-md" itemid="BtnEditarLocatario" />
+              <q-btn type="submit" label="ATUALIZAR" @click="saveEdit" class="custom-button q-mt-md"
+                itemid="BtnEditarLocatario" />
             </div>
           </q-form>
         </q-card-section>
@@ -145,16 +151,18 @@
         hide-bottom>
         <template v-slot:body-cell-actions="props">
           <q-td :props="props" class="text-center">
-            <q-btn flat color="primary" @click="showDetails(props.row)" icon="visibility" aria-label="View" :itemid="'visibility' + '-' + props.row.name"><q-tooltip
-                class="bg-primary" :ffset="[10, 10]">
+            <q-btn flat color="primary" @click="showDetails(props.row)" icon="visibility" aria-label="View"
+              :itemid="'visibility' + '-' + props.row.name"><q-tooltip class="bg-primary" :ffset="[10, 10]">
                 Visualizar detalhes
               </q-tooltip></q-btn>
-            <q-btn flat color="secondary" v-if="userRole === 'ADMIN'" @click="editRow(props.row)" icon="edit" :itemid="'edit' + '-' + props.row.name"
-              aria-label="Edit"><q-tooltip class="bg-secondary" :ffset="[10, 10]">
+            <q-btn flat color="secondary" v-if="userRole === 'ADMIN'" @click="editRow(props.row)" icon="edit"
+              :itemid="'edit' + '-' + props.row.name" aria-label="Edit"><q-tooltip class="bg-secondary"
+                :ffset="[10, 10]">
                 Editar Locatário
               </q-tooltip></q-btn>
-            <q-btn flat color="negative" v-if="userRole === 'ADMIN'" @click="showDeleteModal(props.row)" icon="delete" :itemid="'delete' + '-' + props.row.name"
-              aria-label="Delete"><q-tooltip class="bg-negative" :ffset="[10, 10]">
+            <q-btn flat color="negative" v-if="userRole === 'ADMIN'" @click="showDeleteModal(props.row)" icon="delete"
+              :itemid="'delete' + '-' + props.row.name" aria-label="Delete"><q-tooltip class="bg-negative"
+                :ffset="[10, 10]">
                 Excluir Locatário
               </q-tooltip></q-btn>
           </q-td>
@@ -280,8 +288,12 @@ const saveNewRenter = async () => {
     email: newRenter.value.email.trim(),
     address: newRenter.value.address.trim(),
     telephone: newRenter.value.telephone.trim(),
-    cpf: newRenter.value.cpf.trim(),
   };
+
+  // Adiciona o CPF somente se não estiver vazio
+  if (newRenter.value.cpf && newRenter.value.cpf.trim() !== '') {
+    formattedRenter.cpf = newRenter.value.cpf.trim();
+  }
 
   try {
     const response = await api.post('/renter', formattedRenter, {

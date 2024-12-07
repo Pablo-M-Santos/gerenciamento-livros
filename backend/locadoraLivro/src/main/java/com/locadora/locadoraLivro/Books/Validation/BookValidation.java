@@ -74,13 +74,6 @@ public class BookValidation {
         }
     }
 
-    public void validDeleteBook(int id){
-        boolean hasActiveRent = rentRepository.existsByBookIdAndStatus(id, RentStatusEnum.RENTED);
-        if (hasActiveRent) {
-            throw new CustomValidationException("O livro não pode ser excluído porque tem uma locação ativa.");
-        }
-    }
-
     private void validCreateBook(CreateBookRequestDTO data){
         List<BookModel> books = bookRepository.findAllByNameAndIsDeletedFalse(data.name());
         if (books != null){
@@ -89,6 +82,14 @@ public class BookValidation {
                     throw new CustomValidationException("Este livro já está cadastrado.");
                 }
             }
+        }
+    }
+
+
+    public void validDeleteBook(int id){
+        boolean hasActiveRent = rentRepository.existsByBookIdAndStatus(id, RentStatusEnum.RENTED);
+        if (hasActiveRent) {
+            throw new CustomValidationException("O livro não pode ser excluído porque tem uma locação ativa.");
         }
     }
 }

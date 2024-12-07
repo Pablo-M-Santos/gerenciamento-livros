@@ -76,18 +76,12 @@ public class PublisherServices {
         return ResponseEntity.status(HttpStatus.OK).body(publisherRepository.save(publisherModel));
     }
 
-    public ResponseEntity<Object> delete(int id){
-        Optional<PublisherModel> response = publisherRepository.findById(id);
-        if (response.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Editora não encontrada.");
+    public ResponseEntity<Object> delete(int id) {
 
-        publisherValidation.validDeletePublisher(id);
-
-        PublisherModel publisher = response.get();
-
-        publisher.setDeleted(true);
-
-        publisherRepository.save(publisher);
-
-        return ResponseEntity.status(HttpStatus.OK).body("Editora excluída com sucesso.");
+        if (!publisherRepository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Publisher not found");
+        }
+        publisherRepository.deleteById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

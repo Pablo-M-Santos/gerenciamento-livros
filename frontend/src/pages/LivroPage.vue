@@ -153,7 +153,7 @@
                 :ffset="[10, 10]">
                 Editar Livro
               </q-tooltip></q-btn>
-            <q-btn flat color="negative" v-if="userRole === 'ADMIN'" @click="showDeleteModal(props.row)" icon="delete"
+            <q-btn flat color="negative" v-if="userRole === 'ADMIN' && !isBookWithRentals(props.row.id)" @click="showDeleteModal(props.row)" icon="delete"
               :itemid="'delete' + '-' + props.row.name" aria-label="Delete"><q-tooltip class="bg-negative"
                 :ffset="[10, 10]">
                 Excluir Livro
@@ -198,6 +198,7 @@ const showModalExcluir = ref(false);
 const showModalSobre = ref(false);
 const rowToDelete = ref(null);
 const search = ref('');
+const srch = ref('');
 const rows = ref([]);
 const page = ref(0);
 const rowsPerPage = 5;
@@ -209,6 +210,7 @@ const columns = [
   { name: 'author', align: 'center', label: 'Autor', field: 'author', sortable: true },
   { name: 'totalQuantity', align: 'center', label: 'Disponíveis', field: 'totalQuantity', sortable: true },
   { name: 'totalInUse', align: 'center', label: 'Alugados', field: 'totalInUse', sortable: true },
+  { name: 'publisher', label: 'Editora', align: 'center', field: row => row.publisher ? row.publisher.name : 'Não definida', sortable: true },
   { name: 'actions', align: 'center', label: 'Ações', field: 'actions' },
 ];
 
@@ -431,6 +433,7 @@ onMounted(() => {
     userRole.value = localStorage.getItem('role')
     getRows();
     loadPublishers();
+    loadRent();
   }
 });
 
@@ -449,6 +452,26 @@ const loadPublishers = (search = '') => {
     });
 };
 
+const statusFiltered = ref('');
+
+const loadRent = (srch = '', status = statusFiltered.value) => {
+  api.get('/rent', { params: { search: srch, page: page.value, status: status } })
+    .then(response => {
+      console.log('Dados dos alugueis:', response.data);
+      const rentals = response.data.content || [];
+      booksWithRentals.value = [...new Set(rentals.map(rental => rental.book.id))];
+    })
+    .catch(error => {
+      console.error('Erro ao carregar alugueis:', error);
+      booksWithRentals.value = [];
+    });
+};
+
+const booksWithRentals = ref([]);
+
+const isBookWithRentals = (bookId) => {
+  return booksWithRentals.value.includes(bookId);
+};
 
 const performSearch = () => {
   onSearch();
