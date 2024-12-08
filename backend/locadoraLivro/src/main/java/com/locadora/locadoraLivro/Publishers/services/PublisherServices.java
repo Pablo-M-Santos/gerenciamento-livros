@@ -1,5 +1,7 @@
 package com.locadora.locadoraLivro.Publishers.services;
 
+import com.locadora.locadoraLivro.Books.models.BookModel;
+import com.locadora.locadoraLivro.Books.repositories.BookRepository;
 import com.locadora.locadoraLivro.Exceptions.ModelNotFoundException;
 import com.locadora.locadoraLivro.Publishers.DTOs.CreatePublisherRequestDTO;
 import com.locadora.locadoraLivro.Publishers.DTOs.UpdatePublisherRecordDTO;
@@ -29,20 +31,34 @@ public class PublisherServices {
     @Autowired
     PublisherValidation publisherValidation;
 
+    @Autowired
+    BookRepository bookRepository;
+
     public ResponseEntity<Void> create(@Valid CreatePublisherRequestDTO data) {
 
         publisherValidation.create(data);
+        Optional<PublisherModel> existingPublisher = publisherRepository.findByNameOrEmailAndIsDeletedTrue(data.name(), data.email());
 
-        PublisherModel newPublisher = new PublisherModel(data.name(), data.email(), data.telephone(), data.site());
-        publisherRepository.save(newPublisher);
-
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        if (existingPublisher.isPresent()) {
+            PublisherModel publisher = existingPublisher.get();
+            publisher.setIsDeleted(false);
+            publisherRepository.save(publisher);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } else {
+            PublisherModel newPublisher = new PublisherModel(data.name(), data.email(), data.telephone(), data.site());
+            publisherRepository.save(newPublisher);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        }
     }
+
 
     public Page<PublisherModel> findAll(String search, int page) {
         int size = 8;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-        if (Objects.equals(search, "")){
+
+        search = search.trim().replaceAll("[^0-9]", "");
+
+        if (search.isEmpty()) {
             Page<PublisherModel> publishers = publisherRepository.findAllByIsDeletedFalse(pageable);
             if (publishers.isEmpty()) throw new ModelNotFoundException();
             return publishers;
@@ -53,12 +69,17 @@ public class PublisherServices {
     }
 
     public List<PublisherModel> findAllWithoutPagination(String search) {
-        if (Objects.equals(search, "")) {
+        // Remove todos os caracteres não numéricos
+        search = search.trim().replaceAll("[^0-9]", "");
+
+        if (search.isEmpty()) {
             return publisherRepository.findAllByIsDeletedFalse(Sort.by(Sort.Direction.DESC, "id"));
         } else {
             return publisherRepository.findAllByName(search, Sort.by(Sort.Direction.DESC, "id"));
         }
     }
+
+
 
     public Optional<PublisherModel> findById(int id){
         return publisherRepository.findById(id);
@@ -77,11 +98,23 @@ public class PublisherServices {
     }
 
     public ResponseEntity<Object> delete(int id) {
-
-        if (!publisherRepository.existsById(id)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Publisher not found");
+        Optional<PublisherModel> publisher = publisherRepository.findById(id);
+        if (publisher.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Editora não encontrada.");
         }
-        publisherRepository.deleteById(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+        // Verificar se há livros associados à editora que não foram excluídos
+        List<BookModel> activeBooks = bookRepository.findByPublisherIdAndIsDeletedFalse(id);
+        if (!activeBooks.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Não é possível excluir a editora. Existem livros ativos associados.");
+        }
+
+        // Realizar a exclusão lógica da editora
+        PublisherModel publisherModel = publisher.get();
+        publisherModel.setIsDeleted(true);  // Use o método correto aqui
+        publisherRepository.save(publisherModel);  // Salvar a editora atualizada
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();  // Sucesso na exclusão lógica
     }
+
 }

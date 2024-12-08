@@ -48,6 +48,11 @@ public class PublisherModel implements UserDetails {
         this.isDeleted = false;
     }
 
+    public void setIsDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
@@ -82,6 +87,7 @@ public class PublisherModel implements UserDetails {
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
     }
+
 }
 
 

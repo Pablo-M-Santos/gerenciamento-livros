@@ -128,17 +128,22 @@ public class PublisherValidation {
     }
 
     public void validDeletePublisher(int id) {
-        var books = bookRepository.findByPublisherId(id);
+        var books = bookRepository.findByPublisherIdAndIsDeletedFalse(id);
+
         if (books.isEmpty()) {
             return;
         }
 
-        for (var book : books) {
-            if (rentRepository.existsByBookIdAndStatus(book.getId(), RentStatusEnum.RENTED)) {
-                throw new CustomValidationException("Não é possível excluir a editora. Existem livros atualmente alugados.");
-            }
+        boolean hasRentedBooks = books.stream()
+                .anyMatch(book -> rentRepository.existsByBookIdAndStatus(book.getId(), RentStatusEnum.RENTED));
+
+        // Lançar exceção apropriada
+        if (hasRentedBooks) {
+            throw new CustomValidationException("Não é possível excluir a editora. Existem livros atualmente alugados.");
         }
 
         throw new CustomValidationException("Não é possível excluir a editora. Existem livros associados a ela.");
     }
+
+
 }

@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PublisherRepository extends JpaRepository<PublisherModel, Integer> {
@@ -24,6 +25,8 @@ public interface PublisherRepository extends JpaRepository<PublisherModel, Integ
     PublisherModel findBySiteAndIsDeletedFalse(String site);
     PublisherModel findByTelephone(String telephone);
     PublisherModel findByTelephoneAndIsDeletedFalse(String telephone);
+    Optional<PublisherModel> findByNameOrEmailAndIsDeletedTrue(String name, String email);
+
 
     @Query("SELECT u FROM PublisherModel u WHERE " +
             "(LOWER(REPLACE(u.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
@@ -40,4 +43,7 @@ public interface PublisherRepository extends JpaRepository<PublisherModel, Integ
             "OR LOWER(REPLACE(u.telephone, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%'))) " +
             "AND u.isDeleted = false")
     Page<PublisherModel> findAllByName(@Param("searchTerm") String searchTerm, Pageable pageable);
+
+
+
 }

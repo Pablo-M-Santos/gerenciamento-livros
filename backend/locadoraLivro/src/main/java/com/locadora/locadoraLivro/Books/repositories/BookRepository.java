@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookRepository extends JpaRepository<BookModel, Integer> {
@@ -18,6 +19,11 @@ public interface BookRepository extends JpaRepository<BookModel, Integer> {
     List<BookModel> findAllByNameAndIsDeletedFalse(String name);
     List<BookModel> findByPublisherId(int publisherId);
     Page<BookModel> findAllByIsDeletedFalse(Pageable pageable);
+    Optional<BookModel> findByNameAndAuthorAndIsDeletedTrue(String name, String author);
+
+
+    @Query("SELECT b FROM BookModel b WHERE b.publisher.id = :publisherId AND b.isDeleted = false")
+    List<BookModel> findByPublisherIdAndIsDeletedFalse(int publisherId);
 
     @Query("SELECT u FROM BookModel u WHERE " +
             "(LOWER(REPLACE(u.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
