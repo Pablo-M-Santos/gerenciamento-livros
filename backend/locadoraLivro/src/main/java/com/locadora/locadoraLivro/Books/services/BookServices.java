@@ -54,7 +54,7 @@ public class BookServices {
     }
 
     public Page<BookModel> findAll(String search, int page){
-        int size = 8;
+        int size = 5;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         if (Objects.equals(search, "")){
             Page<BookModel> books = bookRepository.findAllByIsDeletedFalse(pageable);
@@ -64,6 +64,7 @@ public class BookServices {
                 List<RentModel> totalRented = rentRepository.findAllByBookIdAndStatus(book.getId(), RentStatusEnum.RENTED);
                 List<RentModel> totalLate = rentRepository.findAllByBookIdAndStatus(book.getId(), RentStatusEnum.LATE);
                 book.setTotalInUse(totalRented.size() + totalLate.size());
+                bookRepository.save(book);
             }
 
             return books;

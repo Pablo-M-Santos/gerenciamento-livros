@@ -226,6 +226,7 @@ const getRows = (search = '') => {
     .then(response => {
       if (Array.isArray(response.data.content)) {
         rows.value = response.data.content;
+        console.log('Dados dos livros:', response.data.content);
       } else {
         rows.value = [];
       }

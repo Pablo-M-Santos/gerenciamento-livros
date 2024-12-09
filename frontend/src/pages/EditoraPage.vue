@@ -586,7 +586,6 @@ const saveEdit = async () => {
   font-size: 15px;
   font-weight: 800;
 }
-
 @media (max-width: 700px) {
   .button-pesquisar {
     display: none;
