@@ -27,22 +27,22 @@ public interface PublisherRepository extends JpaRepository<PublisherModel, Integ
     PublisherModel findByTelephoneAndIsDeletedFalse(String telephone);
     Optional<PublisherModel> findByNameOrEmailAndIsDeletedTrue(String name, String email);
 
+    @Query("SELECT u FROM PublisherModel u WHERE " +
+            "(LOWER(REPLACE(u.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
+            "OR LOWER(REPLACE(u.email, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
+            "OR LOWER(REPLACE(REPLACE(REPLACE(REPLACE(u.telephone, '(', ''), ')', ''), '-', ''), ' ', '')) " +
+            "LIKE LOWER(CONCAT('%', REPLACE(REPLACE(REPLACE(REPLACE(:searchTerm, '(', ''), ')', ''), '-', ''), ' ', ''), '%'))) " +
+            "AND u.isDeleted = false")
+    List<PublisherModel> findAllBySearchTerm(@Param("searchTerm") String searchTerm, Sort sort);
 
     @Query("SELECT u FROM PublisherModel u WHERE " +
             "(LOWER(REPLACE(u.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
             "OR LOWER(REPLACE(u.email, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
-            "OR LOWER(REPLACE(u.site, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
-            "OR LOWER(REPLACE(u.telephone, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%'))) " +
+            "OR LOWER(REPLACE(REPLACE(REPLACE(REPLACE(u.telephone, '(', ''), ')', ''), '-', ''), ' ', '')) " +
+            "LIKE LOWER(CONCAT('%', REPLACE(REPLACE(REPLACE(REPLACE(:searchTerm, '(', ''), ')', ''), '-', ''), ' ', ''), '%'))) " +
             "AND u.isDeleted = false")
-    List<PublisherModel> findAllByName(@Param("searchTerm") String searchTerm, Sort sort);
+    Page<PublisherModel> findAllBySearchTerm(@Param("searchTerm") String searchTerm, Pageable pageable);
 
-    @Query("SELECT u FROM PublisherModel u WHERE " +
-            "(LOWER(REPLACE(u.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
-            "OR LOWER(REPLACE(u.email, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
-            "OR LOWER(REPLACE(u.site, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
-            "OR LOWER(REPLACE(u.telephone, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%'))) " +
-            "AND u.isDeleted = false")
-    Page<PublisherModel> findAllByName(@Param("searchTerm") String searchTerm, Pageable pageable);
 
 
 

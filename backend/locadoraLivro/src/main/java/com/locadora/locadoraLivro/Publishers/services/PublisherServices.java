@@ -56,29 +56,24 @@ public class PublisherServices {
         int size = 8;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
-        search = search.trim().replaceAll("[^0-9]", "");
-
-        if (search.isEmpty()) {
+        if (Objects.equals(search, "")) {
             Page<PublisherModel> publishers = publisherRepository.findAllByIsDeletedFalse(pageable);
             if (publishers.isEmpty()) throw new ModelNotFoundException();
             return publishers;
         } else {
-            Page<PublisherModel> publisherSearch = publisherRepository.findAllByName(search, pageable);
+            Page<PublisherModel> publisherSearch = publisherRepository.findAllBySearchTerm(search, pageable);
+            if (publisherSearch.isEmpty()) throw new ModelNotFoundException();
             return publisherSearch;
         }
     }
 
     public List<PublisherModel> findAllWithoutPagination(String search) {
-        // Remove todos os caracteres não numéricos
-        search = search.trim().replaceAll("[^0-9]", "");
-
-        if (search.isEmpty()) {
+        if (Objects.equals(search, "")) {
             return publisherRepository.findAllByIsDeletedFalse(Sort.by(Sort.Direction.DESC, "id"));
         } else {
-            return publisherRepository.findAllByName(search, Sort.by(Sort.Direction.DESC, "id"));
+            return publisherRepository.findAllBySearchTerm(search, Sort.by(Sort.Direction.DESC, "id"));
         }
     }
-
 
 
     public Optional<PublisherModel> findById(int id){
@@ -103,18 +98,16 @@ public class PublisherServices {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Editora não encontrada.");
         }
 
-        // Verificar se há livros associados à editora que não foram excluídos
         List<BookModel> activeBooks = bookRepository.findByPublisherIdAndIsDeletedFalse(id);
         if (!activeBooks.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Não é possível excluir a editora. Existem livros ativos associados.");
         }
 
-        // Realizar a exclusão lógica da editora
         PublisherModel publisherModel = publisher.get();
-        publisherModel.setIsDeleted(true);  // Use o método correto aqui
-        publisherRepository.save(publisherModel);  // Salvar a editora atualizada
+        publisherModel.setIsDeleted(true);
+        publisherRepository.save(publisherModel);
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();  // Sucesso na exclusão lógica
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }
