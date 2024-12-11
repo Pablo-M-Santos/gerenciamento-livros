@@ -23,39 +23,7 @@
           <q-btn @click="getRows(srch)" round dense flat icon="search" itemid="searchBtn" />
         </template>
       </q-input>
-      <q-btn-dropdown color="teal-9" :label="filterLabel" icon="filter_list" itemid="filterBtn">
-        <q-list>
-          <q-item clickable v-close-popup @click="statusFilter('RENTED', 'Alugados')" itemid="filterAlugadosBtn">
-            <q-item-section>
-              <q-item-label>Alugados</q-item-label>
-            </q-item-section>
-          </q-item>
 
-          <q-item clickable v-close-popup @click="statusFilter('LATE', 'Atrasados')" itemid="filterAtrasadosBtn">
-            <q-item-section>
-              <q-item-label>Atrasados</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <q-item clickable v-close-popup @click="statusFilter('IN_TIME', 'Devolvidos no prazo')" itemid="filterNoPrazoBtn">
-            <q-item-section>
-              <q-item-label>Devolvido no prazo</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <q-item clickable v-close-popup @click="statusFilter('DELIVERED_WITH_DELAY', 'Devolvido fora prazo')" itemid="filterForaDoPrazoBtn">
-            <q-item-section>
-              <q-item-label>Devolvido fora prazo</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <q-item clickable v-close-popup @click="statusFilter('', 'Todos')" itemid="filterTodosBtn">
-            <q-item-section>
-              <q-item-label>Todos</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </q-btn-dropdown>
     </q-form>
 
 
@@ -130,7 +98,7 @@
           <h3 class="titulo-confirmacao">Tem certeza que deseja devolver?</h3>
         </q-card-section>
         <q-card-actions class="button-confirmacao">
-          <q-btn label="SIM" color="secondary" @click="confirmReturn" class="q-mr-sm"  itemid="BtnEntregaAluguel"/>
+          <q-btn label="SIM" color="secondary" @click="confirmReturn" class="q-mr-sm" itemid="BtnEntregaAluguel" />
           <q-btn label="NÃO" color="negative" @click="cancelReturn" />
         </q-card-actions>
       </q-card>
@@ -188,12 +156,15 @@ const maxRowsPerPage = 10;
 
 const today = new Date().toISOString().split('T')[0];
 
+
 const maxReturnDate = ref(new Date(new Date().setDate(new Date().getDate() + 29)).toISOString().split('T')[0]);
+
+
 
 
 const page = ref(0);
 const rowsPerPage = 5;
-
+const srch = ref('');
 const newRent = ref({
   renterId: '',
   bookId: '',
@@ -211,11 +182,12 @@ const filterLabel = ref('Filtrar');
 const rows = ref([])
 const columns = computed(() => {
   const baseColumns = [
-    { name: 'renter.name', align: 'center', label: 'Locatário', field: row => row.renter.name, },
-    { name: 'book.name', align: 'center', label: 'Livro', field: row => row.book.name, },
-    { name: 'rentDate', align: 'center', label: 'Data de Aluguel', field: row => formatDate(row.rentDate), },
-    { name: 'deadLine', align: 'center', label: 'Data de Devolução', field: row => formatDate(row.deadLine), },
-    { name: 'status', align: 'center', label: 'Status', field: row => traduzirStatus(row.status), },
+    { name: 'renter.name', align: 'center', label: 'Nome do Locatário', field: row => row.renter.name },
+    { name: 'book.name', align: 'center', label: 'Título do Livro', field: row => row.book.name },
+    { name: 'rentDate', align: 'center', label: 'Data do Aluguel', field: 'rentDate' },
+    { name: 'deadLine', align: 'center', label: 'Data Prevista para Devolução', field: 'deadLine' },
+    { name: 'devolutionDate', align: 'center', label: 'Data da Devolução', field: row => row.devolutionDate || '' },
+    { name: 'status', align: 'center', label: 'Status do Aluguel', field: row => traduzirStatus(row.status) },
   ];
 
   if (userRole.value === 'ADMIN') {
@@ -225,15 +197,6 @@ const columns = computed(() => {
   return baseColumns;
 });
 
-
-function formatDate(date) {
-  if (!date) return '';
-  const d = new Date(date);
-  const day = String(d.getDate()).padStart(2, '0');
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const year = d.getFullYear();
-  return `${day}/${month}/${year}`;
-}
 
 const editRow = (row) => {
   rentToEdit.value = {
@@ -286,14 +249,25 @@ const openRegisterDialog = () => {
 
 
 const saveNewRent = () => {
-  const today = new Date();
-  const deadLine = new Date();
-  deadLine.setDate(today.getDate() + 30);
+  const rentDate = new Date().toISOString().split('T')[0];
+  const deadLine = newRent.value.deadLine
+    ? newRent.value.deadLine
+    : new Date(new Date().setDate(new Date().getDate() + 29))
+      .toISOString()
+      .split('T')[0];
+
+  console.log("Dados enviados para o backend:", {
+    renterId: newRent.value.renterId,
+    bookId: newRent.value.bookId,
+    rentDate,
+    deadLine,
+  });
 
   api.post('/rent', {
     renterId: newRent.value.renterId,
     bookId: newRent.value.bookId,
-    deadLine: deadLine.toISOString().split('T')[0]
+    rentDate,
+    deadLine,
   })
     .then(response => {
       showModalCadastro.value = false;
@@ -302,22 +276,17 @@ const saveNewRent = () => {
     })
     .catch(error => {
       let errorMessage = 'Erro desconhecido ao cadastrar aluguel.';
-
       if (error.response) {
         if (error.response.status === 400) {
-
           errorMessage = Object.values(error.response.data).join(', ') || errorMessage;
         } else if (error.response.data.message) {
-
           errorMessage = error.response.data.message;
         }
       }
-
       console.error("Erro ao cadastrar aluguel:", error.response ? error.response.data : error.message);
       showNotification('negative', errorMessage);
     });
 };
-
 
 
 const confirmReturn = () => {
@@ -352,7 +321,6 @@ const confirmReturn = () => {
       handleError(error, "Erro ao atualizar status!")
     })
 }
-
 
 
 const showReturnModal = (row) => {

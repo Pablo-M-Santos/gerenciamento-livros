@@ -40,7 +40,6 @@ public class UserServices {
     private PasswordResetTokenRepository resetTokenRepository;
 
     public ResponseEntity<Void> create(@Valid CreateUserRequestDTO data) {
-
         userValidation.create(data);
 
         String encryptedPassword = passwordEncoder.encode(data.password());
@@ -53,33 +52,23 @@ public class UserServices {
     public Page<UserModel> findAll(String search, int page) {
         int size = 8;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-        if (Objects.equals(search, "")) {
+
+        if (search == null || search.trim().isEmpty()) {
             Page<UserModel> users = userRepository.findAll(pageable);
             if (users.isEmpty()) throw new ModelNotFoundException();
             return users;
-        } else {
-            return userRepository.findAllByName(search, pageable);
-        }
-    }
 
-    public Page<UserModel> findAllByRole(String search, int page, String role) {
-        int size = 5;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-
-        if (Objects.equals(search, "")) {
-            Page<UserModel> users = userRepository.findAllByRole(role, pageable);
-            if (users.isEmpty()) throw new ModelNotFoundException();
-            return users;
         } else {
-            return userRepository.findAllByRoleAndSearch(role, search, pageable);
+            return userRepository.findAllBySearch(search, pageable);
         }
     }
 
     public List<UserModel> findAllWithoutPagination(String search) {
-        if (Objects.equals(search, "")) {
+        if (search == null || search.trim().isEmpty()) {
             return userRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
         } else {
-            return userRepository.findAllByName(search, Sort.by(Sort.Direction.DESC, "id"));
+
+            return userRepository.findAllBySearch(search, Sort.by(Sort.Direction.DESC, "id"));
         }
     }
 
@@ -103,7 +92,6 @@ public class UserServices {
         return ResponseEntity.status(HttpStatus.OK).body(userRepository.save(userModel));
     }
 
-
     public ResponseEntity<Object> delete(int id) {
         Optional<UserModel> response = userRepository.findById(id);
         if (response.isEmpty()) {
@@ -112,7 +100,6 @@ public class UserServices {
         userRepository.delete(response.get());
         return ResponseEntity.status(HttpStatus.OK).body("User deleted successfully");
     }
-
 
     public String createPasswordResetToken(String email) {
         Optional<UserModel> userOptional = Optional.ofNullable(userRepository.findByEmail(email));
@@ -138,7 +125,6 @@ public class UserServices {
         return token;
     }
 
-
     public boolean validatePasswordResetToken(String token) {
         PasswordResetToken resetToken = resetTokenRepository.findByToken(token);
         if (resetToken == null) {
@@ -149,7 +135,6 @@ public class UserServices {
         }
         return true;
     }
-
 
     public boolean resetPassword(String token, String newPassword) {
         PasswordResetToken resetToken = resetTokenRepository.findByToken(token);
@@ -165,7 +150,6 @@ public class UserServices {
 
         return true;
     }
-
 
     public String getUserNameByEmail(String email) {
         UserModel user = userRepository.findByEmail(email);

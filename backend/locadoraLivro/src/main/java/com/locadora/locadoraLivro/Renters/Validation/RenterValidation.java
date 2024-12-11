@@ -35,8 +35,9 @@ public class RenterValidation {
         validateUpdateName(data);
         validateUpdateEmail(data, id);
         validateCPFUpdate(data, id);
-        validateTelephone(data.telephone());
+        validateUpdateTelephone(data.telephone(), id);
     }
+
 
     private void validateName(CreateRenterRequestDTO data) {
         if (data.name() == "" || data.name() == null) {
@@ -128,10 +129,10 @@ public class RenterValidation {
         }
     }
 
-
     public void validateDeleteRenter(int id) {
-        if (rentRepository.existsByRenterIdAndStatus(id, RentStatusEnum.RENTED)) {
-            throw new CustomValidationException("Não é possível excluir o locatário. Existem livros atualmente alugados.");
+        if (rentRepository.existsByRenterId(id)) {
+            throw new CustomValidationException("Não é possível excluir o locatário. Este locatário já teve um aluguel.");
         }
     }
+
 }

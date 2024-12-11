@@ -23,27 +23,7 @@
           <q-btn @click="getRows(srch)" round dense flat icon="search" itemid="searchBtn" />
         </template>
       </q-input>
-      <q-btn-dropdown color="teal-9" :label="filterLabel" icon="filter_list" itemid="filterBtn">
-        <q-list>
-          <q-item clickable v-close-popup @click="permissionFilter('ADMIN', 'Administrador')" itemid="filterEditorBtn">
-            <q-item-section>
-              <q-item-label>Administrador</q-item-label>
-            </q-item-section>
-          </q-item>
 
-          <q-item clickable v-close-popup @click="permissionFilter('USER', 'Locatário')" itemid="filterLeitorBtn">
-            <q-item-section>
-              <q-item-label>Locatário</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <q-item clickable v-close-popup @click="permissionFilter('', 'Todos')" itemid="filterTodosBtn">
-            <q-item-section>
-              <q-item-label>Todos</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </q-btn-dropdown>
     </q-form>
 
 
@@ -75,7 +55,7 @@
               <q-radio v-model="userCreate.role" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="ADMIN"
                 label="Editor" :error="roleError" :error-message="roleErrorMessage" itemid="cadastrarAdministradorUsuario" />
               <q-radio v-model="userCreate.role" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="USER"
-                label="Locatário" :error="roleError" :error-message="roleErrorMessage" itemid="cadastrarLocatarioUsuario" />
+                label="Locatario" :error="roleError" :error-message="roleErrorMessage" itemid="cadastrarLocatarioUsuario" />
             </div>
 
 
@@ -106,7 +86,7 @@
               <q-radio v-model="formEditar.role" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="ADMIN"
                 label="Editor" />
               <q-radio v-model="formEditar.role" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="USER"
-                label="Locatário" itemid="editarLocatarioUsuario" />
+                label="Locatario" itemid="editarLocatarioUsuario" />
             </div>
 
             <div class="button-container">
@@ -389,7 +369,7 @@ const submitFormEditar = () => {
 
 const roleMapping = {
   ADMIN: 'Administrador',
-  USER: 'Locatário'
+  USER: 'Locatario'
 };
 const roleError = ref(false);
 const roleErrorMessage = ref('');

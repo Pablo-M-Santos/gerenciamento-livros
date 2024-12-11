@@ -1,9 +1,6 @@
 <template>
   <div class="mais-alugados">
     <div>
-      <div class="header">
-        <h3 class="title">Top 3 Livros Mais Alugados</h3>
-      </div>
       <div class="dados">
         <q-table :rows="rows" :columns="columns" row-key="id" hide-bottom>
           <template v-slot:header="props">
@@ -99,6 +96,7 @@ const sortRowsDescByRentsActive = () => {
 
 .dados {
   box-shadow: 3px 4px 10px 0px rgba(0, 0, 0, 0.25);
+  margin-top: 20px;
 }
 
 .header {

@@ -13,10 +13,7 @@ import com.locadora.locadoraLivro.Rents.models.RentStatusEnum;
 import com.locadora.locadoraLivro.Rents.repositories.RentRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -25,6 +22,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class RentServices {
@@ -65,39 +63,51 @@ public class RentServices {
         int size = 8;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
-        if (Objects.equals(search, "")){
+        // Verifica se a pesquisa está vazia
+        if (search.isEmpty()) {
+            // Pesquisa sem filtro
             Page<RentModel> rents = rentRepository.findAll(pageable);
             if (rents.isEmpty()) throw new ModelNotFoundException();
-
-            for (RentModel rent : rents) { rentValidation.setRentStatus(rent); }
-
             return rents;
         } else {
-            Page<RentModel> rentSearch = rentRepository.findAllByRenterNameOrBookName(search, pageable);
-            return rentSearch;
+            // Verificando se a pesquisa é "Não entregue"
+            if (search.equalsIgnoreCase("Não entregue")) {
+                // Filtro para aluguéis não devolvidos (devolutionDate é null)
+                return rentRepository.findAllByDevolutionDateIsNull(pageable);
+            } else {
+                // Caso contrário, realiza a pesquisa com o filtro
+                return rentRepository.findAllBySearch(search, pageable);
+            }
         }
     }
+
+
 
     public Page<RentModel> findAllByStatus(String search, int page, String status) {
         int size = 5;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
-        if (Objects.equals(search, "")) {
+        if (search.isEmpty()) {
             Page<RentModel> rents = rentRepository.findAllByStatus(status, pageable);
             if (rents.isEmpty()) throw new ModelNotFoundException();
             return rents;
         } else {
+            // Chamando a query personalizada de pesquisa com status
             return rentRepository.findAllByRenterNameOrBookNameAndStatus(search, status, pageable);
         }
     }
 
     public List<RentModel> findAllWithoutPagination(String search) {
-        if (Objects.equals(search, "")) {
-            return rentRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, "id"));
+
+        if (search.isEmpty()) {
+            return rentRepository.findAll(pageable).getContent();  // Usando pageable, mas sem paginar
         } else {
-            return rentRepository.findAllByRenterNameOrBookName(search, Sort.by(Sort.Direction.DESC, "id"));
+            return rentRepository.findAllBySearch(search, pageable).getContent();  // Passando pageable para a pesquisa
         }
     }
+
+
 
     public Optional<RentModel> findById(int id){
         return rentRepository.findById(id);
@@ -124,21 +134,54 @@ public class RentServices {
 
     public ResponseEntity<Object> update(int id, @Valid UpdateRentRecordDTO updateRentRecordDTO) {
         Optional<RentModel> rentOptional = rentRepository.findById(id);
-        if (rentOptional.isEmpty()) { return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Aluguel não encontrado"); }
-
-        RenterModel renter = renterRepository.findById(updateRentRecordDTO.renterId()).get();
-
-        BookModel book = bookRepository.findById(updateRentRecordDTO.bookId()).get();
-
-        rentValidation.update(updateRentRecordDTO, id);
+        if (rentOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Aluguel não encontrado");
+        }
 
         RentModel rentModel = rentOptional.get();
-        rentModel.setBook(book);
-        rentModel.setRenter(renter);
-        rentModel.setDeadLine(updateRentRecordDTO.deadLine());
 
+        // Verifica se o novo locatário existe
+        Optional<RenterModel> newRenterOptional = renterRepository.findById(updateRentRecordDTO.renterId());
+        if (newRenterOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Novo locatário não encontrado");
+        }
+        RenterModel newRenter = newRenterOptional.get();
+
+        // Verifica se o novo locatário não está deletado
+        if (newRenter.isDeleted()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O locatário está deletado e não pode ser atribuído ao aluguel");
+        }
+
+        // Verifica se o novo livro existe
+        Optional<BookModel> newBookOptional = bookRepository.findById(updateRentRecordDTO.bookId());
+        if (newBookOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Novo livro não encontrado");
+        }
+        BookModel newBook = newBookOptional.get();
+
+        if (newBook.getTotalInUse() >= newBook.getTotalQuantity()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Novo livro não disponível para aluguel");
+        }
+
+        // Atualiza os dados do aluguel
+        rentModel.setRenter(newRenter); // Atualiza o locatário do aluguel
+        rentModel.setBook(newBook);     // Atualiza o livro do aluguel
+        rentModel.setDeadLine(updateRentRecordDTO.deadLine());
         rentRepository.save(rentModel);
+
+        // Atualiza as quantidades dos livros
+        BookModel oldBook = rentModel.getBook();
+        oldBook.setTotalInUse(oldBook.getTotalInUse() - 1);
+        newBook.setTotalInUse(newBook.getTotalInUse() + 1);
+
+        oldBook.setTotalQuantity(oldBook.getTotalQuantity() + 1);
+        newBook.setTotalQuantity(newBook.getTotalQuantity() - 1);
+
+        bookRepository.save(oldBook);
+        bookRepository.save(newBook);
 
         return ResponseEntity.status(HttpStatus.OK).body("Aluguel atualizado com sucesso");
     }
+
+
 }

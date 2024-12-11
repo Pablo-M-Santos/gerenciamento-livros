@@ -274,7 +274,7 @@ const editRow = (row) => {
       name: InfosEdit.value.name,
       author: InfosEdit.value.author,
       totalQuantity: InfosEdit.value.totalQuantity,
-      launchDate: formatDate(InfosEdit.value.launchDate),
+      launchDate: InfosEdit.value.launchDate,
       publisherId: InfosEdit.value.publisher.id,
       totalInUse: InfosEdit.value.totalInUse
     };

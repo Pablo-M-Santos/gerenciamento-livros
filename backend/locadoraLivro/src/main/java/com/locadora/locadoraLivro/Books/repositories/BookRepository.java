@@ -32,7 +32,9 @@ public interface BookRepository extends JpaRepository<BookModel, Integer> {
             "OR LOWER(REPLACE(u.author, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
             "OR LOWER(REPLACE(CAST(u.launchDate AS string), ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
             "OR LOWER(CAST(u.totalQuantity AS string)) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
-            "OR LOWER(CAST(u.totalInUse AS string)) LIKE LOWER(CONCAT('%', :searchTerm, '%'))) " +
+            "OR LOWER(CAST(u.totalInUse AS string)) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+            "OR LOWER(REPLACE(u.publisher.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%'))) " +
             "AND u.isDeleted = false")
     Page<BookModel> findAllByName(@Param("searchTerm") String searchTerm, Pageable pageable);
+
 }

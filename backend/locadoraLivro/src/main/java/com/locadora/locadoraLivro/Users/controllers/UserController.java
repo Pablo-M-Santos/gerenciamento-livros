@@ -28,17 +28,14 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<Object> getAll(String search, @RequestParam(required = false) Integer page, @RequestParam(required = false) String role){
+    public ResponseEntity<Object> getAll(String search, @RequestParam(required = false) Integer page) {
         if (page == null) {
             return ResponseEntity.status(HttpStatus.OK).body(userMapper.toUserResponseList(userServices.findAllWithoutPagination(search)));
         }
 
-        if (!role.isEmpty() && role != null){
-            return ResponseEntity.status(HttpStatus.OK).body(userServices.findAllByRole(search, page, role).map(userMapper::toUserResponse));
-        }
-
         return ResponseEntity.status(HttpStatus.OK).body(userServices.findAll(search, page).map(userMapper::toUserResponse));
     }
+
 
     @GetMapping("/user/{id}")
     public ResponseEntity<UserResponseDTO> getById(@PathVariable(value = "id") int id) {

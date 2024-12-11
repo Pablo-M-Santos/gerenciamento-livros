@@ -7,20 +7,19 @@ Library            XML
 Resource    autentificacao.robot
 
 *** Variables ***
-${BASE_URL}        http://localhost:9000
-${EMAIL}           admin@gmail.com
-${PASSWORD}        12345678
-
-${NAME_RENTER}       Locatario Robot
-${EMAIL_RENTER}      locatarioRobot@gmail.com
-${TELEPHONE_RENTER}       85987858860
-${ADRESS_RENTER}       wda
-${CPF_RENTER}       08214996104
-${NAME_RENTER_UPDATE}       locatario Robot Atualizacao
-${EMAIL_RENTER_UPDATE}      locatarioRobotAtualizacao@gmail.com
-${TELEPHONE_RENTER_UPDATE}       85987858861
-${ADRESS_RENTER_UPDATE}       wdaa
-${CPF_RENTER_UPDATE}       01833442199
+${BASE_URL}                    http://localhost:9000
+${EMAIL}                       admin@gmail.com
+${PASSWORD}                    12345678
+${NAME_RENTER}                 Locatario Robot
+${EMAIL_RENTER}                locatarioRobot@gmail.com
+${TELEPHONE_RENTER}            85987858860
+${ADRESS_RENTER}               wda
+${CPF_RENTER}                  08214996104
+${NAME_RENTER_UPDATE}          locatario Robot Atualizacao
+${EMAIL_RENTER_UPDATE}         locatarioRobotAtualizacao@gmail.com
+${TELEPHONE_RENTER_UPDATE}     85987858861
+${ADRESS_RENTER_UPDATE}        wdaa
+${CPF_RENTER_UPDATE}           01833442199
 
 
 
@@ -137,7 +136,25 @@ Teste de pesquisa
 
     Press Keys       css=[itemid="searchInput"]    ENTER
 
+    Press Keys       css=[itemid="searchInput"]    CTRL+A+BACKSPACE
+
+    Press Keys       css=[itemid="searchInput"]    ENTER
+
     Sleep    1
+
+    Input Text    css=[itemid="searchInput"]    ${EMAIL_RENTER_UPDATE}
+
+    Press Keys       css=[itemid="searchInput"]    ENTER
+
+    Press Keys       css=[itemid="searchInput"]    CTRL+A+BACKSPACE
+
+    Press Keys       css=[itemid="searchInput"]    ENTER
+
+    Sleep    1
+
+    Input Text    css=[itemid="searchInput"]    ${TELEPHONE_RENTER_UPDATE}
+
+    Press Keys       css=[itemid="searchInput"]    ENTER
 
     Press Keys       css=[itemid="searchInput"]    CTRL+A+BACKSPACE
 

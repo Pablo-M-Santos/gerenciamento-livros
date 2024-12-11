@@ -20,7 +20,7 @@ public record UpdateRenterRequestDTO(
         @NotBlank(message = "Address cannot be empty or contain only spaces.")
         String address,
 
-        @CPF(message = "Invalid CPF format.")
+        @CPF(message = "CPF Inválido.")
         String cpf
 ) {
 }

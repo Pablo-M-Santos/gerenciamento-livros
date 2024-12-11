@@ -31,23 +31,41 @@ public class RenterServices {
     private RenterValidation renterValidation;
 
     public ResponseEntity<Void> create(@Valid CreateRenterRequestDTO data) {
-        renterValidation.create(data);
+        Optional<RenterModel> existingRenter = renterRepository.findByCpfAndIsDeletedTrue(data.cpf());
 
-        RenterModel newRenter = new RenterModel(data.name(), data.email(), data.telephone(), data.address(), data.cpf());
-        renterRepository.save(newRenter);
+        if (existingRenter.isPresent()) {
+            RenterModel renter = existingRenter.get();
+            renter.setDeleted(false);
+            renter.setName(data.name());
+            renter.setEmail(data.email());
+            renter.setTelephone(data.telephone());
+            renter.setAddress(data.address());
+            // Atualiza o CPF, se necessário
+            renterRepository.save(renter);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } else {
+            renterValidation.create(data);
+
+            RenterModel newRenter = new RenterModel(data.name(), data.email(), data.telephone(), data.address(), data.cpf());
+            renterRepository.save(newRenter);
+
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        }
     }
+
 
     public Page<RenterModel> findAll(String search, int page) {
         int size = 8;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
         if (Objects.equals(search, "")) {
             Page<RenterModel> renters = renterRepository.findAllByIsDeletedFalse(pageable);
             if (renters.isEmpty()) throw new ModelNotFoundException();
             return renters;
         } else {
-            Page<RenterModel> renterSearch = renterRepository.findAllByName(search, pageable);
+            Page<RenterModel> renterSearch = renterRepository.findAllBySearchTerm(search, pageable);
+            if (renterSearch.isEmpty()) throw new ModelNotFoundException();
             return renterSearch;
         }
     }
@@ -56,9 +74,10 @@ public class RenterServices {
         if (Objects.equals(search, "")) {
             return renterRepository.findAllByIsDeletedFalse(Sort.by(Sort.Direction.DESC, "id"));
         } else {
-            return renterRepository.findAllByName(search, Sort.by(Sort.Direction.DESC, "id"));
+            return renterRepository.findAllBySearchTerm(search, Sort.by(Sort.Direction.DESC, "id"));
         }
     }
+
 
     public Optional<RenterModel> findById(int id) {
         return renterRepository.findById(id);

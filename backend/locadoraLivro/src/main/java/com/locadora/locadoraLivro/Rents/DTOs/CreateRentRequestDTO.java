@@ -13,5 +13,6 @@ public record CreateRentRequestDTO(
         int bookId,
 
         @NotNull(message = "O campo data é obrigatório")
+        @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate deadLine) {
 }

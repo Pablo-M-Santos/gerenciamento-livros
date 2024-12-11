@@ -28,35 +28,47 @@ public class PasswordResetControllerTest {
     @InjectMocks
     private PasswordResetController passwordResetController;
 
+    private final String validEmail = "usuario@exemplo.com";
+    private final String invalidEmail = "invalido@exemplo.com";
+    private final String validToken = "valid-token";
+    private final String invalidToken = "invalid-token";
+    private final String userName = "UsuarioTeste";
+    private final String newPassword = "new-password";
+
     @Test
     public void testProcessForgotPasswordSuccess() {
-        String email = "usuario@exemplo.com";
-        String token = "valid-token";
-        String userName = "UsuarioTeste";
-
         EmailRequest emailRequest = new EmailRequest();
-        emailRequest.setEmail(email);
+        emailRequest.setEmail(validEmail);
 
-        when(userServices.createPasswordResetToken(email)).thenReturn(token);
-        when(userServices.getUserNameByEmail(email)).thenReturn(userName);
+        when(userServices.createPasswordResetToken(validEmail)).thenReturn(validToken);
+        when(userServices.getUserNameByEmail(validEmail)).thenReturn(userName);
 
         ResponseEntity<String> response = passwordResetController.processForgotPassword(emailRequest);
 
         assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Instruções de redefinição de senha enviadas para " + email, response.getBody());
+        assertEquals("Instruções de redefinição de senha enviadas para " + validEmail, response.getBody());
     }
 
+    @Test
+    public void testProcessForgotPasswordUserNotFound() {
+        EmailRequest emailRequest = new EmailRequest();
+        emailRequest.setEmail(invalidEmail);
+
+        when(userServices.createPasswordResetToken(invalidEmail)).thenReturn(null);
+
+        ResponseEntity<String> response = passwordResetController.processForgotPassword(emailRequest);
+
+        assertEquals(400, response.getStatusCodeValue());
+        assertEquals("Usuário não encontrado.", response.getBody());
+    }
 
     @Test
     public void testResetPasswordSuccess() {
-        String token = "valid-token";
-        String newPassword = "new-password";
-
         PasswordResetRequest passwordResetRequest = new PasswordResetRequest();
-        passwordResetRequest.setToken(token);
+        passwordResetRequest.setToken(validToken);
         passwordResetRequest.setNewPassword(newPassword);
 
-        when(userServices.resetPassword(token, newPassword)).thenReturn(true);
+        when(userServices.resetPassword(validToken, newPassword)).thenReturn(true);
 
         ResponseEntity<String> response = passwordResetController.resetPassword(passwordResetRequest);
 
@@ -64,18 +76,13 @@ public class PasswordResetControllerTest {
         assertEquals("Senha redefinida com sucesso.", response.getBody());
     }
 
-
     @Test
     public void testResetPasswordTokenInvalid() {
-        String token = "invalid-token";
-        String newPassword = "new-password";
-
         PasswordResetRequest passwordResetRequest = new PasswordResetRequest();
-        passwordResetRequest.setToken(token);
+        passwordResetRequest.setToken(invalidToken);
         passwordResetRequest.setNewPassword(newPassword);
 
-
-        when(userServices.resetPassword(token, newPassword)).thenReturn(false);
+        when(userServices.resetPassword(invalidToken, newPassword)).thenReturn(false);
 
         ResponseEntity<String> response = passwordResetController.resetPassword(passwordResetRequest);
 
@@ -83,19 +90,29 @@ public class PasswordResetControllerTest {
         assertEquals("Falha ao redefinir a senha. Token inválido ou expirado.", response.getBody());
     }
 
-
     @Test
     public void testValidateResetToken() {
-        String token = "valid-token";
-
         TokenValidationRequest tokenRequest = new TokenValidationRequest();
-        tokenRequest.setToken(token);
+        tokenRequest.setToken(validToken);
 
-        when(userServices.validatePasswordResetToken(token)).thenReturn(true);
+        when(userServices.validatePasswordResetToken(validToken)).thenReturn(true);
 
         ResponseEntity<String> response = passwordResetController.validateResetToken(tokenRequest);
 
         assertEquals(200, response.getStatusCodeValue());
         assertEquals("Token válido.", response.getBody());
+    }
+
+    @Test
+    public void testValidateResetTokenInvalid() {
+        TokenValidationRequest tokenRequest = new TokenValidationRequest();
+        tokenRequest.setToken(invalidToken);
+
+        when(userServices.validatePasswordResetToken(invalidToken)).thenReturn(false);
+
+        ResponseEntity<String> response = passwordResetController.validateResetToken(tokenRequest);
+
+        assertEquals(400, response.getStatusCodeValue());
+        assertEquals("Token inválido ou expirado.", response.getBody());
     }
 }

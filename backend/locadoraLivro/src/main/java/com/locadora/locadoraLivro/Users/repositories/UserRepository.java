@@ -7,6 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Pageable;
@@ -28,13 +29,20 @@ public interface UserRepository extends JpaRepository<UserModel, Integer> {
             "OR LOWER(REPLACE(u.email, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%'))) ")
     Page<UserModel> findAllByName(@Param("searchTerm") String searchTerm, Pageable pageable);
 
-    @Query("SELECT u FROM UserModel u WHERE LOWER(u.role) = LOWER(:role)")
-    Page<UserModel> findAllByRole(@Param("role") String role, Pageable pageable);
+    @Query("SELECT u FROM UserModel u WHERE " +
+            "(:search IS NULL OR LOWER(REPLACE(u.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:search, ' ', ''), '%')) " +
+            "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "OR LOWER(CASE  WHEN u.role = 'ADMIN' THEN 'ADMINISTRADOR' ELSE 'LOCATARIO' END) LIKE LOWER(CONCAT('%', :search, '%')))")
+    List<UserModel> findAllBySearch(@Param("search") String search, Sort sort);
+
+
 
     @Query("SELECT u FROM UserModel u WHERE " +
-            "LOWER(u.role) = LOWER(:searchRole) AND (" +
-            "LOWER(REPLACE(u.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')) " +
-            "OR LOWER(REPLACE(u.email, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:searchTerm, ' ', ''), '%')))")
-    Page<UserModel> findAllByRoleAndSearch(@Param("searchRole") String searchRole, @Param("searchTerm") String searchTerm, Pageable pageable);
+            "(:search IS NULL OR LOWER(REPLACE(u.name, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:search, ' ', ''), '%')) " +
+            "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "OR LOWER(CASE  WHEN u.role = 'ADMIN' THEN 'ADMINISTRADOR' ELSE 'LOCATARIO' END) LIKE LOWER(CONCAT('%', :search, '%')))")
+    Page<UserModel> findAllBySearch(
+            @Param("search") String search,
+            Pageable pageable );
 }
 

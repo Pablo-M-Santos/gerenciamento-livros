@@ -30,16 +30,26 @@ public class RentController {
     }
 
     @GetMapping("/rent")
-    public ResponseEntity<Object> getAll(String search, @RequestParam(required = false) Integer page, @RequestParam(required = false) String status){
+    public ResponseEntity<Object> getAll(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) String status) {
+
         if (page == null) {
-            return ResponseEntity.status(HttpStatus.OK).body(rentMapper.toRentResponseList(rentServices.findAllWithoutPagination(search)));
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    rentMapper.toRentResponseList(rentServices.findAllWithoutPagination(search))
+            );
         }
 
-        if (!status.isEmpty() && status != null){
-            return ResponseEntity.status(HttpStatus.OK).body(rentServices.findAllByStatus(search, page, status).map(rentMapper::toRentResponse));
+        if (status != null && !status.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    rentServices.findAllByStatus(search, page, status).map(rentMapper::toRentResponse)
+            );
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(rentServices.findAll(search, page).map(rentMapper::toRentResponse));
+        return ResponseEntity.status(HttpStatus.OK).body(
+                rentServices.findAll(search, page).map(rentMapper::toRentResponse)
+        );
     }
 
     @GetMapping("/rent/{id}")

@@ -7,21 +7,18 @@ Library            XML
 Resource    autentificacao.robot
 
 *** Variables ***
-${BASE_URL}        http://localhost:9000
-${EMAIL}           admin@gmail.com
-${PASSWORD}        12345678
-
-${TITLE_BOOK}       Livro Robot
-${AUTOR_BOOK}       Autor Robot
-${QUANTIDADE_BOOK}     10
-${DATE_BOOK}       22/11/2024
-${TITLE_BOOK_UPDATE}       Livro Robot Atualizacao
-${AUTOR_BOOK_UPDATE}       Autor Robot Atualizacao
-${QUANTIDADE_BOOK_UPDATE}     11
-${DATE_BOOK_UPDATE}       21/11/2024
-
-
-
+${BASE_URL}                        http://localhost:9000
+${EMAIL}                           admin@gmail.com
+${PASSWORD}                        12345678
+${TITLE_BOOK}                      Livro Robot
+${AUTOR_BOOK}                      Autor Robot
+${QUANTIDADE_BOOK}                 10
+${DATE_BOOK}                       22/11/2024
+${TITLE_BOOK_UPDATE}               Livro Robot Atualizacao
+${AUTOR_BOOK_UPDATE}               Autor Robot Atualizacao
+${QUANTIDADE_BOOK_UPDATE}          11
+${publisher}                       EDITORA 2
+${DATE_BOOK_UPDATE}                21/11/2024
 
 
 *** Test Cases ***
@@ -129,8 +126,8 @@ Editar Livro
     Wait Until Page Contains Element    //div[@class='q-field__control-container col relative-position row no-wrap q-anchor--skip'][contains(.,'Selecione a editora')]    timeout=10s
     Click Element    //div[@class='q-field__control-container col relative-position row no-wrap q-anchor--skip'][contains(.,'Selecione a editora')]
 
-    Wait Until Page Contains Element    //div[@role="option" and .//span[text()="EDITORA2"]]    timeout=10s
-    Click Element    //div[@role="option" and .//span[text()="EDITORA2"]]
+    Wait Until Page Contains Element    //div[@role="option" and .//span[text()="EDITORA 2"]]    timeout=10s
+    Click Element    //div[@role="option" and .//span[text()="EDITORA 2"]]
 
     Click Button    css=[itemid="BtnEditarLivro"]
 
@@ -141,10 +138,43 @@ Teste de pesquisa
     Sleep    1
 
     Input Text    css=[itemid="searchInput"]    ${TITLE_BOOK_UPDATE}
+    Sleep    0.5
+
+    Press Keys       css=[itemid="searchInput"]    ENTER
+
+    Press Keys       css=[itemid="searchInput"]    CTRL+A+BACKSPACE
+
+    Press Keys       css=[itemid="searchInput"]    ENTER
+
+   
+    Input Text    css=[itemid="searchInput"]    ${AUTOR_BOOK}
+
+    Sleep    0.5
+
+    Press Keys       css=[itemid="searchInput"]    ENTER
+
+    Press Keys       css=[itemid="searchInput"]    CTRL+A+BACKSPACE
+
+    Press Keys       css=[itemid="searchInput"]    ENTER
+
+    Input Text    css=[itemid="searchInput"]    ${QUANTIDADE_BOOK_UPDATE}
+
+    Sleep    0.5
+
+    Press Keys       css=[itemid="searchInput"]    ENTER
+
+    Press Keys       css=[itemid="searchInput"]    CTRL+A+BACKSPACE
 
     Press Keys       css=[itemid="searchInput"]    ENTER
 
     Sleep    1
+
+
+    Input Text    css=[itemid="searchInput"]    ${publisher}
+
+    Sleep    0.5
+
+    Press Keys       css=[itemid="searchInput"]    ENTER
 
     Press Keys       css=[itemid="searchInput"]    CTRL+A+BACKSPACE
 

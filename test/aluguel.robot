@@ -10,7 +10,6 @@ Resource    autentificacao.robot
 ${BASE_URL}        http://localhost:9000
 ${EMAIL}           admin@gmail.com
 ${PASSWORD}        12345678
-
 ${DATA_RENT}       22/11
 ${DATA_RENT_UPDATE}       21/12
 ${NAME_ALUGUEL}    Locatario
@@ -24,9 +23,6 @@ Aluguel
     Editar Aluguel
     Teste de pesquisa
     Teste de Entrega
-
-
-
 
 
 *** Keywords ***

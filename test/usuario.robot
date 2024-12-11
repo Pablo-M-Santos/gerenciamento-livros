@@ -3,49 +3,55 @@ Library           RequestsLibrary
 Library           Collections
 Library           BuiltIn
 Library           SeleniumLibrary
-Library            XML
+Library           XML
 Resource    autentificacao.robot
 
 *** Variables ***
-${BASE_URL}        http://localhost:9000
-${EMAIL}           admin@gmail.com
-${PASSWORD}        12345678
-${NAME_USER}       Test Robot
-${EMAIL_USER}      testRobot1@gmail.com
-${PASSWORD_USER}   12345678
-${NAME_USER_UPDATE}       Test Robot Atualizacao
-${EMAIL_USER_UPDATE}      testRobotAtualizacao@gmail.com
-    
-
-
+${BASE_URL}                http://localhost:9000
+${EMAIL}                   admin@gmail.com
+${PASSWORD}                12345678
+${NAME_USER}               Locatario Robot
+${EMAIL_USER}              robot@gmail.com
+${PASSWORD_USER}           12345678
+${NAME_USER_UPDATE}        Locatario Robot Atualizacao
+${EMAIL_USER_UPDATE}       robotAtualizacao@gmail.com
+${NAME_ADMIN}              Administrador Robot
+${EMAIL_ADMIN}             robotAdministradorRobot@gmail.com
+${PASSWORD_ADMIN}          12345678
 
 *** Test Cases ***
-Usuario
+Usuario Locatario e Admin
     Login
-    Cadastrar Usuario
-    Editar Usuario
-    Teste de filtro de usuários
-    Teste de pesquisa
-    Teste Sobre Usuário
-
-
+    Criar Usuario Locatario
+    Ver Sobre Usuario Locatario
+    Editar Usuario Locatario
+    Criar Usuario Admin
+    Ver Sobre Usuario Admin
+    Teste de Pesquisa Locatario
+    Teste de Pesquisa Admin
 
 *** Keywords ***
 
 Login
     Open Browser    ${BASE_URL}    chrome
     Maximize Browser Window
+    Sleep    1
+
     Wait Until Element Is Visible    css=[itemid="emailInput"]    timeout=10s
     Click Element    css=[itemid="emailInput"]
+    Sleep    0.5
 
     Element Should Be Enabled        css=[itemid="emailInput"]
     Input Text    css=[itemid="emailInput"]    ${EMAIL}
-
+    Sleep    0.5
+    
     Wait Until Element Is Visible    css=[itemid="passwordInput"]    timeout=10s
     Click Element    css=[itemid="passwordInput"]
+    Sleep    0.5
 
     Element Should Be Enabled        css=[itemid="passwordInput"]
     Input Text    css=[itemid="passwordInput"]    ${PASSWORD}
+    Sleep    0.5
 
     Click Element    css=[itemid="loginBtn"]
     Sleep    2
@@ -55,101 +61,110 @@ Click Item In Menu
     ${itemid}=    Set Variable    menu-item-${menu_item.lower().replace(" ", "-")}
     Click Element    css=[itemid=${itemid}]
 
-
-
-Cadastrar Usuario
-
+Criar Usuario Locatario
     Click Item In Menu    Usuário
+    Sleep    0.5
 
     Wait Until Element Is Visible    css=[itemid="menu-item-home"]    timeout=10s
-
     Sleep    1
 
     Click Button    css=[itemid="cadastroBtnUsuario"]
-
+    Sleep    0.5
     Input Text    css=[itemid="cadastroNomeUsuario"]    ${NAME_USER}
-
+    Sleep    0.5
     Input Text    css=[itemid="cadastrarEmailUsuario"]    ${EMAIL_USER}
-
+    Sleep    0.5
     Input Text    css=[itemid="cadastrarSenhaUsuario"]    ${PASSWORD_USER}
-
-    Click Element    css=[itemid="cadastrarAdministradorUsuario"]    
-
+    Sleep    0.5
+    Click Element    css=[itemid="cadastrarLocatarioUsuario"]    
+    Sleep    0.5
     Click Button    css=[itemid="BtnCadastrarUsuario"]
 
-Editar Usuario
-
-
+Ver Sobre Usuario Locatario
     Sleep    1
-
-    Wait Until Element Is Visible    css=[itemid="edit-Test Robot"]    
-    Click Element    css=[itemid="edit-Test Robot"]
-    
+    Wait Until Element Is Visible    css=[itemid="visibility-${NAME_USER}"]
+    Click Element    css=[itemid="visibility-${NAME_USER}"]
     Sleep    1
+    Click Button    css=[itemid="BtnSobreUsuario"]
 
+Editar Usuario Locatario
+    Sleep    1
+    Wait Until Element Is Visible    css=[itemid="edit-${NAME_USER}"]    
+    Click Element    css=[itemid="edit-${NAME_USER}"]
+    Sleep    1
     Click Element    css=[itemid="editarNomeUsuario"]
-
+    Sleep    0.5
     Press Keys       css=[itemid="editarNomeUsuario"]    CTRL+A+BACKSPACE
-
+    Sleep    0.5
     Input Text    css=[itemid="editarNomeUsuario"]    ${NAME_USER_UPDATE}
-
+    Sleep    0.5
     Click Element    css=[itemid="emailNomeUsuario"]
-
+    Sleep    0.5
     Press Keys       css=[itemid="emailNomeUsuario"]    CTRL+A+BACKSPACE
-
+    Sleep    0.5
     Input Text    css=[itemid="emailNomeUsuario"]    ${EMAIL_USER_UPDATE}
-
-    Click Element    css=[itemid="editarLocatarioUsuario"]    
-
+    Sleep    0.5
+    Click Element    css=[itemid="editarLocatarioUsuario"]
+    Sleep    0.5
     Click Button    css=[itemid="BtnEditarUsuario"]
 
-
-Teste de filtro de usuários
-
+Criar Usuario Admin
+    Click Item In Menu    Usuário
+    Sleep    0.5
+    Wait Until Element Is Visible    css=[itemid="menu-item-home"]    timeout=10s
     Sleep    1
-
-    Click Element    css=[itemid="filterBtn"]
+    Click Button    css=[itemid="cadastroBtnUsuario"]
     Sleep    0.5
-
-    Click Element    css=[itemid="filterEditorBtn"]
-    Sleep    2
-
-    Click Element    css=[itemid="filterBtn"]
+    Input Text    css=[itemid="cadastroNomeUsuario"]    ${NAME_ADMIN}
     Sleep    0.5
-
-    Click Element    css=[itemid="filterLeitorBtn"]
-    Sleep    2
-
-    Click Element    css=[itemid="filterBtn"]
+    Input Text    css=[itemid="cadastrarEmailUsuario"]    ${EMAIL_ADMIN}
     Sleep    0.5
+    Input Text    css=[itemid="cadastrarSenhaUsuario"]    ${PASSWORD_ADMIN}
+    Sleep    0.5
+    Click Element    css=[itemid="cadastrarAdministradorUsuario"]    
+    Sleep    0.5
+    Click Button    css=[itemid="BtnCadastrarUsuario"]
 
-    Click Element    css=[itemid="filterTodosBtn"]
-    Sleep    2
-
-    Close Browser
-
-Teste de pesquisa
-
+Ver Sobre Usuario Admin
     Sleep    1
+    Wait Until Element Is Visible    css=[itemid="visibility-${NAME_ADMIN}"]
+    Click Element    css=[itemid="visibility-${NAME_ADMIN}"]
+    Sleep    1
+    Click Button    css=[itemid="BtnSobreUsuario"]
 
+Teste de Pesquisa Locatario
+    Sleep    1
     Input Text    css=[itemid="searchInput"]    ${NAME_USER_UPDATE}
-
     Click Element    css=[itemid="searchBtn"]
-
     Sleep    2
-
+    Click Element    css=[itemid="closeSearchBtn"]
+    Sleep    1
+    Input Text    css=[itemid="searchInput"]    ${EMAIL_USER_UPDATE}
+    Click Element    css=[itemid="searchBtn"]
+    Sleep    2
+    Click Element    css=[itemid="closeSearchBtn"]
+    Sleep    1
+    Input Text    css=[itemid="searchInput"]    Locatario
+    Click Element    css=[itemid="searchBtn"]
+    Sleep    2
     Click Element    css=[itemid="closeSearchBtn"]
 
+Teste de Pesquisa Admin
     Sleep    1
-
-
-Teste Sobre Usuário
-
-    Sleep    1   
-
-    Wait Until Element Is Visible    css=[itemid="visibility-Test Robot Atualizacao"]    
-    Click Element    css=[itemid="visibility-Test Robot Atualizacao"]
-    
+    Input Text    css=[itemid="searchInput"]    ${NAME_ADMIN}
+    Click Element    css=[itemid="searchBtn"]
+    Sleep    2
+    Click Element    css=[itemid="closeSearchBtn"]
     Sleep    1
+    Input Text    css=[itemid="searchInput"]    ${EMAIL_ADMIN}
+    Click Element    css=[itemid="searchBtn"]
+    Sleep    2
+    Click Element    css=[itemid="closeSearchBtn"]
+    Sleep    1
+    Input Text    css=[itemid="searchInput"]    Administrador
+    Click Element    css=[itemid="searchBtn"]
+    Sleep    2
+    Click Element    css=[itemid="closeSearchBtn"]
 
-    Click Button    css=[itemid="BtnSobreUsuario"]
+Close Browser
+    Close All Browsers

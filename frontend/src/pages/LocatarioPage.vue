@@ -53,7 +53,7 @@
             </div>
 
             <div class="button-container">
-              <q-btn type="submit" label="CADASTRAR" @click="saveNewRenter" class="center-width q-mt-md"
+              <q-btn type="submit" label="CADASTRAR" class="center-width q-mt-md"
                 itemid="BtnCadastrarLocatario" />
             </div>
           </q-form>
@@ -98,7 +98,7 @@
         </q-card-section>
 
         <q-card-section>
-          <q-form>
+          <q-form @submit.prevent="saveEdit">
             <div class="form-grid">
               <q-input filled v-model="formEdit.name" label="Nome" required lazy-rules
                 :rules="[val => !!val || 'Nome do Locatário é obrigatório']" itemid="editarNomeLocatario" />
@@ -120,7 +120,7 @@
             </div>
 
             <div class="button-container">
-              <q-btn type="submit" label="ATUALIZAR" @click="saveEdit" class="custom-button q-mt-md"
+              <q-btn type="submit" label="ATUALIZAR"  class="custom-button q-mt-md"
                 itemid="BtnEditarLocatario" />
             </div>
           </q-form>
@@ -160,7 +160,7 @@
                 :ffset="[10, 10]">
                 Editar Locatário
               </q-tooltip></q-btn>
-            <q-btn flat color="negative" v-if="userRole === 'ADMIN'" @click="showDeleteModal(props.row)" icon="delete"
+            <q-btn flat color="negative" v-if="userRole === 'ADMIN' && !isRenterWithRentals(props.row.id)" @click="showDeleteModal(props.row)" icon="delete"
               :itemid="'delete' + '-' + props.row.name" aria-label="Delete"><q-tooltip class="bg-negative"
                 :ffset="[10, 10]">
                 Excluir Locatário
@@ -225,43 +225,12 @@ const columns = [
 
 const userRole = ref('');
 
-onMounted(() => {
-  const token = localStorage.getItem('authToken');
-  if (!token) {
-    router.push('/login');
-  } else {
-    userRole.value = localStorage.getItem('role')
-    getRows();
-  }
-});
+
 
 const pagination = ref({
   page: 1,
   rowsPerPage: 8,
 });
-const sortRowsAscByName = () => {
-  rows.value.sort((a, b) => a.name.localeCompare(b.name));
-};
-
-const sortRowsDescByName = () => {
-  rows.value.sort((a, b) => b.name.localeCompare(a.name));
-};
-
-const sortRowsAscByEmail = () => {
-  rows.value.sort((a, b) => a.email.localeCompare(b.email));
-};
-
-const sortRowsDescByEmail = () => {
-  rows.value.sort((a, b) => b.email.localeCompare(a.email));
-};
-
-const sortRowsAscByTelephone = () => {
-  rows.value.sort((a, b) => a.telephone.localeCompare(b.telephone));
-};
-
-const sortRowsDescByTelephone = () => {
-  rows.value.sort((a, b) => b.telephone.localeCompare(a.telephone));
-};
 
 const getRows = (search = '') => {
   api.get('/renter', { params: { search: search, page: page.value } })
@@ -290,7 +259,7 @@ const saveNewRenter = async () => {
     telephone: newRenter.value.telephone.trim(),
   };
 
-  // Adiciona o CPF somente se não estiver vazio
+
   if (newRenter.value.cpf && newRenter.value.cpf.trim() !== '') {
     formattedRenter.cpf = newRenter.value.cpf.trim();
   }
@@ -326,26 +295,42 @@ const saveNewRenter = async () => {
 
 
 
-const saveEdit = () => {
+const saveEdit = async () => {
   if (!formEdit.value.id) {
     showNotification('negative', 'Locatário não selecionado!');
     return;
   }
 
-  api.put(`/renter/${formEdit.value.id}`, formEdit.value)
-    .then(() => {
-      const index = rows.value.findIndex(r => r.id === formEdit.value.id);
-      if (index !== -1) {
-        rows.value[index] = { ...formEdit.value };
-      }
-      showNotification('positive', 'Locatário atualizado com sucesso!');
-      showModalEditar.value = false;
-    })
-    .catch(error => {
-      console.error('Erro ao editar locatário:', error);
-      showNotification('negative', 'Erro ao atualizar locatário!');
+  try {
+    await api.put(`/renter/${formEdit.value.id}`, formEdit.value, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
+
+    const index = rows.value.findIndex(r => r.id === formEdit.value.id);
+    if (index !== -1) {
+      rows.value[index] = { ...formEdit.value };
+    }
+
+    showNotification('positive', 'Locatário atualizado com sucesso!');
+    showModalEditar.value = false;
+  } catch (error) {
+    let errorMessage = 'Erro ao atualizar locatário!';
+
+    if (error.response) {
+      if (error.response.status === 400) {
+        errorMessage = Object.values(error.response.data).join(', ') || errorMessage;
+      } else if (error.response.data && error.response.data.message) {
+        errorMessage = error.response.data.message;
+      }
+    }
+
+    console.error('Erro ao editar locatário:', error.response ? error.response.data : error.message);
+    showNotification('negative', errorMessage);
+  }
 };
+
 
 const showDetails = (row) => {
   getApi(row.id);
@@ -452,6 +437,40 @@ const showNotification = (type, message) => {
     position: 'top',
   });
 };
+
+onMounted(() => {
+  const token = localStorage.getItem('authToken');
+  if (!token) {
+    router.push('/login');
+  } else {
+    userRole.value = localStorage.getItem('role')
+    getRows();
+    loadRentals();
+  }
+});
+
+const isRenterWithRentals = (renterId) => {
+  return rentersWithRentals.value.includes(renterId);
+};
+
+const rentersWithRentals = ref([]);
+
+const loadRentals = (srch = '') => {
+  api.get('/rent', { params: { search: srch, page: page.value} })
+    .then(response => {
+      console.log('Dados dos alugueis:', response.data);
+      const rentals = response.data.content;
+
+      rentersWithRentals.value = rentals.map(rental => rental.renter.id);
+    })
+    .catch(error => {
+      console.error('Erro ao carregar alugueis:', error);
+    });
+};
+
+
+const srch = ref('');
+
 </script>
 
 
