@@ -30,8 +30,14 @@ public class BookController {
     }
 
     @GetMapping("/book")
-    public ResponseEntity<Page<BookResponseDTO>> getAll(String search, int page){
-        return ResponseEntity.status(HttpStatus.OK).body(bookServices.findAll(search, page).map(bookMapper::toBookResponse));
+    public ResponseEntity<Object> getAll(String search, @RequestParam(required = false) Integer page) {
+        if (page == null) {
+            // Sem paginação, retorna todos os livros
+            return ResponseEntity.status(HttpStatus.OK).body(bookMapper.toBookResponseList(bookServices.findAllWithoutPagination(search)));
+        } else {
+            // Com paginação
+            return ResponseEntity.status(HttpStatus.OK).body(bookServices.findAll(search, page).map(bookMapper::toBookResponse));
+        }
     }
 
     @GetMapping("/book/{id}")

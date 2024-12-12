@@ -462,10 +462,10 @@ const loadRenter = (search = '') => {
 };
 
 const loadBook = (search = '') => {
-  api.get('/book', { params: { search: search, page: page.value } })
+  api.get('/book', { params: { search: search} })
     .then(response => {
-      allbook.value = response.data.content;
-      bookOptions.value = response.data.content;
+      allbook.value = response.data;
+      bookOptions.value = response.data;
     })
     .catch(error => {
       console.error('Erro ao carregar livros:', error);

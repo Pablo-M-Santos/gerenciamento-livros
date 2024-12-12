@@ -45,10 +45,14 @@ onMounted(() => {
 const page = ref(0)
 
 const getRows = (search = '') => {
-  api.get('/dashboard/rentsPerRenter', { params: {  search: search, page: page.value} })
+  api.get('/dashboard/rentsPerRenter', { params: { search: search, page: page.value } })
     .then(response => {
+      console.log('Resposta da API:', response.data); // Adicione esta linha para verificar a resposta da API
       if (Array.isArray(response.data.content)) {
-        rows.value = response.data.content;
+        const sortedData = response.data.content.sort((a, b) => {
+          return b.rentsQuantity - a.rentsQuantity; // Ordena por empréstimos
+        });
+        rows.value = sortedData.slice(0, 3); // Limita aos 3 primeiros
       } else {
         console.error('A resposta da API não é um array:', response.data);
         rows.value = [];
@@ -58,6 +62,7 @@ const getRows = (search = '') => {
       console.error("Erro ao obter dados:", error);
     });
 };
+
 
 const sortRowsAscByName = () => {
   rows.value.sort((a, b) => a.name.localeCompare(b.name));

@@ -63,12 +63,17 @@ public class RentServices {
         int size = 8;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
- 
+
         if (search.isEmpty()) {
 
             Page<RentModel> rents = rentRepository.findAll(pageable);
             if (rents.isEmpty()) throw new ModelNotFoundException();
+
+            for (RentModel rent : rents) {
+                rentValidation.setRentStatus(rent);
+            }
             return rents;
+
         } else {
 
             if (search.equalsIgnoreCase("Não entregue")) {

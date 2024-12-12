@@ -8,6 +8,7 @@ import com.locadora.locadoraLivro.Books.repositories.BookRepository;
 import com.locadora.locadoraLivro.Exceptions.ModelNotFoundException;
 import com.locadora.locadoraLivro.Publishers.models.PublisherModel;
 import com.locadora.locadoraLivro.Publishers.repositories.PublisherRepository;
+import com.locadora.locadoraLivro.Renters.models.RenterModel;
 import com.locadora.locadoraLivro.Rents.models.RentModel;
 import com.locadora.locadoraLivro.Rents.models.RentStatusEnum;
 import com.locadora.locadoraLivro.Rents.repositories.RentRepository;
@@ -54,7 +55,7 @@ public class BookServices {
     }
 
     public Page<BookModel> findAll(String search, int page){
-        int size = 5;
+        int size = 8;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         if (Objects.equals(search, "")){
             Page<BookModel> books = bookRepository.findAllByIsDeletedFalse(pageable);
@@ -74,6 +75,16 @@ public class BookServices {
             return bookSearch;
         }
     }
+
+    public List<BookModel> findAllWithoutPagination(String search) {
+        if (Objects.equals(search, "")) {
+            return bookRepository.findAllByIsDeletedFalse(Sort.by(Sort.Direction.DESC, "id"));
+        } else {
+            return bookRepository.findAllBySearchTerm(search, Sort.by(Sort.Direction.DESC, "id"));
+        }
+    }
+
+
 
     public Optional<BookModel> findById(int id){
         return bookRepository.findById(id);

@@ -362,7 +362,7 @@ const submitFormEditar = () => {
       }
 
       console.error("Erro ao atualizar usuário:", error.response ? error.response.data : error.message);
-      showNotification('negative', errorMessage);
+      showNotification('negative', errorMessage); 
     });
 };
 
