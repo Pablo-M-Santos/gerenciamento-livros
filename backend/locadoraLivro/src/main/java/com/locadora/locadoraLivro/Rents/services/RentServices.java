@@ -63,19 +63,19 @@ public class RentServices {
         int size = 8;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
-        // Verifica se a pesquisa está vazia
+ 
         if (search.isEmpty()) {
-            // Pesquisa sem filtro
+
             Page<RentModel> rents = rentRepository.findAll(pageable);
             if (rents.isEmpty()) throw new ModelNotFoundException();
             return rents;
         } else {
-            // Verificando se a pesquisa é "Não entregue"
+
             if (search.equalsIgnoreCase("Não entregue")) {
-                // Filtro para aluguéis não devolvidos (devolutionDate é null)
+
                 return rentRepository.findAllByDevolutionDateIsNull(pageable);
             } else {
-                // Caso contrário, realiza a pesquisa com o filtro
+
                 return rentRepository.findAllBySearch(search, pageable);
             }
         }
@@ -92,7 +92,7 @@ public class RentServices {
             if (rents.isEmpty()) throw new ModelNotFoundException();
             return rents;
         } else {
-            // Chamando a query personalizada de pesquisa com status
+
             return rentRepository.findAllByRenterNameOrBookNameAndStatus(search, status, pageable);
         }
     }
@@ -101,9 +101,9 @@ public class RentServices {
         Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, "id"));
 
         if (search.isEmpty()) {
-            return rentRepository.findAll(pageable).getContent();  // Usando pageable, mas sem paginar
+            return rentRepository.findAll(pageable).getContent();
         } else {
-            return rentRepository.findAllBySearch(search, pageable).getContent();  // Passando pageable para a pesquisa
+            return rentRepository.findAllBySearch(search, pageable).getContent();  
         }
     }
 
