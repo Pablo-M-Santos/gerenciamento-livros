@@ -22,10 +22,11 @@ frontend_lint:
 
 frontend_test:
   stage: test
-  image: node:14
+  image: python:3.9  
   script:
-    - cd frontend
-    - npm test
+    - cd test  
+    - pip install robotframework
+    - robot --outputdir=results tests.robot 
 
 frontend_build:
   stage: build
@@ -36,14 +37,3 @@ frontend_build:
   artifacts:
     paths:
       - frontend/dist/
-
-# Job para o backend
-backend_build:
-  stage: build
-  image: maven:3.8.1-jdk-11
-  script:
-    - cd backend/LocadoraLivro
-    - mvn clean install
-  artifacts:
-    paths:
-      - backend/LocadoraLivro/target/
