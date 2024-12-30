@@ -16,6 +16,8 @@ frontend_lint:
   image: node:14
   script:
     - cd frontend
+    - npm install
+    - npm install -g eslint
     - npm run lint
 
 frontend_test:
