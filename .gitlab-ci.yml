@@ -1,23 +1,29 @@
-.deploy:
+image: docker:latest
+
+services:
+  - docker:dind
+
+stages:
+  - build
+  - test
+  - deploy
+
+build-job:
+  stage: build
+  script:
+    - echo "Construindo a aplicação..."
+    - docker build -t locadora-docker .
+
+test-job:
+  stage: test
+  script:
+    - echo "Executando testes..."
+    - docker run locadora-docker test
+
+deploy-job:
   stage: deploy
   script:
-    - >
-      sudo docker-compose
-      --project-name "livraria-pablo-$CI_COMMIT_REF_SLUG"
-      up -d --build
-
-deploy_develop:
-  extends: .deploy 
-  environment: develop
-  only:
-    - develop 
-  tags:
-    - runner_dev
-
-deploy_homo:
-  extends: .deploy
-  environment: homo
-  only:
-    - homolog  
-  tags:
-    - runner_homo
+    - echo "Realizando o deploy..."
+    - docker push locadora-docker
+  environment:
+    name: production
