@@ -24,7 +24,10 @@ frontend_test:
   stage: test
   image: python:3.9  # Usando uma imagem Python para o Robot Framework
   script:
-    - pip install robotframework selenium requests xmlrunner  # Instala as bibliotecas necessárias para os testes
+    - pip install robotframework 
+    - pip install robotframework-requests
+    - pip install robotframework-seleniumlibrary
+
     - ls -la test  # Lista os arquivos na pasta 'test' para garantir que o caminho está correto
     - robot --outputdir=results test/*.robot  # Executa todos os testes .robot dentro da pasta 'test'
 
