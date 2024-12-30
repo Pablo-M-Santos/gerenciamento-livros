@@ -4,8 +4,6 @@ import com.locadora.locadoraLivro.Users.DTOs.CreateUserRequestDTO;
 import com.locadora.locadoraLivro.Users.DTOs.UpdateUserRequestDTO;
 import com.locadora.locadoraLivro.Users.DTOs.UserResponseDTO;
 import com.locadora.locadoraLivro.Users.mappers.UserMapper;
-import com.locadora.locadoraLivro.Users.models.UserModel;
-import com.locadora.locadoraLivro.Users.models.UserRoleEnum;
 import com.locadora.locadoraLivro.Users.services.UserServices;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,12 +41,12 @@ public class UserController {
     }
 
     @PutMapping("/user/{id}")
-    public ResponseEntity<Object> update(@PathVariable(value="id") int id, @RequestBody @Valid UpdateUserRequestDTO updateUserRequestDTO){
+    public ResponseEntity<Object> update(@PathVariable(value = "id") int id, @RequestBody @Valid UpdateUserRequestDTO updateUserRequestDTO) {
         return userServices.update(id, updateUserRequestDTO);
     }
 
     @DeleteMapping("/user/{id}")
-    public ResponseEntity<Object> delete(@PathVariable(value="id") int id){
+    public ResponseEntity<Object> delete(@PathVariable(value = "id") int id) {
         return userServices.delete(id);
     }
 }

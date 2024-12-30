@@ -34,7 +34,6 @@ Locatario
     Teste Exclusão Locatario
 
 
-
 *** Keywords ***
 
 Login
@@ -72,11 +71,19 @@ Cadastrar Locatario
 
     Click Button    css=[itemid="cadastroBtnLocatario"]
 
+    Sleep    1
+
     Input Text    css=[itemid="cadastroNomeLocatario"]    ${NAME_RENTER}
+
+    Sleep    1
     
     Input Text    css=[itemid="cadastrarEmailLocatario"]    ${EMAIL_RENTER}
 
+    Sleep    1
+
     Input Text    css=[itemid="cadastroTelefoneLocatario"]    ${TELEPHONE_RENTER}
+
+    Sleep    1
 
     Input Text    css=[itemid="cadastroEnderecoLocatario"]    ${ADRESS_RENTER}
 

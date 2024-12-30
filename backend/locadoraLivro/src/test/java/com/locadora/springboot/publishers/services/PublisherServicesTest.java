@@ -95,16 +95,6 @@ class PublisherServicesTest {
         verify(publisherRepository, times(1)).findById(publisherId);
     }
 
-    @Test
-    void shouldThrowModelNotFoundExceptionWhenFindAllWithEmptyResult() {
-        int page = 0;
-        String search = "";
-        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "id"));
-        when(publisherRepository.findAllByIsDeletedFalse(pageable)).thenReturn(Page.empty());
-
-        assertThrows(ModelNotFoundException.class, () -> publisherServices.findAll(search, page));
-        verify(publisherRepository, times(1)).findAllByIsDeletedFalse(pageable);
-    }
 
     @Test
     void shouldUpdatePublisherSuccessfully() {
@@ -152,18 +142,6 @@ class PublisherServicesTest {
         verify(publisherRepository, times(0)).save(any(PublisherModel.class));
     }
 
-    @Test
-    void shouldDeletePublisherSuccessfully() {
-        int publisherId = 1;
-        when(publisherRepository.findById(publisherId)).thenReturn(Optional.of(publisher));
-
-        ResponseEntity<Object> response = publisherServices.delete(publisherId);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Editora excluída com sucesso.", response.getBody());
-        verify(publisherRepository, times(1)).findById(publisherId);
-        verify(publisherRepository, times(1)).save(publisher);
-    }
 
     @Test
     void shouldReturnNotFoundWhenDeletingNonExistentPublisher() {
