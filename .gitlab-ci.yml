@@ -1,29 +1,25 @@
-image: docker:latest
-
-services:
-  - docker:dind
+image: node:14
 
 stages:
-  - build
+  - install
   - test
-  - deploy
+  - build
 
-build-job:
-  stage: build
+install:
+  stage: install
   script:
-    - echo "Construindo a aplicação..."
-    - docker build -t locadora-docker .
+    - npm install
 
-test-job:
+test:
   stage: test
   script:
-    - echo "Executando testes..."
-    - docker run locadora-docker test
+    - npm run lint
+    - npm test
 
-deploy-job:
-  stage: deploy
+build:
+  stage: build
   script:
-    - echo "Realizando o deploy..."
-    - docker push locadora-docker
-  environment:
-    name: production
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
