@@ -1,25 +1,47 @@
-image: node:14
-
 stages:
   - install
   - test
   - build
 
-install:
+# Job para o frontend
+frontend_install:
   stage: install
+  image: node:14
   script:
+    - cd frontend
     - npm install
 
-test:
+frontend_lint:
   stage: test
+  image: node:14
   script:
+    - cd frontend
     - npm run lint
+
+frontend_test:
+  stage: test
+  image: node:14
+  script:
+    - cd frontend
     - npm test
 
-build:
+frontend_build:
   stage: build
+  image: node:14
   script:
+    - cd frontend
     - npm run build
   artifacts:
     paths:
-      - dist/
+      - frontend/dist/
+
+# Job para o backend
+backend_build:
+  stage: build
+  image: maven:3.8.1-jdk-11
+  script:
+    - cd backend/LocadoraLivro
+    - mvn clean install
+  artifacts:
+    paths:
+      - backend/LocadoraLivro/target/
