@@ -22,11 +22,11 @@ frontend_lint:
 
 frontend_test:
   stage: test
-  image: python:3.9  
+  image: python:3.9  # Usando uma imagem Python para o Robot Framework
   script:
-    - cd test  
-    - pip install robotframework
-    - robot --outputdir=results tests.robot 
+    - pip install robotframework  # Instalar o Robot Framework
+    - ls -la test  # Listar os arquivos na pasta 'test' para garantir que o caminho está correto
+    - robot --outputdir=results test/*.robot  # Executa todos os testes .robot dentro da pasta 'test'
 
 frontend_build:
   stage: build
