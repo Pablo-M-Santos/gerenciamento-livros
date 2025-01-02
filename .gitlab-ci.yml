@@ -1,4 +1,4 @@
-image: python:3.9-slim  # Usando uma imagem leve do Python
+image: python:3.9-slim  
 
 stages:
   - install
@@ -8,32 +8,29 @@ stages:
 install_dependencies:
   stage: install
   script:
-    # Instalar as dependências do sistema
     - apt-get update && apt-get install -y wget curl unzip
     - apt-get install -y libnss3 libgconf-2-4
     - apt-get install -y chromium
-
-    # Instalar dependências do Python
     - pip install --upgrade pip
     - pip install robotframework
     - pip install robotframework-seleniumlibrary
     - pip install selenium
     - pip install webdriver-manager
-
-    # Baixar o chromedriver mais recente com webdriver-manager
     - python -m webdriver_manager.chrome --install
 
 # Etapa de execução dos testes
 run_tests:
   stage: test
   script:
-    # Rodar os testes no modo headless
-    - export DISPLAY=:99  # Definir o display para o headless
-    - Xvfb :99 &  # Iniciar o servidor X virtual para simular a tela
-    - robot --outputdir=results usuario.robot  # Rodar o teste
+    - echo "Iniciando os testes"
+    - export DISPLAY=:99
+    - Xvfb :99 &  
+    - echo "Rodando o robot"
+    - robot --outputdir=results usuario.robot  
     - echo "Testes concluídos com sucesso!"
   artifacts:
     paths:
       - results/
   only:
-    - main  # Ajuste para rodar apenas na branch principal ou a que você preferir
+    - main
+
