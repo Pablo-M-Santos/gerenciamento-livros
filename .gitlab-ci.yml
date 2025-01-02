@@ -1,42 +1,57 @@
 stages:
   - install
   - test
-  - build
 
-# Job para o frontend
-frontend_install:
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.pip_cache"
+  PATH: "/usr/bin:$PATH"
+  CHROME_DRIVER_VERSION: "latest" # Use uma versão específica, se necessário
+
+cache:
+  paths:
+    - .pip_cache/
+
+before_script:
+  - apt-get update && apt-get install -y python3 python3-pip chromium-driver chromium
+  - python3 -m venv venv
+  - source venv/bin/activate
+  - pip install --cache-dir $PIP_CACHE_DIR -r requirements.txt
+  - export PATH=$PATH:/usr/lib/chromium/
+
+install_dependencies:
   stage: install
-  image: node:14
   script:
-    - cd frontend
-    - npm install
-
-frontend_lint:
-  stage: test
-  image: node:14
-  script:
-    - cd frontend
-    - npm install
-    - npm install -g eslint
-    - npm run lint
+    - echo "Instalando dependências..."
+    - apt-get update && apt-get install -y chromium chromium-driver
+    - pip install --cache-dir $PIP_CACHE_DIR -r requirements.txt
+  only:
+    - main # Rodar apenas na branch `main`
 
 frontend_test:
   stage: test
-  image: python:3.9  # Usando uma imagem Python para o Robot Framework
   script:
-    - pip install robotframework 
-    - pip install robotframework-requests
-    - pip install robotframework-seleniumlibrary
-
-    - ls -la test  # Lista os arquivos na pasta 'test' para garantir que o caminho está correto
-    - robot --outputdir=results test/*.robot  # Executa todos os testes .robot dentro da pasta 'test'
-
-frontend_build:
-  stage: build
-  image: node:14
-  script:
-    - cd frontend
-    - npm run build
+    - echo "Executando testes com Robot Framework..."
+    - mkdir -p results
+    - robot --outputdir=results test/*.robot
   artifacts:
     paths:
-      - frontend/dist/
+      - results/
+    when: always
+  only:
+    - merge_requests # Rodar apenas em MRs
+  tags:
+    - docker # Certifique-se de que os runners tenham suporte a Docker
+
+# Exemplo para rodar no Docker
+docker_tests:
+  stage: test
+  image: python:3.10
+  services:
+    - selenium/standalone-chrome:latest
+  script:
+    - pip install -r requirements.txt
+    - robot --outputdir=results test/*.robot
+  artifacts:
+    paths:
+      - results/
+    when: always
