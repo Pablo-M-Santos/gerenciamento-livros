@@ -10,7 +10,7 @@ frontend_install:
   script:
     - cd frontend
     - npm install
-    
+
 # Job para executar testes do Robot Framework
 frontend_test:
   stage: test
@@ -19,8 +19,10 @@ frontend_test:
     - selenium/standalone-chrome
   script:
     - cd test
+    - mkdir -p ../results
     - pip install -r requirements.txt
-    - robot --outputdir=results test/*.robot
+    - robot --outputdir=../results usuario.robot
+
   artifacts:
     paths:
       - results/
