@@ -1,26 +1,22 @@
 stages:
   - test
 
-# Job para executar testes do Robot Framework para o usuário
-usuario_test:
+# Job para executar os testes do Robot Framework
+frontend_test:
   stage: test
   image: python:3.9
   services:
     - selenium/standalone-chrome
   variables:
-    BASE_URL: http://localhost:9000  # Se necessário, altere para a URL do seu projeto
+    BASE_URL: http://localhost:9000
   before_script:
     # Instalar dependências necessárias para o Selenium funcionar corretamente
     - apt-get update && apt-get install -y chromium chromium-driver
-    - pip install --upgrade pip
-    - pip install robotframework
-    - pip install robotframework-seleniumlibrary
-    - pip install selenium
-    - pip install webdriver-manager
-    - python -m webdriver_manager.chrome --install
+    - pip install robotframework selenium robotframework-seleniumlibrary webdriver-manager
   script:
-    # Executa os testes Robot Framework
-    - robot --outputdir=results usuario.robot
+    - cd test  # Navega até a pasta onde o arquivo usuario.robot está localizado
+    - python -m webdriver_manager.chrome --install  # Instala o WebDriver para o Chrome
+    - robot --outputdir=results usuario.robot  # Executa os testes no arquivo usuario.robot
   artifacts:
     paths:
       - results/
