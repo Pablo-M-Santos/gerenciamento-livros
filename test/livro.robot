@@ -4,7 +4,7 @@ Library           Collections
 Library           BuiltIn
 Library           SeleniumLibrary
 Library            XML
-Resource    autentificacao.robot
+
 
 *** Variables ***
 ${BASE_URL}                        http://localhost:9000

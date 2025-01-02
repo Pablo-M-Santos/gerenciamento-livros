@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.1.1 (Python 3.13.0 on win32)" generated="2025-01-02T15:21:44.194569" rpa="false" schemaversion="5">
+<suite id="s1" name="Usuario" source="c:\Users\Pablo\Documents\locadora-pablo\test\usuario.robot">
+<test id="s1-t1" name="Usuario Locatario e Admin" line="22">
+<kw name="Login">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2025-01-02T15:21:45.325105" level="INFO">Opening browser 'chrome' to base url 'http://localhost:9000'.</msg>
+<arg>${BASE_URL}</arg>
+<arg>chrome</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2025-01-02T15:21:45.324675" elapsed="3.217806"/>
+</kw>
+<kw name="Maximize Browser Window" owner="SeleniumLibrary">
+<doc>Maximizes current browser window.</doc>
+<status status="PASS" start="2025-01-02T15:21:48.543237" elapsed="0.252519"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-01-02T15:21:49.798454" level="INFO">Slept 1 second.</msg>
+<arg>1</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-01-02T15:21:48.796783" elapsed="1.002102"/>
+</kw>
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=[itemid="emailInput"]</arg>
+<arg>timeout=10s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-01-02T15:21:49.799199" elapsed="0.037035"/>
+</kw>
+<kw name="Click Element" owner="SeleniumLibrary">
+<msg time="2025-01-02T15:21:49.836873" level="INFO">Clicking element 'css=[itemid="emailInput"]'.</msg>
+<arg>css=[itemid="emailInput"]</arg>
+<doc>Click the element identified by ``locator``.</doc>
+<status status="PASS" start="2025-01-02T15:21:49.836553" elapsed="0.118196"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-01-02T15:21:50.457327" level="INFO">Slept 500 milliseconds.</msg>
+<arg>0.5</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-01-02T15:21:49.955401" elapsed="0.502316"/>
+</kw>
+<kw name="Element Should Be Enabled" owner="SeleniumLibrary">
+<arg>css=[itemid="emailInput"]</arg>
+<doc>Verifies that element identified by ``locator`` is enabled.</doc>
+<status status="PASS" start="2025-01-02T15:21:50.458069" elapsed="0.037401"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-01-02T15:21:50.496384" level="INFO">Typing text 'admin@gmail.com' into text field 'css=[itemid="emailInput"]'.</msg>
+<arg>css=[itemid="emailInput"]</arg>
+<arg>${EMAIL}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-01-02T15:21:50.495862" elapsed="0.179730"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-01-02T15:21:51.176457" level="INFO">Slept 500 milliseconds.</msg>
+<arg>0.5</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-01-02T15:21:50.675940" elapsed="0.500858"/>
+</kw>
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=[itemid="passwordInput"]</arg>
+<arg>timeout=10s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-01-02T15:21:51.177168" elapsed="0.039193"/>
+</kw>
+<kw name="Click Element" owner="SeleniumLibrary">
+<msg time="2025-01-02T15:21:51.217150" level="INFO">Clicking element 'css=[itemid="passwordInput"]'.</msg>
+<arg>css=[itemid="passwordInput"]</arg>
+<doc>Click the element identified by ``locator``.</doc>
+<status status="PASS" start="2025-01-02T15:21:51.216738" elapsed="0.123810"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-01-02T15:21:51.842010" level="INFO">Slept 500 milliseconds.</msg>
+<arg>0.5</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-01-02T15:21:51.341111" elapsed="0.501494"/>
+</kw>
+<kw name="Element Should Be Enabled" owner="SeleniumLibrary">
+<arg>css=[itemid="passwordInput"]</arg>
+<doc>Verifies that element identified by ``locator`` is enabled.</doc>
+<status status="PASS" start="2025-01-02T15:21:51.843098" elapsed="0.032708"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-01-02T15:21:51.876555" level="INFO">Typing text '12345678' into text field 'css=[itemid="passwordInput"]'.</msg>
+<arg>css=[itemid="passwordInput"]</arg>
+<arg>${PASSWORD}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-01-02T15:21:51.876165" elapsed="0.127256"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-01-02T15:21:52.504599" level="INFO">Slept 500 milliseconds.</msg>
+<arg>0.5</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-01-02T15:21:52.003941" elapsed="0.501030"/>
+</kw>
+<kw name="Click Element" owner="SeleniumLibrary">
+<msg time="2025-01-02T15:21:52.505667" level="INFO">Clicking element 'css=[itemid="loginBtn"]'.</msg>
+<arg>css=[itemid="loginBtn"]</arg>
+<doc>Click the element identified by ``locator``.</doc>
+<status status="PASS" start="2025-01-02T15:21:52.505303" elapsed="0.115391"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-01-02T15:21:54.622551" level="INFO">Slept 2 seconds.</msg>
+<arg>2</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-01-02T15:21:52.621209" elapsed="2.001770"/>
+</kw>
+<status status="PASS" start="2025-01-02T15:21:45.323211" elapsed="9.300087"/>
+</kw>
+<kw name="Criar Usuario Locatario">
+<kw name="Click Item In Menu">
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2025-01-02T15:21:54.630096" level="INFO">${itemid} = menu-item-usuário</msg>
+<var>${itemid}</var>
+<arg>menu-item-${menu_item.lower().replace(" ", "-")}</arg>
+<doc>Returns the given values which can then be assigned to a variables.</doc>
+<status status="PASS" start="2025-01-02T15:21:54.628018" elapsed="0.002944"/>
+</kw>
+<kw name="Click Element" owner="SeleniumLibrary">
+<msg time="2025-01-02T15:21:54.633565" level="INFO">Clicking element 'css=[itemid=menu-item-usuário]'.</msg>
+<arg>css=[itemid=${itemid}]</arg>
+<doc>Click the element identified by ``locator``.</doc>
+<status status="PASS" start="2025-01-02T15:21:54.631659" elapsed="0.117236"/>
+</kw>
+<arg>Usuário</arg>
+<status status="PASS" start="2025-01-02T15:21:54.627153" elapsed="0.122978"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-01-02T15:21:55.253087" level="INFO">Slept 500 milliseconds.</msg>
+<arg>0.5</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-01-02T15:21:54.751737" elapsed="0.501721"/>
+</kw>
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=[itemid="menu-item-home"]</arg>
+<arg>timeout=10s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-01-02T15:21:55.253801" elapsed="0.028013"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-01-02T15:21:56.283478" level="INFO">Slept 1 second.</msg>
+<arg>1</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-01-02T15:21:55.282187" elapsed="1.001661"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2025-01-02T15:21:56.284502" level="INFO">Clicking button 'css=[itemid="cadastroBtnUsuario"]'.</msg>
+<arg>css=[itemid="cadastroBtnUsuario"]</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2025-01-02T15:21:56.284142" elapsed="0.164379"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-01-02T15:21:56.951566" level="INFO">Slept 500 milliseconds.</msg>
+<arg>0.5</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-01-02T15:21:56.449427" elapsed="0.502722"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-01-02T15:21:56.953228" level="INFO">Typing text 'Locatario Robot' into text field 'css=[itemid="cadastroNomeUsuario"]'.</msg>
+<arg>css=[itemid="cadastroNomeUsuario"]</arg>
+<arg>${NAME_USER}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-01-02T15:21:56.952709" elapsed="0.263091"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-01-02T15:21:57.718285" level="INFO">Slept 500 milliseconds.</msg>
+<arg>0.5</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-01-02T15:21:57.216633" elapsed="0.502000"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-01-02T15:21:57.719512" level="INFO">Typing text 'robot@gmail.com' into text field 'css=[itemid="cadastrarEmailUsuario"]'.</msg>
+<arg>css=[itemid="cadastrarEmailUsuario"]</arg>
+<arg>${EMAIL_USER}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-01-02T15:21:57.719083" elapsed="0.265805"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-01-02T15:21:58.486480" level="INFO">Slept 500 milliseconds.</msg>
+<arg>0.5</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-01-02T15:21:57.985462" elapsed="0.501337"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-01-02T15:21:58.487699" level="INFO">Typing text '12345678' into text field 'css=[itemid="cadastrarSenhaUsuario"]'.</msg>
+<arg>css=[itemid="cadastrarSenhaUsuario"]</arg>
+<arg>${PASSWORD_USER}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-01-02T15:21:58.487107" elapsed="0.243341"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-01-02T15:21:59.232492" level="INFO">Slept 500 milliseconds.</msg>
+<arg>0.5</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-01-02T15:21:58.730963" elapsed="0.501835"/>
+</kw>
+<kw name="Click Element" owner="SeleniumLibrary">
+<msg time="2025-01-02T15:21:59.233429" level="INFO">Clicking element 'css=[itemid="cadastrarLocatarioUsuario"]'.</msg>
+<arg>css=[itemid="cadastrarLocatarioUsuario"]</arg>
+<doc>Click the element identified by ``locator``.</doc>
+<status status="PASS" start="2025-01-02T15:21:59.233100" elapsed="0.119826"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-01-02T15:21:59.854403" level="INFO">Slept 500 milliseconds.</msg>
+<arg>0.5</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-01-02T15:21:59.353403" elapsed="0.501435"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2025-01-02T15:21:59.855842" level="INFO">Clicking button 'css=[itemid="BtnCadastrarUsuario"]'.</msg>
+<arg>css=[itemid="BtnCadastrarUsuario"]</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2025-01-02T15:21:59.855281" elapsed="0.291697"/>
+</kw>
+<status status="PASS" start="2025-01-02T15:21:54.626227" elapsed="5.521280"/>
+</kw>
+<kw name="Ver Sobre Usuario Locatario">
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-01-02T15:22:01.201141" level="INFO">Slept 1 second.</msg>
+<arg>1</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-01-02T15:22:00.199956" elapsed="1.001564"/>
+</kw>
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<msg time="2025-01-02T15:22:01.207953" level="WARN">Keyword 'Capture Page Screenshot' could not be run on failure: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=131.0.6778.205)
+Stacktrace:
+	GetHandleVerifier [0x00007FF6EB00FB05+28789]
+	(No symbol) [0x00007FF6EAF786E0]
+	(No symbol) [0x00007FF6EAE1592A]
+	(No symbol) [0x00007FF6EADEF505]
+	(No symbol) [0x00007FF6EAE96477]
+	(No symbol) [0x00007FF6EAEAEF42]
+	(No symbol) [0x00007FF6EAE8F1E3]
+	(No symbol) [0x00007FF6EAE5A938]
+	(No symbol) [0x00007FF6EAE5BAA1]
+	GetHandleVerifier [0x00007FF6EB34933D+3410093]
+	GetHandleVerifier [0x00007FF6EB35E7DD+3497293]
+	GetHandleVerifier [0x00007FF6EB352A73+3448803]
+	GetHandleVerifier [0x00007FF6EB0D7BBB+848171]
+	(No symbol) [0x00007FF6EAF83C3F]
+	(No symbol) [0x00007FF6EAF7F6E4]
+	(No symbol) [0x00007FF6EAF7F87D]
+	(No symbol) [0x00007FF6EAF6ED49]
+	BaseThreadInitThunk [0x00007FFAA45D7374+20]
+	RtlUserThreadStart [0x00007FFAA603CC91+33]
+</msg>
+<msg time="2025-01-02T15:22:01.216490" level="FAIL">NoSuchWindowException: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=131.0.6778.205)
+Stacktrace:
+	GetHandleVerifier [0x00007FF6EB00FB05+28789]
+	(No symbol) [0x00007FF6EAF786E0]
+	(No symbol) [0x00007FF6EAE1592A]
+	(No symbol) [0x00007FF6EADEF505]
+	(No symbol) [0x00007FF6EAE96477]
+	(No symbol) [0x00007FF6EAEAEF42]
+	(No symbol) [0x00007FF6EAE8F1E3]
+	(No symbol) [0x00007FF6EAE5A938]
+	(No symbol) [0x00007FF6EAE5BAA1]
+	GetHandleVerifier [0x00007FF6EB34933D+3410093]
+	GetHandleVerifier [0x00007FF6EB35E7DD+3497293]
+	GetHandleVerifier [0x00007FF6EB352A73+3448803]
+	GetHandleVerifier [0x00007FF6EB0D7BBB+848171]
+	(No symbol) [0x00007FF6EAF83C3F]
+	(No symbol) [0x00007FF6EAF7F6E4]
+	(No symbol) [0x00007FF6EAF7F87D]
+	(No symbol) [0x00007FF6EAF6ED49]
+	BaseThreadInitThunk [0x00007FFAA45D7374+20]
+	RtlUserThreadStart [0x00007FFAA603CC91+33]
+</msg>
+<arg>css=[itemid="visibility-${NAME_USER}"]</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="FAIL" start="2025-01-02T15:22:01.202091" elapsed="0.054052">NoSuchWindowException: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=131.0.6778.205)
+Stacktrace:
+	GetHandleVerifier [0x00007FF6EB00FB05+28789]
+	(No symbol) [0x00007FF6EAF786E0]
+	(No symbol) [0x00007FF6EAE1592A]
+	(No symbol) [0x00007FF6EADEF505]
+	(No symbol) [0x00007FF6EAE96477]
+	(No symbol) [0x00007FF6EAEAEF42]
+	(No symbol) [0x00007FF6EAE8F1E3]
+	(No symbol) [0x00007FF6EAE5A938]
+	(No symbol) [0x00007FF6EAE5BAA1]
+	GetHandleVerifier [0x00007FF6EB34933D+3410093]
+	GetHandleVerifier [0x00007FF6EB35E7DD+3497293]
+	GetHandleVerifier [0x00007FF6EB352A73+3448803]
+	GetHandleVerifier [0x00007FF6EB0D7BBB+848171]
+	(No symbol) [0x00007FF6EAF83C3F]
+	(No symbol) [0x00007FF6EAF7F6E4]
+	(No symbol) [0x00007FF6EAF7F87D]
+	(No symbol) [0x00007FF6EAF6ED49]
+	BaseThreadInitThunk [0x00007FFAA45D7374+20]
+	RtlUserThreadStart [0x00007FFAA603CC91+33]
+</status>
+</kw>
+<kw name="Click Element" owner="SeleniumLibrary">
+<arg>css=[itemid="visibility-${NAME_USER}"]</arg>
+<doc>Click the element identified by ``locator``.</doc>
+<status status="NOT RUN" start="2025-01-02T15:22:01.256557" elapsed="0.000127"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<arg>1</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="NOT RUN" start="2025-01-02T15:22:01.256877" elapsed="0.000101"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<arg>css=[itemid="BtnSobreUsuario"]</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="NOT RUN" start="2025-01-02T15:22:01.257171" elapsed="0.000102"/>
+</kw>
+<status status="FAIL" start="2025-01-02T15:22:00.198507" elapsed="1.058996">NoSuchWindowException: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=131.0.6778.205)
+Stacktrace:
+	GetHandleVerifier [0x00007FF6EB00FB05+28789]
+	(No symbol) [0x00007FF6EAF786E0]
+	(No symbol) [0x00007FF6EAE1592A]
+	(No symbol) [0x00007FF6EADEF505]
+	(No symbol) [0x00007FF6EAE96477]
+	(No symbol) [0x00007FF6EAEAEF42]
+	(No symbol) [0x00007FF6EAE8F1E3]
+	(No symbol) [0x00007FF6EAE5A938]
+	(No symbol) [0x00007FF6EAE5BAA1]
+	GetHandleVerifier [0x00007FF6EB34933D+3410093]
+	GetHandleVerifier [0x00007FF6EB35E7DD+3497293]
+	GetHandleVerifier [0x00007FF6EB352A73+3448803]
+	GetHandleVerifier [0x00007FF6EB0D7BBB+848171]
+	(No symbol) [0x00007FF6EAF83C3F]
+	(No symbol) [0x00007FF6EAF7F6E4]
+	(No symbol) [0x00007FF6EAF7F87D]
+	(No symbol) [0x00007FF6EAF6ED49]
+	BaseThreadInitThunk [0x00007FFAA45D7374+20]
+	RtlUserThreadStart [0x00007FFAA603CC91+33]
+</status>
+</kw>
+<kw name="Editar Usuario Locatario">
+<status status="NOT RUN" start="2025-01-02T15:22:01.261228" elapsed="0.000521"/>
+</kw>
+<kw name="Criar Usuario Admin">
+<status status="NOT RUN" start="2025-01-02T15:22:01.264200" elapsed="0.000263"/>
+</kw>
+<kw name="Ver Sobre Usuario Admin">
+<status status="NOT RUN" start="2025-01-02T15:22:01.265302" elapsed="0.000408"/>
+</kw>
+<kw name="Teste de Pesquisa Locatario">
+<status status="NOT RUN" start="2025-01-02T15:22:01.267224" elapsed="0.000281"/>
+</kw>
+<kw name="Teste de Pesquisa Admin">
+<status status="NOT RUN" start="2025-01-02T15:22:01.268509" elapsed="0.000364"/>
+</kw>
+<status status="FAIL" start="2025-01-02T15:21:45.321616" elapsed="15.950119">NoSuchWindowException: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=131.0.6778.205)
+Stacktrace:
+	GetHandleVerifier [0x00007FF6EB00FB05+28789]
+	(No symbol) [0x00007FF6EAF786E0]
+	(No symbol) [0x00007FF6EAE1592A]
+	(No symbol) [0x00007FF6EADEF505]
+	(No symbol) [0x00007FF6EAE96477]
+	(No symbol) [0x00007FF6EAEAEF42]
+	(No symbol) [0x00007FF6EAE8F1E3]
+	(No symbol) [0x00007FF6EAE5A938]
+	(No symbol) [0x00007FF6EAE5BAA1]
+	GetHandleVerifier [0x00007FF6EB34933D+3410093]
+	GetHandleVerifier [0x00007FF6EB35E7DD+3497293]
+	GetHandleVerifier [0x00007FF6EB352A73+3448803]
+	GetHandleVerifier [0x00007FF6EB0D7BBB+848171]
+	(No symbol) [0x00007FF6EAF83C3F]
+	(No symbol) [0x00007FF6EAF7F6E4]
+	(No symbol) [0x00007FF6EAF7F87D]
+	(No symbol) [0x00007FF6EAF6ED49]
+	BaseThreadInitThunk [0x00007FFAA45D7374+20]
+	RtlUserThreadStart [0x00007FFAA603CC91+33]
+</status>
+</test>
+<status status="FAIL" start="2025-01-02T15:21:44.203730" elapsed="17.075776"/>
+</suite>
+<statistics>
+<total>
+<stat pass="0" fail="1" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat pass="0" fail="1" skip="0" id="s1" name="Usuario">Usuario</stat>
+</suite>
+</statistics>
+<errors>
+<msg time="2025-01-02T15:22:01.207953" level="WARN">Keyword 'Capture Page Screenshot' could not be run on failure: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=131.0.6778.205)
+Stacktrace:
+	GetHandleVerifier [0x00007FF6EB00FB05+28789]
+	(No symbol) [0x00007FF6EAF786E0]
+	(No symbol) [0x00007FF6EAE1592A]
+	(No symbol) [0x00007FF6EADEF505]
+	(No symbol) [0x00007FF6EAE96477]
+	(No symbol) [0x00007FF6EAEAEF42]
+	(No symbol) [0x00007FF6EAE8F1E3]
+	(No symbol) [0x00007FF6EAE5A938]
+	(No symbol) [0x00007FF6EAE5BAA1]
+	GetHandleVerifier [0x00007FF6EB34933D+3410093]
+	GetHandleVerifier [0x00007FF6EB35E7DD+3497293]
+	GetHandleVerifier [0x00007FF6EB352A73+3448803]
+	GetHandleVerifier [0x00007FF6EB0D7BBB+848171]
+	(No symbol) [0x00007FF6EAF83C3F]
+	(No symbol) [0x00007FF6EAF7F6E4]
+	(No symbol) [0x00007FF6EAF7F87D]
+	(No symbol) [0x00007FF6EAF6ED49]
+	BaseThreadInitThunk [0x00007FFAA45D7374+20]
+	RtlUserThreadStart [0x00007FFAA603CC91+33]
+</msg>
+</errors>
+</robot>
