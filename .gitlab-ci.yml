@@ -31,6 +31,7 @@ run_tests:
     - export DISPLAY=:99  # Definir o display para o headless
     - Xvfb :99 &  # Iniciar o servidor X virtual para simular a tela
     - robot --outputdir=results usuario.robot  # Rodar o teste
+    - echo "Testes concluídos com sucesso!"
   artifacts:
     paths:
       - results/
