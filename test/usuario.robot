@@ -17,6 +17,8 @@ ${EMAIL_USER_UPDATE}       robotAtualizacao@gmail.com
 ${NAME_ADMIN}              Administrador Robot
 ${EMAIL_ADMIN}             robotAdministradorRobot@gmail.com
 ${PASSWORD_ADMIN}          12345678
+${EDGE_OPTIONS}            --headless --disable-dev-shm-usage --no-sandbox --remote-debugging-port=9222
+${BROWSER}                 Edge
 
 *** Test Cases ***
 Usuario Locatario e Admin
@@ -32,7 +34,7 @@ Usuario Locatario e Admin
 *** Keywords ***
 
 Login
-    Open Browser    ${BASE_URL}    chrome
+    Open Browser  http://localhost:9000  ${BROWSER}  options=${EDGE_OPTIONS}
     Maximize Browser Window
     Sleep    1
 

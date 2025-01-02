@@ -1,25 +1,15 @@
-stages:
-  - test
-
 frontend_test:
   stage: test
   image: python:3.9
   services:
-    - selenium/standalone-chrome
-  variables:
-    BASE_URL: http://localhost:9000
-    DISPLAY: :99
+    - name: selenium/standalone-edge:latest
+      alias: selenium
   before_script:
-    - apt-get update && apt-get install -y chromium chromium-driver
-    - pip install robotframework selenium robotframework-seleniumlibrary webdriver-manager robotframework-requests
+    - pip install robotframework selenium robotframework-seleniumlibrary
   script:
-    - cd test  # Navega até a pasta onde o arquivo usuario.robot está localizado
-    - python -m webdriver_manager.chrome --install  # Instala o WebDriver para o Chrome
-    - export DISPLAY=:99  # Configura a variável DISPLAY para o modo headless
-    - export GOOGLE_CHROME_BIN=/usr/bin/chromium  # Especifica o caminho para o binário do Chromium
-    - export CHROME_OPTS="--headless --disable-dev-shm-usage --no-sandbox --remote-debugging-port=9222"
-    - robot --outputdir=results usuario.robot  # Executa os testes no arquivo usuario.robot
-  artifacts:
-    paths:
-      - results/
-    when: always
+    - cd test
+    - python -m webdriver_manager.microsoft --install
+    - export DISPLAY=:99
+    - export EDGE_BIN=/usr/bin/microsoft-edge
+    - export EDGE_DRIVER=/usr/bin/msedgedriver
+    - robot --outputdir=results usuario.robot
