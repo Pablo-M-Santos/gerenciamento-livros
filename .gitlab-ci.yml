@@ -10,7 +10,6 @@ frontend_install:
   script:
     - cd frontend
     - npm install
-
 # Job para executar testes do Robot Framework
 frontend_test:
   stage: test
@@ -21,7 +20,7 @@ frontend_test:
     BASE_URL: http://localhost:9000
   before_script:
     - apt-get update && apt-get install -y chromium chromium-driver
-    - pip install -r requirements.txt 
+    - pip install -r requirements.txt  # Instalar dependências do Robot Framework
     - CHROME_VERSION=$(google-chrome --version | awk '{print $3}')
     - CHROMEDRIVER_VERSION=$(chromedriver --version)
     - echo "Chrome version: $CHROME_VERSION"
