@@ -20,16 +20,23 @@ frontend_test:
   variables:
     BASE_URL: http://localhost:9000
   before_script:
-    # Instalar dependências necessárias para o Selenium funcionar corretamente
     - apt-get update && apt-get install -y chromium chromium-driver
+    - pip install -r requirements.txt 
+    - CHROME_VERSION=$(google-chrome --version | awk '{print $3}')
+    - CHROMEDRIVER_VERSION=$(chromedriver --version)
+    - echo "Chrome version: $CHROME_VERSION"
+    - echo "Chromedriver version: $CHROMEDRIVER_VERSION"
+    - wget -N https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip
+    - unzip chromedriver_linux64.zip
+    - mv chromedriver /usr/local/bin/
+    - chmod +x /usr/local/bin/chromedriver
   script:
-    - pip install -r requirements.txt  # Melhor prática: usar um arquivo requirements.txt
-    - robot --outputdir=results test/*.robot  # Executa os testes Robot Framework
+    - cd test
+    - robot --outputdir=results test/*.robot
   artifacts:
     paths:
       - results/
     when: always
-
 
 # Job para buildar o frontend
 frontend_build:
