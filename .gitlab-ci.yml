@@ -1,40 +1,38 @@
+image: python:3.9-slim  # Usando uma imagem leve do Python
+
 stages:
   - install
   - test
-  - build
 
-# Job para instalar dependências do frontend
-frontend_install:
+# Etapa de instalação das dependências
+install_dependencies:
   stage: install
-  image: node:14
   script:
-    - cd frontend
-    - npm install
+    # Instalar as dependências do sistema
+    - apt-get update && apt-get install -y wget curl unzip
+    - apt-get install -y libnss3 libgconf-2-4
+    - apt-get install -y chromium
 
-# Job para executar testes do Robot Framework
-frontend_test:
+    # Instalar dependências do Python
+    - pip install --upgrade pip
+    - pip install robotframework
+    - pip install robotframework-seleniumlibrary
+    - pip install selenium
+    - pip install webdriver-manager
+
+    # Baixar o chromedriver mais recente com webdriver-manager
+    - python -m webdriver_manager.chrome --install
+
+# Etapa de execução dos testes
+run_tests:
   stage: test
-  image: python:3.9
-  services:
-    - selenium/standalone-chrome
   script:
-    - cd test
-    - mkdir -p ../results
-    - pip install -r requirements.txt
-    - robot --outputdir=../results usuario.robot
-
+    # Rodar os testes no modo headless
+    - export DISPLAY=:99  # Definir o display para o headless
+    - Xvfb :99 &  # Iniciar o servidor X virtual para simular a tela
+    - robot --outputdir=results usuario.robot  # Rodar o teste
   artifacts:
     paths:
       - results/
-    when: always
-
-# Job para buildar o frontend
-frontend_build:
-  stage: build
-  image: node:14
-  script:
-    - cd frontend
-    - npm run build
-  artifacts:
-    paths:
-      - frontend/dist/
+  only:
+    - main  # Ajuste para rodar apenas na branch principal ou a que você preferir
