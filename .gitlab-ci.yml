@@ -10,25 +10,16 @@ frontend_install:
   script:
     - cd frontend
     - npm install
+    
 # Job para executar testes do Robot Framework
 frontend_test:
   stage: test
   image: python:3.9
   services:
     - selenium/standalone-chrome
-  variables:
-    BASE_URL: http://localhost:9000
-  before_script:
-    - apt-get update && apt-get install -y chromium chromium-driver
-    - pip install -r requirements.txt  # Instalar dependências do Robot Framework
-    - CHROME_VERSION=$(google-chrome --version | awk '{print $3}')
-    - CHROMEDRIVER_VERSION=$(chromedriver --version)
-    - wget -N https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip
-    - unzip chromedriver_linux64.zip
-    - mv chromedriver /usr/local/bin/
-    - chmod +x /usr/local/bin/chromedriver
   script:
     - cd test
+    - pip install -r requirements.txt
     - robot --outputdir=results test/*.robot
   artifacts:
     paths:
