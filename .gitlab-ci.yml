@@ -13,7 +13,7 @@ frontend_test:
   before_script:
     # Instalar dependências necessárias para o Selenium funcionar corretamente
     - apt-get update && apt-get install -y chromium chromium-driver
-    - pip install robotframework selenium robotframework-seleniumlibrary webdriver-manager RequestsLibrary
+    - pip install robotframework selenium robotframework-seleniumlibrary webdriver-manager robotframework-requests
   script:
     - cd test  # Navega até a pasta onde o arquivo usuario.robot está localizado
     - python -m webdriver_manager.chrome --install  # Instala o WebDriver para o Chrome
