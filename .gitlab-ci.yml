@@ -20,16 +20,16 @@ frontend_test:
   variables:
     BASE_URL: http://localhost:9000
   before_script:
+    # Instalar dependências necessárias para o Selenium funcionar corretamente
     - apt-get update && apt-get install -y chromium chromium-driver
   script:
-    - pip install robotframework
-    - pip install robotframework-requests
-    - pip install robotframework-seleniumlibrary
-    - robot --outputdir=results test/*.robot
+    - pip install -r requirements.txt  # Melhor prática: usar um arquivo requirements.txt
+    - robot --outputdir=results test/*.robot  # Executa os testes Robot Framework
   artifacts:
     paths:
       - results/
     when: always
+
 
 # Job para buildar o frontend
 frontend_build:
