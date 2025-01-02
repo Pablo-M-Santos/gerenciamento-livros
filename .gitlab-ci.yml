@@ -1,15 +1,24 @@
+stages:
+  - test
+
 frontend_test:
   stage: test
   image: python:3.9
   services:
-    - name: selenium/standalone-edge:latest
+    - name: selenium/standalone-edge
       alias: selenium
   before_script:
-    - pip install robotframework selenium robotframework-seleniumlibrary
+    - apt-get update
+    - apt-get install -y microsoft-edge-stable
+    - pip install robotframework selenium webdriver-manager robotframework-seleniumlibrary
   script:
-    - cd test
-    - python -m webdriver_manager.microsoft --install
+    - cd test  # Navega até o diretório dos testes
+    - python -m webdriver_manager.microsoft  # Instala o WebDriver para o Edge
     - export DISPLAY=:99
     - export EDGE_BIN=/usr/bin/microsoft-edge
     - export EDGE_DRIVER=/usr/bin/msedgedriver
-    - robot --outputdir=results usuario.robot
+    - robot --outputdir=results usuario.robot  # Executa os testes no arquivo usuario.robot
+  artifacts:
+    paths:
+      - results/
+    when: always
