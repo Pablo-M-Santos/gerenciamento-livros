@@ -17,6 +17,8 @@ frontend_test:
   script:
     - cd test  # Navega até a pasta onde o arquivo usuario.robot está localizado
     - python -m webdriver_manager.chrome --install  # Instala o WebDriver para o Chrome
+    - export DISPLAY=:99  # Configura a variável DISPLAY para o modo headless
+    - export GOOGLE_CHROME_BIN=/usr/bin/chromium  # Especifica o caminho para o binário do Chromium
     - robot --outputdir=results usuario.robot  # Executa os testes no arquivo usuario.robot
   artifacts:
     paths:
