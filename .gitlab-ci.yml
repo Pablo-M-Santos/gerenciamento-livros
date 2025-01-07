@@ -1,27 +1,12 @@
-name: Run Robot Tests with ChromeDriver
+stages:
+  - test
 
-on: [push]
-
-jobs:
-  run-tests:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Check out repository
-      uses: actions/checkout@v3
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.9
-
-    - name: Install dependencies
-      run: |
-        pip install robotframework robotframework-seleniumlibrary webdriver-manager
-
-    - name: Set up ChromeDriver using webdriver-manager
-      run: |
-        python -m webdriver_manager.chrome
-
-    - name: Run Robot Tests
-      run: |
-        robot test/usuario.robot
+test:
+  image: python:3.9
+  stage: test
+  script:
+    - pip install robotframework robotframework-seleniumlibrary webdriver-manager
+    - python -c "from webdriver_manager.chrome import ChromeDriverManager; ChromeDriverManager().install()"
+    - robot test/test.robot
+  tags:
+    - selenium
