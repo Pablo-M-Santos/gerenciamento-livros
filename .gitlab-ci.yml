@@ -8,7 +8,27 @@ test:
     - name: selenium/standalone-firefox
       alias: selenium
   script:
-    - apt-get update && apt-get install -y wget
+    - apt-get update && apt-get install -y wget curl  # Instala o curl
+    - apt-get install -y firefox-esr 
+    - pip install --upgrade pip  
+    - pip install robotframework robotframework-seleniumlibrary webdriver-manager  
+    - curl http://localhost:9000  # Verificando se o servidor está respondendo
+    - apt-get update && apt-get install -y xvfb  # Instalar Xvfb para rodar em modo headless
+    - xvfb-run robot test/test.robot  # Rodando os testes com Xvfb
+    - python -c "from webdriver_manager.firefox import GeckoDriverManager; GeckoDriverManager().install()"  # Instalar o geckodriver
+  only:
+    - developer
+stages:
+  - test
+
+test:
+  stage: test
+  image: python:3.9-slim
+  services:
+    - name: selenium/standalone-firefox
+      alias: selenium
+  script:
+    - apt-get update && apt-get install -y wget curl  # Instala o curl
     - apt-get install -y firefox-esr 
     - pip install --upgrade pip  
     - pip install robotframework robotframework-seleniumlibrary webdriver-manager  
