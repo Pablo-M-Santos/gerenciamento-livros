@@ -6,13 +6,13 @@ test:
   image: python:3.9-slim
   services:
     - name: selenium/standalone-firefox
-      alias: selenium  # Usando o nome do contêiner como alias para facilitar o acesso
+      alias: selenium
   script:
-    - apt-get update && apt-get install -y wget curl firefox-esr  # Instalação do curl e Firefox
-    - pip install --upgrade pip  
-    - pip install robotframework robotframework-seleniumlibrary webdriver-manager  
-    - python -c "from webdriver_manager.firefox import GeckoDriverManager; GeckoDriverManager().install()"  # Instalar o GeckoDriver
-    - curl selenium:4444  # Verifica se o Selenium está acessível
-    - xvfb-run robot test/test.robot  # Rodar os testes com o Xvfb para emular a interface gráfica
+    - apt-get update && apt-get install -y wget
+    - apt-get install -y firefox-esr  # Instalando o Firefox
+    - pip install --upgrade pip  # Atualizando pip para garantir compatibilidade
+    - pip install robotframework robotframework-seleniumlibrary webdriver-manager  # Instalando dependências
+    - python -c "from webdriver_manager.firefox import GeckoDriverManager; GeckoDriverManager().install()"  # Instalando o geckodriver
+    - robot test/test.robot  # Rodando os testes
   only:
-    - developer
+    - developer  # Limitar a execução apenas para a branch 'developer'
