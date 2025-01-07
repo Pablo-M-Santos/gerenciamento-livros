@@ -10,3 +10,4 @@ test:
     - robot test/test.robot
   tags:
     - selenium
+
