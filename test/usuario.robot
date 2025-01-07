@@ -4,6 +4,8 @@ Library           Collections
 Library           BuiltIn
 Library           SeleniumLibrary
 Library           XML
+Suite Setup       Iniciar Navegador
+Suite Teardown    Fechar Navegador
 
 *** Variables ***
 ${BASE_URL}                http://localhost:9000
@@ -31,6 +33,20 @@ Usuario Locatario e Admin
     Teste de Pesquisa Admin
 
 *** Keywords ***
+
+Iniciar Navegador
+    ${chrome_options}=    Create Chrome Options
+    Open Browser    ${BASE_URL}    chrome    options=${chrome_options}
+
+Fechar Navegador
+    Close Browser
+
+Create Chrome Options
+    ${options}=    Evaluate    sys.modules['selenium.webdriver.chrome.options'].Options()    sys, selenium.webdriver.chrome.options
+    Call Method    ${options}    add_argument    --headless
+    Call Method    ${options}    add_argument    --no-sandbox
+    Call Method    ${options}    add_argument    --disable-dev-shm-usage
+    RETURN    ${options}
 
 Login
     Open Browser  http://localhost:9000  ${BROWSER}  
