@@ -2,16 +2,16 @@ stages:
   - test
 
 test:
-  image: python:3.9
   stage: test
+  image: python:3.9-slim
+  services:
+    - name: selenium/standalone-firefox
+      alias: selenium
   script:
-    # Instalar as dependências do projeto
-    - pip install robotframework robotframework-seleniumlibrary webdriver-manager requests
-    # Instalar o ChromeDriver com o webdriver-manager
-    - python -c "from webdriver_manager.chrome import ChromeDriverManager; ChromeDriverManager().install()"
-    # Verificar se o chromedriver foi instalado corretamente e está no PATH
-    - ls /root/.cache/selenium/chromedriver/
-    # Rodar os testes Robot Framework
-    - robot test/usuario.robot
+    - apt-get update && apt-get install -y wget
+    - apt-get install -y firefox-esr  # Instalando o Firefox
+    - pip install robotframework robotframework-seleniumlibrary webdriver-manager  # Instalando as dependências
+    - python -c "from webdriver_manager.firefox import GeckoDriverManager; GeckoDriverManager().install()"  # Instalando o geckodriver
+    - robot test/usuario.robot  # Rodando os testes
   only:
-    - developer  # Executar apenas na branch 'developer'
+    - developer  # Limitar a execução apenas para a branch 'developer'

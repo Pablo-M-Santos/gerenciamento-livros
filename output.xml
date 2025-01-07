@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.1.1 (Python 3.13.0 on win32)" generated="2025-01-07T14:22:03.505638" rpa="false" schemaversion="5">
+<suite id="s1" name="Test" source="c:\Users\Pablo\Documents\locadora-pablo\test\test.robot">
+<kw name="Iniciar Navegador" type="SETUP">
+<kw name="Create Firefox Options">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2025-01-07T14:22:04.791544" level="INFO">${options} = &lt;selenium.webdriver.firefox.options.Options object at 0x0000020E07E5D400&gt;</msg>
+<var>${options}</var>
+<arg>sys.modules['selenium.webdriver.firefox.options'].Options()</arg>
+<arg>sys, selenium.webdriver.firefox.options</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2025-01-07T14:22:04.791028" elapsed="0.004572"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>--headless</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2025-01-07T14:22:04.796244" elapsed="0.001527"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>--no-sandbox</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2025-01-07T14:22:04.798382" elapsed="0.000614"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>--disable-dev-shm-usage</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2025-01-07T14:22:04.799483" elapsed="0.000598"/>
+</kw>
+<return>
+<value>${options}</value>
+<status status="PASS" start="2025-01-07T14:22:04.800580" elapsed="0.000275"/>
+</return>
+<msg time="2025-01-07T14:22:04.801415" level="INFO">${firefox_options} = &lt;selenium.webdriver.firefox.options.Options object at 0x0000020E07E5D400&gt;</msg>
+<var>${firefox_options}</var>
+<status status="PASS" start="2025-01-07T14:22:04.790073" elapsed="0.011697"/>
+</kw>
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2025-01-07T14:22:04.804412" level="INFO">Opening browser 'firefox' to base url 'http://localhost:9000'.</msg>
+<arg>${URL}</arg>
+<arg>firefox</arg>
+<arg>options=${firefox_options}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2025-01-07T14:22:04.802560" elapsed="7.293526"/>
+</kw>
+<status status="PASS" start="2025-01-07T14:22:04.789571" elapsed="7.307080"/>
+</kw>
+<test id="s1-t1" name="Usuario" line="17">
+<kw name="Login">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2025-01-07T14:22:12.120172" level="INFO">Opening browser 'Firefox' to base url 'http://localhost:9000'.</msg>
+<arg>http://localhost:9000</arg>
+<arg>${BROWSER}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="PASS" start="2025-01-07T14:22:12.119521" elapsed="12.691672"/>
+</kw>
+<kw name="Maximize Browser Window" owner="SeleniumLibrary">
+<doc>Maximizes current browser window.</doc>
+<status status="PASS" start="2025-01-07T14:22:24.811771" elapsed="0.303644"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-01-07T14:22:26.119605" level="INFO">Slept 1 second.</msg>
+<arg>1</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-01-07T14:22:25.115936" elapsed="1.004089"/>
+</kw>
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=[itemid="emailInput"]</arg>
+<arg>timeout=10s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-01-07T14:22:26.120519" elapsed="0.041132"/>
+</kw>
+<kw name="Click Element" owner="SeleniumLibrary">
+<msg time="2025-01-07T14:22:26.162300" level="INFO">Clicking element 'css=[itemid="emailInput"]'.</msg>
+<arg>css=[itemid="emailInput"]</arg>
+<doc>Click the element identified by ``locator``.</doc>
+<status status="PASS" start="2025-01-07T14:22:26.161999" elapsed="0.368853"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-01-07T14:22:27.032325" level="INFO">Slept 500 milliseconds.</msg>
+<arg>0.5</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-01-07T14:22:26.531383" elapsed="0.501250"/>
+</kw>
+<kw name="Element Should Be Enabled" owner="SeleniumLibrary">
+<arg>css=[itemid="emailInput"]</arg>
+<doc>Verifies that element identified by ``locator`` is enabled.</doc>
+<status status="PASS" start="2025-01-07T14:22:27.032887" elapsed="0.015636"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-01-07T14:22:27.049202" level="INFO">Typing text 'admin@gmail.com' into text field 'css=[itemid="emailInput"]'.</msg>
+<arg>css=[itemid="emailInput"]</arg>
+<arg>${EMAIL}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-01-07T14:22:27.048813" elapsed="0.033920"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-01-07T14:22:27.584683" level="INFO">Slept 500 milliseconds.</msg>
+<arg>0.5</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-01-07T14:22:27.083279" elapsed="0.501770"/>
+</kw>
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=[itemid="passwordInput"]</arg>
+<arg>timeout=10s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2025-01-07T14:22:27.585401" elapsed="0.014957"/>
+</kw>
+<kw name="Click Element" owner="SeleniumLibrary">
+<msg time="2025-01-07T14:22:27.600997" level="INFO">Clicking element 'css=[itemid="passwordInput"]'.</msg>
+<arg>css=[itemid="passwordInput"]</arg>
+<doc>Click the element identified by ``locator``.</doc>
+<status status="PASS" start="2025-01-07T14:22:27.600675" elapsed="0.243324"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-01-07T14:22:28.345941" level="INFO">Slept 500 milliseconds.</msg>
+<arg>0.5</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-01-07T14:22:27.844760" elapsed="0.501700"/>
+</kw>
+<kw name="Element Should Be Enabled" owner="SeleniumLibrary">
+<arg>css=[itemid="passwordInput"]</arg>
+<doc>Verifies that element identified by ``locator`` is enabled.</doc>
+<status status="PASS" start="2025-01-07T14:22:28.346852" elapsed="0.013877"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2025-01-07T14:22:28.362078" level="INFO">Typing text '12345678' into text field 'css=[itemid="passwordInput"]'.</msg>
+<arg>css=[itemid="passwordInput"]</arg>
+<arg>${PASSWORD}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2025-01-07T14:22:28.361235" elapsed="0.029950"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-01-07T14:22:28.892731" level="INFO">Slept 500 milliseconds.</msg>
+<arg>0.5</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-01-07T14:22:28.391787" elapsed="0.501302"/>
+</kw>
+<kw name="Click Element" owner="SeleniumLibrary">
+<msg time="2025-01-07T14:22:28.893779" level="INFO">Clicking element 'css=[itemid="loginBtn"]'.</msg>
+<arg>css=[itemid="loginBtn"]</arg>
+<doc>Click the element identified by ``locator``.</doc>
+<status status="PASS" start="2025-01-07T14:22:28.893417" elapsed="0.262690"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2025-01-07T14:22:31.158415" level="INFO">Slept 2 seconds.</msg>
+<arg>2</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2025-01-07T14:22:29.157583" elapsed="2.001146"/>
+</kw>
+<status status="PASS" start="2025-01-07T14:22:12.118694" elapsed="19.040225"/>
+</kw>
+<status status="PASS" start="2025-01-07T14:22:12.097013" elapsed="19.062917"/>
+</test>
+<kw name="Fechar Navegador" type="TEARDOWN">
+<kw name="Close Browser">
+<kw name="Close All Browsers" owner="SeleniumLibrary">
+<doc>Closes all open browsers and resets the browser cache.</doc>
+<status status="PASS" start="2025-01-07T14:22:31.164934" elapsed="15.314619"/>
+</kw>
+<status status="PASS" start="2025-01-07T14:22:31.164292" elapsed="15.315976"/>
+</kw>
+<status status="PASS" start="2025-01-07T14:22:31.163517" elapsed="15.317073"/>
+</kw>
+<status status="PASS" start="2025-01-07T14:22:03.527435" elapsed="42.953424"/>
+</suite>
+<statistics>
+<total>
+<stat pass="1" fail="0" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat pass="1" fail="0" skip="0" id="s1" name="Test">Test</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>
