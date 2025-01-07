@@ -7,7 +7,7 @@ Suite Setup       Iniciar Navegador
 Suite Teardown    Fechar Navegador
 
 *** Variables ***
-${URL}             http://localhost:9000
+${URL}             http://selenium:9000
 ${EMAIL}           admin@gmail.com
 ${PASSWORD}        12345678
 ${BROWSER}         firefox  # Alterado para Firefox (garante o uso correto da variável)
@@ -35,6 +35,7 @@ Create Firefox Options
     RETURN    ${options}
 
 Login
+    Log    Abrindo o navegador em ${URL}
     Wait Until Element Is Visible    css=[itemid="emailInput"]    timeout=10s
     Click Element    css=[itemid="emailInput"]
     Sleep    0.5
