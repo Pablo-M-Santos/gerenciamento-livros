@@ -10,7 +10,8 @@ test:
   script:
     - apt-get update && apt-get install -y wget
     - apt-get install -y firefox-esr  # Instalando o Firefox
-    - pip install robotframework robotframework-seleniumlibrary webdriver-manager RequestsLibrary
+    - pip install --upgrade pip  # Atualizando pip para garantir compatibilidade
+    - pip install robotframework robotframework-seleniumlibrary webdriver-manager  # Instalando dependências
     - python -c "from webdriver_manager.firefox import GeckoDriverManager; GeckoDriverManager().install()"  # Instalando o geckodriver
     - robot test/test.robot  # Rodando os testes
   only:
