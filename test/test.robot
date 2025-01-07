@@ -7,7 +7,7 @@ Suite Setup       Iniciar Navegador
 Suite Teardown    Fechar Navegador
 
 *** Variables ***
-${URL}             http://selenium:9000
+${URL}             http://localhost:9000
 ${EMAIL}           admin@gmail.com
 ${PASSWORD}        12345678
 ${BROWSER}         firefox  # Alterado para Firefox (garante o uso correto da variável)
