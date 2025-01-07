@@ -5,9 +5,11 @@ test:
   image: python:3.9
   stage: test
   script:
+    # Instalar as dependências do projeto
     - pip install robotframework robotframework-seleniumlibrary webdriver-manager
+    # Instalar o ChromeDriver com o webdriver-manager
     - python -c "from webdriver_manager.chrome import ChromeDriverManager; ChromeDriverManager().install()"
+    # Rodar os testes Robot Framework
     - robot test/test.robot
-  tags:
-    - selenium
-
+  only:
+    - developer  # Executar apenas na branch 'developer'
