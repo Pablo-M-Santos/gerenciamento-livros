@@ -9,7 +9,7 @@ services:
     ports:
       - "${DB_PORT}:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_pablo:/var/lib/postgresql/data
 
   locadora-backend:
     build: ./backend/
@@ -47,4 +47,4 @@ networks:
         - subnet: 172.63.0.0/16
 
 volumes:
-  postgres_data:
+  postgres_data_pablo:

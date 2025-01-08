@@ -3,7 +3,7 @@ Library           Collections
 Library           BuiltIn
 Library           SeleniumLibrary
 Library           XML
-Suite Setup    Iniciar Navegador
+Suite Setup       Iniciar Navegador
 Suite Teardown    Fechar Navegador
 
 
