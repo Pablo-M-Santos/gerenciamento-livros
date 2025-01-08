@@ -1,18 +1,17 @@
 stages:
   - test
 
-test:
+test_front:
   stage: test
-  image: python:3.9-slim
-  services:
-    - name: selenium/standalone-firefox
-      alias: selenium
+  image: python:3.9
+  before_script:
+    - pip install robotframework
+    - pip install robotframework-seleniumlibrary
+    - apt-get update && apt-get install -y chromium-driver
   script:
-    - apt-get update && apt-get install -y wget
-    - apt-get install -y firefox-esr  # Instalando o Firefox
-    - pip install --upgrade pip  # Atualizando pip para garantir compatibilidade
-    - pip install robotframework robotframework-seleniumlibrary webdriver-manager  # Instalando dependências
-    - python -c "from webdriver_manager.firefox import GeckoDriverManager; GeckoDriverManager().install()"  # Instalando o geckodriver
-    - robot test/test.robot  # Rodando os testes
+    - robot -d results robot.robot
+  artifacts:
+    paths:
+      - results/
   only:
-    - developer  # Limitar a execução apenas para a branch 'developer'
+    - developer
