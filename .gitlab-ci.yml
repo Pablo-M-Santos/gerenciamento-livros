@@ -3,11 +3,10 @@ stages:
 
 test_front:
   stage: test
-  image: python:3.9
+  image: selenium/standalone-chrome:latest
   before_script:
-    - pip install robotframework
-    - pip install robotframework-seleniumlibrary
-    - apt-get update && apt-get install -y chromium-driver
+    - apt-get update
+    - apt-get install -y robotframework robotframework-seleniumlibrary
   script:
     - robot -d results robot.robot
   artifacts:
