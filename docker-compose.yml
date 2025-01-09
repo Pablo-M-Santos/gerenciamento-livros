@@ -1,7 +1,7 @@
 services:
-  locadora-db:
+  locadora-db-pablo:
     image: postgres:15
-    container_name: postgres_db
+    container_name: postgres_db_pablo
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -11,12 +11,12 @@ services:
     volumes:
       - postgres_data_pablo:/var/lib/postgresql/data
 
-  locadora-backend:
+  locadora-backend-pablo:
     build: ./backend/
-    image: locadora-back
-    container_name: locadora-back-${CI_COMMIT_REF_SLUG:-unknown}
+    image: locadora-back-pablo
+    container_name: locadora-back-pablo-${CI_COMMIT_REF_SLUG:-unknown}
     depends_on:
-      - locadora-db
+      - locadora-db-pablo
     ports:
       - "${BACK_PORT}:8040"
     environment:
@@ -24,20 +24,17 @@ services:
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
 
-  locadora-frontend:
+  locadora-frontend-pablo:
     build: 
       context: ./frontend
       args:
         VITE_BASE_URL: ${VITE_BASE_URL}
-
-    image: locadora-front
-    container_name: locadora-front-${CI_COMMIT_REF_SLUG:-unknown}
+    image: locadora-front-pablo
+    container_name: locadora-front-pablo-${CI_COMMIT_REF_SLUG:-unknown}
     depends_on:
-      - locadora-backend
+      - locadora-backend-pablo
     ports:
       - "${FRONT_PORT}:80"
-    volumes:
-      - /usr/share/nginx/html
 
 networks:
   default:
