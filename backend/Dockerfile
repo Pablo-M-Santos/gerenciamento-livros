@@ -9,8 +9,9 @@ RUN mvn dependency:go-offline
 
 
 # Copiar o código-fonte e fazer o build
-COPY src ./src
+COPY locadoraLivro/src ./src
 RUN mvn clean package -DskipTests
+
 
 
 # Usar JDK para rodar a aplicação em produção
