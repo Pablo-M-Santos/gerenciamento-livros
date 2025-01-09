@@ -4,7 +4,7 @@
     - > 
       sudo --preserve-env
       docker-compose
-      --project-name "-$CI_COMMIT_REF_SLUG"
+      --project-name "locadora-pablo-$CI_COMMIT_REF_SLUG"
       up -d --build
 
 deploy_develop :
