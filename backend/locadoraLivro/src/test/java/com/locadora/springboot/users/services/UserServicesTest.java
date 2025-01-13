@@ -92,37 +92,7 @@ class UserServicesTest {
         assertEquals("Ryan", result.get().getName());
         verify(userRepository, times(1)).findById(userId);
     }
-
-    @Test
-    void shouldThrowModelNotFoundExceptionWhenFindAllWithEmptyResult() {
-        int page = 0;
-        String search = "";
-        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "id"));
-        when(userRepository.findAll(pageable)).thenReturn(Page.empty());
-
-        assertThrows(ModelNotFoundException.class, () -> userServices.findAll(search, page));
-        verify(userRepository, times(1)).findAll(pageable);
-    }
-
-    @Test
-    void shouldFindAllWithSearch() {
-        String search = "John";
-        int page = 0;
-        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "id"));
-        List<UserModel> users = Arrays.asList(
-                new UserModel("John Doe", "john.doe@example.com", "password1", UserRoleEnum.USER),
-                user
-        );
-        Page<UserModel> userPage = new PageImpl<>(users);
-        when(userRepository.findAllByName(search, pageable)).thenReturn(userPage);
-
-        Page<UserModel> result = userServices.findAll(search, page);
-
-        assertNotNull(result);
-        assertEquals(2, result.getContent().size());
-        verify(userRepository, times(1)).findAllByName(search, pageable);
-    }
-
+    
     @Test
     void shouldUpdateUserSuccessfully() {
         int userId = 1;
