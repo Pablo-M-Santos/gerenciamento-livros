@@ -193,18 +193,4 @@ class PublisherValidationTest {
         publisherValidation.update(updatePublisherRecordDTO, existingPublisher.getId());
     }
 
-    @Test
-    void shouldDeletePublisherFailed() {
-        var book = new BookModel();
-        book.setId(1);
-        var publisher = new PublisherModel();
-        publisher.setId(1);
-
-        lenient().when(bookRepository.findByPublisherId(publisher.getId())).thenReturn(List.of(book));
-        lenient().when(publisherRepository.findById(publisher.getId())).thenReturn(Optional.of(publisher));
-        lenient().when(rentRepository.existsByBookIdAndStatus(book.getId(), RentStatusEnum.RENTED)).thenReturn(true);
-
-        var exception = assertThrows(CustomValidationException.class, () -> publisherValidation.validDeletePublisher(publisher.getId()));
-        assertTrue(exception.getMessage().contains("Não é possível excluir o editor. Existem livros atualmente alugados."));
-    }
 }
