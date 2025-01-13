@@ -33,7 +33,7 @@ robot:
     # Instalar dependências Python
     - pip3 install selenium robotframework robotframework-seleniumlibrary
   script:
-    - xvfb-run -a robot --variable HEADLESS_OPTIONS:"--headless" ./test/usuario.robot
+    - xvfb-run -a robot --variable HEADLESS_OPTIONS:"--headless" ./test/locaratio.robot
     # - xvfb-run -a robot --variable HEADLESS_OPTIONS:"--headless" ./tests/usersTest.robot
     # - xvfb-run -a robot --variable HEADLESS_OPTIONS:"--headless" ./tests/rentsTests.robot
     # - xvfb-run -a robot --variable HEADLESS_OPTIONS:"--headless" ./tests/rentersTests.robot

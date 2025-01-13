@@ -1,5 +1,4 @@
 *** Settings ***
-Library           RequestsLibrary
 Library           Collections
 Library           BuiltIn
 Library           SeleniumLibrary
