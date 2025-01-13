@@ -11,6 +11,7 @@ test_unitarios:
     - cd backend/locadoraLivro
     - mvn test 
 
+
 robot:
   image: python:3.11.4
   stage: robot-test
