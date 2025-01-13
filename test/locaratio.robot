@@ -1,12 +1,16 @@
 *** Settings ***
-Library           Collections
-Library           BuiltIn
-Library           SeleniumLibrary
+Library            Collections
+Library            BuiltIn
+Library            SeleniumLibrary
 Library            XML
-
+Suite Setup        Iniciar Navegador
+Suite Teardown     Fechar Navegador
 
 *** Variables ***
-${BASE_URL}                    http://localhost:9000
+${BROWSER}                     firefox
+${URL}                         https://locadora-pablo.altislabtech.com.br/
+${BASE_URL}                    www.google.com
+${HEADLESS_OPTIONS}            ${EMPTY}
 ${EMAIL}                       admin@gmail.com
 ${PASSWORD}                    12345678
 ${NAME_RENTER}                 Locatario Robot
@@ -36,7 +40,6 @@ Locatario
 *** Keywords ***
 
 Login
-    Open Browser    ${BASE_URL}    chrome
     Maximize Browser Window
     Wait Until Element Is Visible    css=[itemid="emailInput"]    timeout=10s
     Click Element    css=[itemid="emailInput"]
@@ -190,3 +193,23 @@ Teste Exclusão Locatario
     Sleep    1
 
     Click Button    css=[itemid="BtnExcluirLocatario"]
+
+
+Fechar Navegador
+    Close Browser
+
+Iniciar Navegador
+    ${options}=    Evaluate    sys.modules['selenium.webdriver'].FirefoxOptions()    sys, selenium.webdriver
+    Call Method    ${options}    add_argument    --headless
+    Open Browser    ${URL}    ${BROWSER}    options=${options}
+    Set Selenium Speed    3s
+
+Create Chrome Options
+    ${options}=    Evaluate    sys.modules['selenium.webdriver.chrome.options'].Options()    sys, selenium.webdriver.chrome.options
+    Call Method    ${options}    add_argument    --headless
+    # Call Method    ${options}    add_argument    --no-sandbox
+    # Call Method    ${options}    add_argument    --disable-software-rasterizer
+    # Call Method    ${options}    add_argument    --disable-extensions
+    # Call Method    ${options}    add_argument    --disable-dev-shm-usage
+    # Call Method    ${options}    add_argument    --disable-gpu  # Adicionado para evitar possÃveis falhas de GPU no ambiente headless
+    RETURN    ${options}
