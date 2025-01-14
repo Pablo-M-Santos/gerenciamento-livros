@@ -12,7 +12,7 @@ deploy_develop :
   extends : .deploy
   environment : develop
   only :
-    - develop
+    - developer
   tags :
     - runner_dev
 
