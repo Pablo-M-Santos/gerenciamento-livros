@@ -1,5 +1,5 @@
 services:
-  locadora-db-pablo:
+  locadora-db:
     image: postgres:15
     container_name: postgres_db_pablo
     environment:
@@ -12,11 +12,11 @@ services:
       - postgres_data_pablo:/var/lib/postgresql/data
 
   locadora-backend:
-    build: ./backend/
+    build: ./backend/locadoraLivro
     image: locadora-back
     container_name: locadora-back-${CI_COMMIT_REF_SLUG:-unknown}
     depends_on:
-      - locadora-db-pablo
+      - locadora-db
     ports:
       - "${BACK_PORT}:8040"
     environment:
