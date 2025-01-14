@@ -1,17 +1,17 @@
-
 .deploy:
   stage: deploy
   script:
     - >
       sudo --preserve-env
       docker compose
-      -f docker-compose-ci.yaml
+      -f docker-compose.yaml
       --project-name "livraria-ryan-$CI_COMMIT_REF_SLUG"
       up -d --build
+
 deploy_develop:
   extends: .deploy
   environment: develop
   only:
-    - develop
+    - developer
   tags:
     - runner_dev
