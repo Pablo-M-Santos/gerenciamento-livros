@@ -3,7 +3,8 @@
   script :
     - >
       sudo --preserve-env
-      docker-compose
+      docker compose
+      -f docker-compose.yml
       --project-name "livraria-ryan-$CI_COMMIT_REF_SLUG"
       up -d --build
 
