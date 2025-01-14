@@ -1,6 +1,6 @@
-.deploy :
-  stage : deploy
-  script :
+.deploy:
+  stage: deploy
+  script:
     - >
       sudo --preserve-env
       docker compose
@@ -8,13 +8,10 @@
       --project-name "livraria-pablo-$CI_COMMIT_REF_SLUG"
       up -d --build
 
-deploy_develop :
-  extends : .deploy
-  environment : develop
-  only :
+deploy_develop:
+  extends: .deploy
+  environment: develop
+  only:
     - developer
-  tags :
+  tags:
     - runner_dev
-
-
-    
