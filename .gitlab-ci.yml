@@ -5,7 +5,7 @@
       sudo --preserve-env
       docker compose
       -f docker-compose.yml
-      --project-name "livraria-ryan-$CI_COMMIT_REF_SLUG"
+      --project-name "livraria-pablo-$CI_COMMIT_REF_SLUG"
       up -d --build
 
 deploy_develop :
