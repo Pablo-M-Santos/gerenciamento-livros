@@ -12,7 +12,7 @@ services:
       - postgres_data_pablo:/var/lib/postgresql/data
 
   locadora-backend:
-    build: ./backend/locadoraLivro
+    build: ./backend/
     image: locadora-back
     container_name: locadora-back-${CI_COMMIT_REF_SLUG:-unknown}
     depends_on:
