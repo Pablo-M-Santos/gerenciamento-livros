@@ -1,16 +1,23 @@
+<<<<<<< HEAD
 .deploy :
   stage : deploy
   script :
+=======
+.deploy:
+  stage: deploy
+  script:
+>>>>>>> 35aa231fcf460dcd53b7121839a9cb085b729ff1
     - >
       sudo --preserve-env
-      docker-compose
-      --project-name "livraria-ryan-$CI_COMMIT_REF_SLUG"
+      docker compose
+      -f docker-compose.yml
+      --project-name "livraria-pablo-$CI_COMMIT_REF_SLUG"
       up -d --build
 
-deploy_develop :
-  extends : .deploy
-  environment : develop
-  only :
-    - develop
-  tags :
+deploy_develop:
+  extends: .deploy
+  environment: develop
+  only:
+    - developer
+  tags:
     - runner_dev
