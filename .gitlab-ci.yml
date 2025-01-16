@@ -7,7 +7,7 @@ test_unitarios:
   stage: unit-test
   image: maven:3.9.4-eclipse-temurin-21 
   script:
-    - cd backend/
+    - cd backend/locadoraLivro/
     - mvn test 
 
 robot:
