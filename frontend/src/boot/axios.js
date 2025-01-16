@@ -2,7 +2,7 @@ import { boot } from "quasar/wrappers";
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: 'https://locadora-pablo-back.altislabtech.com.br',
+  baseURL: 'process.env.VITE_BASE_URL',
   headers: {
     "Content-Type": "application/json"
   }
