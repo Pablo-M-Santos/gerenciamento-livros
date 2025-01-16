@@ -20,9 +20,9 @@ services:
     ports:
       - "${BACK_PORT}:8040"
     environment:
-      SPRING_DATASOURCE_URL: ${DB_URL}
-      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      DATASOURCE_URL: ${DB_URL}
+      DATASOURCE_USERNAME: ${DB_USERNAME}
+      DATASOURCE_PASSWORD: ${DB_PASSWORD}
 
   locadora-frontend:
     build: 
