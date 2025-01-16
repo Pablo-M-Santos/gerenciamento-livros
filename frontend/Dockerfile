@@ -11,6 +11,8 @@ RUN npm install
 # Copiar todos os arquivos do projeto
 COPY . .
 
+ARG VITE_BASE_URL
+
 # Construir o projeto Quasar
 RUN npm run build
 
