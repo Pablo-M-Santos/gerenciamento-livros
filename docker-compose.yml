@@ -20,9 +20,9 @@ services:
     ports:
       - "${BACK_PORT}:8040"
     environment:
-      DATASOURCE_URL: ${DB_URL}
-      DATASOURCE_USERNAME: ${DB_USERNAME}
-      DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      - DB_URL
+      - DB_USERNAME
+      - DB_PASSWORD
 
   locadora-frontend:
     build:
