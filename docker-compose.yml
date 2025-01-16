@@ -1,7 +1,7 @@
 services:
   locadora-db-pablo:
     image: postgres:15
-    container_name: postgres_db_pablo
+    container_name: postgres_db_pablo2
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
