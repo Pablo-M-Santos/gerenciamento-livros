@@ -1,7 +1,7 @@
 services:
   locadora-db-pablo:
     image: postgres:15
-    container_name: postgres_db_pablo
+    container_name: postgres_db_pablo_${CI_COMMIT_REF_SLUG:-latest}
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -14,7 +14,7 @@ services:
   locadora-backend:
     build: ./backend/
     image: locadora-back
-    container_name: locadora-back-${CI_COMMIT_REF_SLUG:-unknown}
+    container_name: locadora-back-pablo-${CI_COMMIT_REF_SLUG:-unknown}
     depends_on:
       - locadora-db-pablo
     ports:
@@ -25,12 +25,12 @@ services:
       DATASOURCE_PASSWORD: ${DB_PASSWORD}
 
   locadora-frontend:
-    build: 
+    build:
       context: ./frontend
       args:
         VITE_BASE_URL: ${VITE_BASE_URL}
     image: locadora-front
-    container_name: locadora-front-${CI_COMMIT_REF_SLUG:-unknown}
+    container_name: locadora-front-pablo-${CI_COMMIT_REF_SLUG:-unknown}
     depends_on:
       - locadora-backend
     ports:
