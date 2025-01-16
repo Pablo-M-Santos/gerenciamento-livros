@@ -1,7 +1,7 @@
 services:
-  locadora-db-pablo:
+  locadora-db:
     image: postgres:15
-    container_name: postgres_db_pablo2
+    container_name: postgres_db_pablo
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -12,23 +12,24 @@ services:
       - postgres_data_pablo:/var/lib/postgresql/data
 
   locadora-backend:
-    build: ./backend/
+    build: ./backend/locadoraLivro
     image: locadora-back
     container_name: locadora-back-${CI_COMMIT_REF_SLUG:-unknown}
     depends_on:
-      - locadora-db-pablo
+      - locadora-db
     ports:
       - "${BACK_PORT}:8040"
     environment:
-      DATASOURCE_URL: ${DB_URL}
-      DATASOURCE_USERNAME: ${DB_USERNAME}
-      DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
 
   locadora-frontend:
     build: 
       context: ./frontend
       args:
         VITE_BASE_URL: ${VITE_BASE_URL}
+
     image: locadora-front
     container_name: locadora-front-${CI_COMMIT_REF_SLUG:-unknown}
     depends_on:
@@ -41,7 +42,7 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.67.0.0/16
+       - subnet: 172.63.0.0/16
 
 volumes:
   postgres_data_pablo:
