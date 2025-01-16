@@ -28,6 +28,10 @@ robot:
     - pip3 install selenium robotframework robotframework-seleniumlibrary
   script:
     - xvfb-run -a robot --variable HEADLESS_OPTIONS:"--headless" ./test/usuario.robot
+    - xvfb-run -a robot --variable HEADLESS_OPTIONS:"--headless" ./test/editora.robot
+    - xvfb-run -a robot --variable HEADLESS_OPTIONS:"--headless" ./test/livro.robot
+    - xvfb-run -a robot --variable HEADLESS_OPTIONS:"--headless" ./test/locatario.robot
+    - xvfb-run -a robot --variable HEADLESS_OPTIONS:"--headless" ./test/aluguel.robot
 
 .deploy:
   stage: deploy
