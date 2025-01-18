@@ -1,0 +1,18 @@
+1737158423960	geckodriver	INFO	Listening on 127.0.0.1:56787
+1737158427009	mozrunner::runner	INFO	Running command: "C:\\Users\\Pablo\\.cache\\selenium\\firefox\\win64\\134.0.1\\firefox.exe" "--marionette" "--headless" "--re ... 8" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\Pablo\\AppData\\Local\\Temp\\rust_mozprofilezDi6Nt"
+*** You are running in headless mode.
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+Dynamically enable window occlusion 0
+1737158427519	Marionette	INFO	Marionette enabled
+1737158427683	Marionette	INFO	Listening on port 56799
+WebDriver BiDi listening on ws://127.0.0.1:56788
+Read port: 56799
+1737158427909	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: ({})
+DevTools listening on ws://127.0.0.1:56788/devtools/browser/301a4cac-f834-4332-9c4c-dd96358c0893
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://locadora-pablo.altislabtech.com.br."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://locadora-pablo.altislabtech.com.br."
+1737158620512	Marionette	INFO	Stopped listening on port 56799
+Dynamically enable window occlusion 1

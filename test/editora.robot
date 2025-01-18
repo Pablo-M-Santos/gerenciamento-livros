@@ -134,8 +134,8 @@ Teste Sobre Editora
 
 Teste Exclusão Editora
     Sleep    0.5
-    Wait Until Element Is Visible    css=[itemid="delete-Editora Robot Atualizacao"]
-    Click Element    css=[itemid="delete-Editora Robot Atualizacao"]
+    Wait Until Element Is Visible    css=[itemid="delete-Editora Robot"]
+    Click Element    css=[itemid="delete-Editora Robot"]
     Sleep    0.5
     Click Button    css=[itemid="BtnExcluirUsuario"]
     Sleep    0.5

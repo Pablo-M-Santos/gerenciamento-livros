@@ -17,7 +17,7 @@ ${PASSWORD}                        12345678
 ${TITLE_BOOK}                      Livro Robot
 ${AUTOR_BOOK}                      Autor Robot
 ${QUANTIDADE_BOOK}                 10
-${DATE_BOOK}                       22/11/2024
+${DATE_BOOK}                       22112024
 ${TITLE_BOOK_UPDATE}               Livro Robot Atualizacao
 ${AUTOR_BOOK_UPDATE}               Autor Robot Atualizacao
 ${QUANTIDADE_BOOK_UPDATE}          11
@@ -92,7 +92,8 @@ Cadastrar Livro
 Editar Livro
     Sleep    1
 
-    Wait Until Element Is Visible    css=[itemid="edit-Livro Robot"]    
+    Wait Until Element Is Visible    css=[itemid="edit-Livro Robot"]    timeout=15s 
+    Sleep    1 
     Click Element    css=[itemid="edit-Livro Robot"]
     
     Sleep    1

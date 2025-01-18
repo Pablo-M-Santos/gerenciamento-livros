@@ -43,8 +43,7 @@
             <q-input v-model="bookToCreate.totalQuantity" label="Quantidade" type="number" filled lazy-rules :min="1"
               :rules="[val => val >= 1 || 'É necessário ter pelo menos 1']" itemid="cadastrarQuantidadeLivro" />
 
-            <q-input v-model="bookToCreate.launchDate" label="Data de lançamento" type="date" :max="today"
-              mask="####-##-##" fill-mask filled lazy-rules
+            <q-input v-model="bookToCreate.launchDate" label="Data de lançamento" type="date" :max="today" fill-mask filled lazy-rules
               :rules="[val => val && val.length >= 6 || 'Adicione uma data válida']" itemid="cadastrarDataLivro" />
 
             <q-select v-model="bookToCreate.publisherId" label="Selecione a editora" filled use-input input-debounce="0"
