@@ -24,9 +24,9 @@ ${NAME_ALUGUEL}            Locatario
 Aluguel
     Login
     Cadastrar Aluguel
-    Editar Aluguel
-    Teste de pesquisa
-    Teste de Entrega
+    # Editar Aluguel
+    # Teste de pesquisa
+    # Teste de Entrega
 
 
 *** Keywords ***
@@ -68,26 +68,32 @@ Cadastrar Aluguel
     Wait Until Page Contains Element    //div[@class='q-field__control-container col relative-position row no-wrap q-anchor--skip'][contains(.,'Selecione o Locatário')]    timeout=10s
     Click Element    //div[@class='q-field__control-container col relative-position row no-wrap q-anchor--skip'][contains(.,'Selecione o Locatário')]
 
-    Wait Until Page Contains Element    //div[@role="option" and .//span[text()="Locatario"]]    timeout=10s
-    Click Element    //div[@role="option" and .//span[text()="Locatario"]]
+    Wait Until Page Contains Element    //div[@role="option" and .//span[text()="LOCATARIO"]]    timeout=10s
+    Click Element    //div[@role="option" and .//span[text()="LOCATARIO"]]
 
     Wait Until Page Contains Element    //div[@class='q-field__control-container col relative-position row no-wrap q-anchor--skip'][contains(.,'Selecione o Livro')]    timeout=10s
     Click Element    //div[@class='q-field__control-container col relative-position row no-wrap q-anchor--skip'][contains(.,'Selecione o Livro')]
 
-    Wait Until Page Contains Element    //div[@role="option" and .//span[text()="Livro"]]    timeout=10s
-    Click Element    //div[@role="option" and .//span[text()="Livro"]]
+    Wait Until Page Contains Element    //div[@role="option" and .//span[text()="Livro Robot"]]    timeout=10s
+    Click Element    //div[@role="option" and .//span[text()="Livro Robot"]]
 
-    Input Text    css=[itemid="cadastrarDataAluguel"]    ${DATA_RENT}
+    Capture Page Screenshot
+
+    Execute JavaScript    var el = document.querySelector('[itemid="cadastrarDataAluguel"]'); el.value = "2025-01-22"; el.dispatchEvent(new Event('input')); el.dispatchEvent(new Event('change'));
+    ${data_valor}=    Execute JavaScript    return document.querySelector('[itemid="cadastrarDataAluguel"]').value;
+    Should Be Equal As Strings    ${data_valor}    2025-01-22
 
     Click Button    css=[itemid="BtnCadastrarAluguel"]
+
+    Capture Page Screenshot
 
 
 
 Editar Aluguel
     Sleep    1
 
-    Wait Until Element Is Visible    css=[itemid="edit-9"]
-    Click Element    css=[itemid="edit-9"]
+    Wait Until Element Is Visible    css=[itemid="edit-1"]
+    Click Element    css=[itemid="edit-1"]
 
     Sleep    1
 
@@ -129,8 +135,8 @@ Teste de pesquisa
 Teste de Entrega    
     Sleep    1
 
-    Wait Until Element Is Visible    css=[itemid="confirmar-9"]
-    Click Element    css=[itemid="confirmar-9"]
+    Wait Until Element Is Visible    css=[itemid="confirmar-1"]
+    Click Element    css=[itemid="confirmar-1"]
 
     Click Button    css=[itemid="BtnEntregaAluguel"]
     

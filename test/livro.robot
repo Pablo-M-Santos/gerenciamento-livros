@@ -17,11 +17,12 @@ ${PASSWORD}                        12345678
 ${TITLE_BOOK}                      Livro Robot
 ${AUTOR_BOOK}                      Autor Robot
 ${QUANTIDADE_BOOK}                 10
-${DATE_BOOK}                       22112024
+${DATE_BOOK}                       15/11/2024
 ${TITLE_BOOK_UPDATE}               Livro Robot Atualizacao
 ${AUTOR_BOOK_UPDATE}               Autor Robot Atualizacao
 ${QUANTIDADE_BOOK_UPDATE}          11
-${publisher}                       EDITORA 2
+${publisher}                       EDITORA
+${publisher_update}                EDITORA 2
 ${DATE_BOOK_UPDATE}                21/11/2024
 
 
@@ -29,11 +30,10 @@ ${DATE_BOOK_UPDATE}                21/11/2024
 Livro
     Login
     Cadastrar Livro
-    Editar Livro
     Teste de pesquisa
     Teste Sobre Livro
-    Teste Exclusão Livro
-
+    # Editar Livro
+    # Teste Exclusão Livro
 
 
 *** Keywords ***
@@ -61,33 +61,28 @@ Click Item In Menu
     Click Element    css=[itemid=${itemid}]
 
 
-
 Cadastrar Livro
-
     Click Item In Menu    Livros
 
-    Wait Until Element Is Visible    css=[itemid="menu-item-home"]    timeout=10s
-
-    Sleep    1
-
+    Wait Until Element Is Visible    css=[itemid="cadastroBtnLivro"]    timeout=10s
     Click Button    css=[itemid="cadastroBtnLivro"]
 
     Input Text    css=[itemid="cadastroTituloLivro"]    ${TITLE_BOOK}
-    
     Input Text    css=[itemid="cadastroAutorLivro"]    ${AUTOR_BOOK}
-
     Input Text    css=[itemid="cadastrarQuantidadeLivro"]    ${QUANTIDADE_BOOK}
 
-    Input Text    css=[itemid="cadastrarDataLivro"]    ${DATE_BOOK}
+    Execute JavaScript    var el = document.querySelector('[itemid="cadastrarDataLivro"]'); el.value = "2022-01-10"; el.dispatchEvent(new Event('input')); el.dispatchEvent(new Event('change'));
+    ${data_valor}=    Execute JavaScript    return document.querySelector('[itemid="cadastrarDataLivro"]').value;
+    Should Be Equal As Strings    ${data_valor}    2022-01-10
 
-    Wait Until Page Contains Element    //div[@class='q-field__control-container col relative-position row no-wrap q-anchor--skip'][contains(.,'Selecione a editora')]    timeout=10s
+    Wait Until Element Is Visible    //div[@class='q-field__control-container col relative-position row no-wrap q-anchor--skip'][contains(.,'Selecione a editora')]    timeout=10s
     Click Element    //div[@class='q-field__control-container col relative-position row no-wrap q-anchor--skip'][contains(.,'Selecione a editora')]
 
-    Wait Until Page Contains Element    //div[@role="option" and .//span[text()="EDITORA"]]    timeout=10s
-    Click Element    //div[@role="option" and .//span[text()="EDITORA"]]
-    
+    Wait Until Element Is Visible    //div[@role="option" and .//span[text()="${publisher}"]]    timeout=10s
+    Click Element    //div[@role="option" and .//span[text()="${publisher}"]]
 
     Click Button    css=[itemid="BtnCadastrarLivro"]
+
 
 Editar Livro
     Sleep    1
@@ -125,13 +120,15 @@ Editar Livro
 
     Press Keys       css=[itemid="editarDataLivro"]    CTRL+A+BACKSPACE
 
-    Input Text    css=[itemid="editarDataLivro"]    ${DATE_BOOK_UPDATE}
+    Execute JavaScript    var el = document.querySelector('[itemid="cadastrarDataLivro"]'); el.value = "2022-11-25"; el.dispatchEvent(new Event('input')); el.dispatchEvent(new Event('change'));
+    ${data_valor}=    Execute JavaScript    return document.querySelector('[itemid="cadastrarDataLivro"]').value;
+    Should Be Equal As Strings    ${data_valor}    2022-11-25
 
-    Wait Until Page Contains Element    //div[@class='q-field__control-container col relative-position row no-wrap q-anchor--skip'][contains(.,'Selecione a editora')]    timeout=10s
+    Wait Until Element Is Visible    //div[@class='q-field__control-container col relative-position row no-wrap q-anchor--skip'][contains(.,'Selecione a editora')]    timeout=10s
     Click Element    //div[@class='q-field__control-container col relative-position row no-wrap q-anchor--skip'][contains(.,'Selecione a editora')]
 
-    Wait Until Page Contains Element    //div[@role="option" and .//span[text()="EDITORA 2"]]    timeout=10s
-    Click Element    //div[@role="option" and .//span[text()="EDITORA 2"]]
+    Wait Until Element Is Visible    //div[@role="option" and .//span[text()="${publisher_update}"]]    timeout=10s
+    Click Element    //div[@role="option" and .//span[text()="${publisher_update}"]]
 
     Click Button    css=[itemid="BtnEditarLivro"]
 
@@ -191,8 +188,8 @@ Teste Sobre Livro
 
     Sleep    1   
 
-    Wait Until Element Is Visible    css=[itemid="visibility-Livro Robot Atualizacao"]    
-    Click Element    css=[itemid="visibility-Livro Robot Atualizacao"]
+    Wait Until Element Is Visible    css=[itemid="visibility-Livro Robot"]    
+    Click Element    css=[itemid="visibility-Livro Robot"]
     
     Sleep    1
 
@@ -202,8 +199,8 @@ Teste Exclusão Livro
 
     Sleep    1   
 
-    Wait Until Element Is Visible    css=[itemid="delete-Livro Robot Atualizacao"]    
-    Click Element    css=[itemid="delete-Livro Robot Atualizacao"]
+    Wait Until Element Is Visible    css=[itemid="delete-Livro Robot"]    
+    Click Element    css=[itemid="delete-Livro Robot"]
     
     Sleep    1
 

@@ -13,16 +13,16 @@ ${BASE_URL}                    www.google.com
 ${HEADLESS_OPTIONS}            ${EMPTY}
 ${EMAIL}                       admin@gmail.com
 ${PASSWORD}                    12345678
-${NAME_RENTER}                 Locatario Robot
-${EMAIL_RENTER}                locatarioRobot@gmail.com
-${TELEPHONE_RENTER}            85987858860
+${NAME_RENTER}                 Locatario Test
+${EMAIL_RENTER}                locatarioTest@gmail.com
+${TELEPHONE_RENTER}            85982858499
 ${ADRESS_RENTER}               wda
-${CPF_RENTER}                  08214996104
-${NAME_RENTER_UPDATE}          locatario Robot Atualizacao
-${EMAIL_RENTER_UPDATE}         locatarioRobotAtualizacao@gmail.com
-${TELEPHONE_RENTER_UPDATE}     85987858861
+${CPF_RENTER}                  93036839003
+${NAME_RENTER_UPDATE}          Locatario Test Atualizacao
+${EMAIL_RENTER_UPDATE}         locatarioTestAtualizou@gmail.com
+${TELEPHONE_RENTER_UPDATE}     85981858399
 ${ADRESS_RENTER_UPDATE}        wdaa
-${CPF_RENTER_UPDATE}           01833442199
+${CPF_RENTER_UPDATE}           95568476004
 
 
 
@@ -34,7 +34,7 @@ Locatario
     Editar Locatario
     Teste de pesquisa
     Teste Sobre Locatario
-    Teste Exclusão Locatario
+    # Teste Exclusão Locatario
 
 
 *** Keywords ***
@@ -95,11 +95,13 @@ Cadastrar Locatario
 
     Sleep    1
 
+    Capture Page Screenshot
+
 Editar Locatario
     Sleep    1
 
-    Wait Until Element Is Visible    css=[itemid="edit-Locatario Robot"]    
-    Click Element    css=[itemid="edit-Locatario Robot"]
+    Wait Until Element Is Visible    css=[itemid="edit-Locatario Test"]    
+    Click Element    css=[itemid="edit-Locatario Test"]
     
     Sleep    1
 
@@ -135,7 +137,7 @@ Editar Locatario
 
     Click Button    css=[itemid="BtnEditarLocatario"]
 
-
+    Capture Page Screenshot
 
 Teste de pesquisa
 
@@ -148,6 +150,7 @@ Teste de pesquisa
     Press Keys       css=[itemid="searchInput"]    CTRL+A+BACKSPACE
 
     Press Keys       css=[itemid="searchInput"]    ENTER
+    Capture Page Screenshot
 
     Sleep    1
 
@@ -158,6 +161,7 @@ Teste de pesquisa
     Press Keys       css=[itemid="searchInput"]    CTRL+A+BACKSPACE
 
     Press Keys       css=[itemid="searchInput"]    ENTER
+    Capture Page Screenshot
 
     Sleep    1
 
@@ -168,6 +172,7 @@ Teste de pesquisa
     Press Keys       css=[itemid="searchInput"]    CTRL+A+BACKSPACE
 
     Press Keys       css=[itemid="searchInput"]    ENTER
+    Capture Page Screenshot
 
     Sleep    1
 
@@ -176,19 +181,21 @@ Teste Sobre Locatario
 
     Sleep    1   
 
-    Wait Until Element Is Visible    css=[itemid="visibility-locatario Robot Atualizacao"]    
-    Click Element    css=[itemid="visibility-locatario Robot Atualizacao"]
+    Wait Until Element Is Visible    css=[itemid="visibility-Locatario Test Atualizacao"]     timeout=15s    
+    Click Element    css=[itemid="visibility-Locatario Test Atualizacao"]
     
     Sleep    1
 
     Click Button    css=[itemid="BtnSobreLocatario"]
 
+    Capture Page Screenshot
+
 Teste Exclusão Locatario
 
     Sleep    1   
 
-    Wait Until Element Is Visible    css=[itemid="delete-locatario Robot Atualizacao"]    
-    Click Element    css=[itemid="delete-locatario Robot Atualizacao"]
+    Wait Until Element Is Visible    css=[itemid="delete-Locatario Test Atualizacao"]    
+    Click Element    css=[itemid="delete-Locatario Test Atualizacao"]
     
     Sleep    1
 

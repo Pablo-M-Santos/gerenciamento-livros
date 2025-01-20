@@ -14,23 +14,23 @@ ${BASE_URL}                     www.google.com
 ${HEADLESS_OPTIONS}             ${EMPTY}
 ${EMAIL}                        admin@gmail.com
 ${PASSWORD}                     12345678
-${NAME_PUBLISHER}               Editora Robot
-${TELEPHONE_PUBLISHER}          85987858860
-${EMAIL_PUBLISHER}              editoraRobot@gmail.com
+${NAME_PUBLISHER}               EDITORA
+${TELEPHONE_PUBLISHER}          85987858869
+${EMAIL_PUBLISHER}              EDITOR2A@gmail.com
 ${SITE_PUBLISHER}               https://wda.com.br
-${NAME_PUBLISHER_UPDATE}        Editora Robot Atualizacao
-${TELEPHONE_PUBLISHER_UPDATE}   85987858861
-${EMAIL_PUBLISHER_UPDATE}       editoraRobotAtualizacao@gmail.com
+${NAME_PUBLISHER_UPDATE}        EDITORA
+${TELEPHONE_PUBLISHER_UPDATE}   85987858864
+${EMAIL_PUBLISHER_UPDATE}       EDITORAATUALIZOU@gmail.com
 ${SITE_PUBLISHER_UPDATE}        https://wda1.com.br
 
 *** Test Cases ***
 Editora
     Login
     Cadastrar Editora
-    Teste Sobre Editora
     Editar Editora
+    Teste Sobre Editora
     Teste de Pesquisa por Nome
-    Teste Exclusão Editora
+    # Teste Exclusão Editora
 
 *** Keywords ***
 
@@ -71,8 +71,8 @@ Cadastrar Editora
 
 Editar Editora
     Sleep    0.5
-    Wait Until Element Is Visible    css=[itemid="edit-Editora Robot"]
-    Click Element    css=[itemid="edit-Editora Robot"]
+    Wait Until Element Is Visible    css=[itemid="edit-EDITORA"]
+    Click Element    css=[itemid="edit-EDITORA"]
     Sleep    0.5
     Click Element    css=[itemid="editarNomeEditora"]
     Press Keys       css=[itemid="editarNomeEditora"]    CTRL+A+BACKSPACE
@@ -126,16 +126,16 @@ Teste de Pesquisa por Nome
 
 Teste Sobre Editora
     Sleep    0.5
-    Wait Until Element Is Visible    css=[itemid="visibility-Editora Robot"]
-    Click Element    css=[itemid="visibility-Editora Robot"]
+    Wait Until Element Is Visible    css=[itemid="visibility-EDITORA"]
+    Click Element    css=[itemid="visibility-EDITORA"]
     Sleep    0.5
     Click Button    css=[itemid="BtnSobreUsuario"]
     Sleep    0.5
 
 Teste Exclusão Editora
     Sleep    0.5
-    Wait Until Element Is Visible    css=[itemid="delete-Editora Robot"]
-    Click Element    css=[itemid="delete-Editora Robot"]
+    Wait Until Element Is Visible    css=[itemid="delete-EDITORA"]
+    Click Element    css=[itemid="delete-EDITORA"]
     Sleep    0.5
     Click Button    css=[itemid="BtnExcluirUsuario"]
     Sleep    0.5

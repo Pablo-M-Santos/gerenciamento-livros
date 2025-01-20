@@ -48,8 +48,7 @@
 
             <q-select v-model="bookToCreate.publisherId" label="Selecione a editora" filled use-input input-debounce="0"
               :options="publisherOptions" @filter="filterPublisher" option-label="name" option-value="id" emit-value
-              map-options lazy-rules
-              :rules="[val => !!val || 'Editora é obrigatório']" />
+              map-options lazy-rules :rules="[val => !!val || 'Editora é obrigatório']" itemid="cadastrarEditoraLivro" />
 
             <div class="button-container">
               <q-btn type="submit" label="CADASTRAR" class="center-width q-mt-md" itemid="BtnCadastrarLivro" />
@@ -84,7 +83,7 @@
 
             <q-select v-model="bookToEdit.publisherId" label="Selecione a editora" filled use-input input-debounce="0"
               :options="publisherOptions" @filter="filterPublisher" option-label="name" option-value="id" emit-value
-              map-options />
+              map-options itemid="cadastrarEditoraLivro" />
 
             <div class="button-container">
               <q-btn type="submit" label="ATUALIZAR" class="center-width q-mt-md"
