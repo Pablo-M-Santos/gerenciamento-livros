@@ -95,4 +95,23 @@ public class DashboardServices {
     public List<BooksMoreRented> getBooksMoreRented(int numberOfMonths) {
         return bookRentMapper.toBooksMoreRentedList(bookRepository.findAll(), numberOfMonths);
     }
+
+    public List<RentsperRenterResponseDTO> getTop3RentsPerRenter() {
+        List<RenterModel> renters = renterRepository.findAll();
+        List<RentsperRenterResponseDTO> renterRentList = new ArrayList<>();
+    
+        for (RenterModel renter : renters) {
+            List<RentModel> rents = rentRepository.findAllByRenterId(renter.getId());
+            List<RentModel> rentsActive = rentRepository.findAllByRenterIdAndStatus(renter.getId(), RentStatusEnum.RENTED);
+    
+            renterRentList.add(new RentsperRenterResponseDTO(renter.getName(), rents.size(), rentsActive.size()));
+        }
+    
+        // Ordena pelo número de alugueis e pega os 3 primeiros
+        return renterRentList.stream()
+                .sorted((a, b) -> Integer.compare(b.getTotalRents(), a.getTotalRents())) // Ordena em ordem decrescente
+                .limit(3) // Pega os 3 primeiros
+                .toList();
+    }
+    
 }

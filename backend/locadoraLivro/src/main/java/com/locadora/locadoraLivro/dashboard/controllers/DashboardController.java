@@ -45,4 +45,10 @@ public class DashboardController {
     public ResponseEntity<Object> getBooksMoreRented(int numberOfMonths){
         return ResponseEntity.status(HttpStatus.OK).body(dashboardServices.getBooksMoreRented(numberOfMonths));
     }
+
+    @GetMapping("/top3RentsPerRenter")
+    public ResponseEntity<Object> getTop3RentsPerRenter() {
+        return ResponseEntity.status(HttpStatus.OK).body(dashboardServices.getTop3RentsPerRenter());
+    }   
+
 }
