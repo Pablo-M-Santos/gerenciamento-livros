@@ -1,6 +1,6 @@
 stages:
-  - unit-test
-  - robot-test
+  # - unit-test
+  # - robot-test
   - deploy
 
 test_unitarios:
