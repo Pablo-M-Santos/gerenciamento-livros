@@ -8,4 +8,8 @@ public record RentsperRenterResponseDTO(
         int rentsQuantity,
         int rentsActive) {
 
+
+        public int getTotalRents() {
+                return rentsQuantity + rentsActive;
+        }
 }
