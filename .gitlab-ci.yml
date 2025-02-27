@@ -50,3 +50,24 @@
 #     - developer
 #   tags:
 #     - runner_dev
+
+stages:
+  - deploy
+
+.deploy:
+  stage: deploy
+  script:
+    - >
+      sudo --preserve-env
+      docker compose
+      -f docker-compose.yml
+      --project-name "livraria-pablo-$CI_COMMIT_REF_SLUG"
+      up -d --build
+
+deploy_develop:
+  extends: .deploy
+  environment: develop
+  only:
+    - developer
+  tags:
+    - runner_dev
