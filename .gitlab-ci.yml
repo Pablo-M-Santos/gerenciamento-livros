@@ -1,7 +1,7 @@
-stages:
-  # - unit-test
-  # - robot-test
-  - deploy
+# stages:
+#   - unit-test
+#   - robot-test
+#   - deploy
 
 # test_unitarios:
 #   stage: unit-test
@@ -33,20 +33,20 @@ stages:
 #     - xvfb-run -a robot --variable HEADLESS_OPTIONS:"--headless" ./test/locatario.robot
 #     # - xvfb-run -a robot --variable HEADLESS_OPTIONS:"--headless" ./test/aluguel.robot
 
-.deploy:
-  stage: deploy
-  script:
-    - >
-      sudo --preserve-env
-      docker compose
-      -f docker-compose.yml
-      --project-name "livraria-pablo-$CI_COMMIT_REF_SLUG"
-      up -d --build
+# .deploy:
+#   stage: deploy
+#   script:
+#     - >
+#       sudo --preserve-env
+#       docker compose
+#       -f docker-compose.yml
+#       --project-name "livraria-pablo-$CI_COMMIT_REF_SLUG"
+#       up -d --build
 
-deploy_develop:
-  extends: .deploy
-  environment: develop
-  only:
-    - developer
-  tags:
-    - runner_dev
+# deploy_develop:
+#   extends: .deploy
+#   environment: develop
+#   only:
+#     - developer
+#   tags:
+#     - runner_dev
