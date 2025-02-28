@@ -60,7 +60,7 @@ const onSubmit = async () => {
   }
 
   try {
-    const response = await fetch('http://localhost:8000/api/reset-password', {
+    const response = await fetch('https://locadora-pablo-back.altislabtech.com.br/api/reset-password', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

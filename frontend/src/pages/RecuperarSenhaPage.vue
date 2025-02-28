@@ -67,7 +67,7 @@ const onSubmit = () => {
       return;
     }
 
-    axios.post('http://localhost:8000/api/forgot', {
+    axios.post('https://locadora-pablo-back.altislabtech.com.br/api/forgot', {
       email: email.value
     }, {
       headers: {
@@ -89,7 +89,7 @@ const onSubmit = () => {
       return;
     }
 
-    axios.post('http://localhost:8000/api/reset-password/validate', {
+    axios.post('https://locadora-pablo-back.altislabtech.com.br/api/reset-password/validate', {
       token: token.value
     }, {
       headers: {
