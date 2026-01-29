@@ -29,6 +29,7 @@ const authenticate = (email, password) => {
         localStorage.setItem("userId", response.data.id);
         api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       }
+      return response.data;
     })
     .catch((error) => {
       console.error(
