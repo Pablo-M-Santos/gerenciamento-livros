@@ -83,7 +83,7 @@
         </div>
         <div class="card-body">
           <p>
-            Você veio do GitHub 😎 <br />
+            Primeira vez ? <br />
             Para acessar o projeto, utilize:
           </p>
           <p class="credentials">
