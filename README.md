@@ -13,7 +13,7 @@ Para acessar o sistema, utilize as seguintes credenciais:
 - **Senha:** `12345678`
 ## 🌳 Projeto
 
-A **Gerenciamento de Livros** é um sistema desenvolvido para gerenciar e otimizar a administração de uma locadora de livros. O objetivo principal é fornecer um conjunto de ferramentas que permita o controle eficiente de livros, locatários, usuários e outros aspectos fundamentais para o bom funcionamento da locadora. A aplicação foi construída utilizando tecnologias modernas, garantindo uma experiência fluida e intuitiva para os usuários.
+O **Gerenciamento de Livros** é um sistema desenvolvido para gerenciar e otimizar a administração de uma locadora de livros. O objetivo principal é fornecer um conjunto de ferramentas que permita o controle eficiente de livros, locatários, usuários e outros aspectos fundamentais para o bom funcionamento da locadora. A aplicação foi construída utilizando tecnologias modernas, garantindo uma experiência fluida e intuitiva para os usuários.
 
 ## 📃 Seções
 
