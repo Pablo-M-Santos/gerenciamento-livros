@@ -9,27 +9,56 @@
 
             <q-form @submit="onSubmit" @reset="onReset">
               <div class="input">
-                <q-input filled v-model="email" label="Email" prepend-icon="bx bx-envelope" lazy-rules
-                  :rules="[val => !!val || 'Email é obrigatório', val && val.length > 3 || 'Email precisa ser válido']" itemid="emailInput" />
+                <q-input
+                  filled
+                  v-model="email"
+                  label="Email"
+                  prepend-icon="bx bx-envelope"
+                  lazy-rules
+                  :rules="[
+                    (val) => !!val || 'Email é obrigatório',
+                    (val && val.length > 3) || 'Email precisa ser válido',
+                  ]"
+                  itemid="emailInput"
+                />
               </div>
               <div class="input" id="input-2">
-                <q-input filled :type="isPwd ? 'password' : 'text'" v-model="password" label="Senha"
-                  prepend-icon="fa-solid fa-lock" lazy-rules
-                  :rules="[val => !!val || 'Senha é obrigatório', val && val.length === 8 || 'A senha deve ter exatamente 8 dígitos']" itemid="passwordInput">
+                <q-input
+                  filled
+                  :type="isPwd ? 'password' : 'text'"
+                  v-model="password"
+                  label="Senha"
+                  prepend-icon="fa-solid fa-lock"
+                  lazy-rules
+                  :rules="[
+                    (val) => !!val || 'Senha é obrigatório',
+                    (val && val.length === 8) || 'A senha deve ter exatamente 8 dígitos',
+                  ]"
+                  itemid="passwordInput"
+                >
                   <template v-slot:append>
-                    <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer"
-                      @click="isPwd = !isPwd"></q-icon>
+                    <q-icon
+                      :name="isPwd ? 'visibility_off' : 'visibility'"
+                      class="cursor-pointer"
+                      @click="isPwd = !isPwd"
+                    ></q-icon>
                   </template>
                 </q-input>
               </div>
               <div class="button">
-                <q-btn type="submit" label="ENTRAR" class="q-mt-md login-button" color="primary" rounded  itemid="loginBtn"/>
+                <q-btn
+                  type="submit"
+                  label="ENTRAR"
+                  class="q-mt-md login-button"
+                  color="primary"
+                  rounded
+                  itemid="loginBtn"
+                />
               </div>
               <div class="button q-mt-sm">
-                <router-link to="/recuperar-senha">Esqueceu sua senha?</router-link>
+                <router-link style="color: #006666;" to="/recuperar-senha">Esqueceu sua senha?</router-link>
               </div>
             </q-form>
-
           </div>
 
           <div class="container-interno">
@@ -38,7 +67,7 @@
           </div>
         </div>
       </q-page>
-       <q-card v-if="showCard" class="welcome-card shadow-4">
+      <q-card v-if="showCard" class="welcome-card shadow-4">
         <div class="card-header">
           <h4>👋 Olá, seja bem-vindo!</h4>
           <q-btn
@@ -67,29 +96,29 @@
   </q-layout>
 </template>
 
-
 <script setup>
-import { ref } from 'vue';
-import { useQuasar } from 'quasar';
-import { useRouter } from 'vue-router';
-import { authenticate } from 'boot/axios';
+import { ref } from "vue";
+import { useQuasar } from "quasar";
+import { useRouter } from "vue-router";
+import { authenticate } from "boot/axios";
 
 const $q = useQuasar();
 const router = useRouter();
 const isPwd = ref(true);
-const val = ref('');
+const val = ref("");
 const showCard = ref(true);
+
 const showNotification = (type, msg) => {
   $q.notify({
     type: type,
     message: msg,
-    position: 'top',
-    timeout: 2000
+    position: "top",
+    timeout: 2000,
   });
 };
 
-const email = ref('');
-const password = ref('');
+const email = ref("");
+const password = ref("");
 
 const onSubmit = () => {
   if (email.value && password.value) {
@@ -97,22 +126,21 @@ const onSubmit = () => {
       .then(() => {
         email.value = null;
         password.value = null;
-        router.push('/main/home');
+        router.push("/main/home");
       })
       .catch(() => {
-        showNotification('negative', "Credenciais Inválidas!");
+        showNotification("negative", "Credenciais Inválidas!");
       });
   } else {
-    showNotification('negative', "Por favor, preencha todos os campos corretamente");
+    showNotification("negative", "Por favor, preencha todos os campos corretamente");
   }
-}
+};
 
 const onReset = () => {
   email.value = null;
   password.value = null;
-}
+};
 </script>
-
 
 <style scoped>
 .container {
@@ -152,6 +180,7 @@ const onReset = () => {
   display: flex;
   justify-content: center;
   align-items: center;
+  color: #006666 !important;
 }
 
 .container-textos .titulo {
@@ -179,7 +208,6 @@ const onReset = () => {
   width: 480px;
 }
 
-
 #input-2 {
   margin-top: 45px;
 }
@@ -189,12 +217,11 @@ const onReset = () => {
   height: 59px;
   margin-top: 60px;
   border-radius: 30px;
-  background-color: #006666;
+  background-color: #006666 !important;
   font-size: 21px;
   font-weight: 800;
   color: white;
 }
-
 
 .container-interno {
   width: 320px;
@@ -213,7 +240,6 @@ const onReset = () => {
     margin: 24.71px 0px 0px 52px;
   }
 }
-
 .welcome-card {
   position: fixed;
   bottom: 20px;
@@ -278,7 +304,8 @@ const onReset = () => {
   font-size: 14px;
   color: #004d40;
 }
-  
+
+
 @media (max-width: 1000px) {
   .container-interno h2 {
     display: none;
@@ -329,7 +356,6 @@ const onReset = () => {
     font-size: 17px;
   }
 }
-
 
 @media (max-width: 600px) {
   .container-externo {
