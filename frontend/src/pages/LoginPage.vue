@@ -38,6 +38,31 @@
           </div>
         </div>
       </q-page>
+       <q-card v-if="showCard" class="welcome-card shadow-4">
+        <div class="card-header">
+          <h4>👋 Olá, seja bem-vindo!</h4>
+          <q-btn
+            flat
+            icon="close"
+            round
+            dense
+            size="sm"
+            color="#555"
+            @click="showCard = false"
+            class="close-btn"
+          />
+        </div>
+        <div class="card-body">
+          <p>
+            Você veio do GitHub 😎 <br />
+            Para acessar o projeto, utilize:
+          </p>
+          <p class="credentials">
+            Email: <strong>admin@gmail.com</strong><br />
+            Senha: <strong>12345678</strong>
+          </p>
+        </div>
+      </q-card>
     </q-page-container>
   </q-layout>
 </template>
@@ -53,6 +78,7 @@ const $q = useQuasar();
 const router = useRouter();
 const isPwd = ref(true);
 const val = ref('');
+const showCard = ref(true);
 const showNotification = (type, msg) => {
   $q.notify({
     type: type,
@@ -188,6 +214,71 @@ const onReset = () => {
   }
 }
 
+.welcome-card {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  background: #f8f9fa; 
+  color: #333;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  font-family: 'Roboto', sans-serif;
+  animation: slideIn 0.5s ease-out;
+  z-index: 9999;
+}
+
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.card-header {
+  background-color: #006666;
+  color: white;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header h4 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.close-btn {
+  min-width: 24px;
+}
+
+.card-body {
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.card-body p {
+  margin: 0 0 8px 0;
+}
+
+.credentials {
+  background-color: #e0f2f1; 
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #004d40;
+}
+  
 @media (max-width: 1000px) {
   .container-interno h2 {
     display: none;
