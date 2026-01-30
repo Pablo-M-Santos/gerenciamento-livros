@@ -67,7 +67,7 @@
           </div>
         </div>
       </q-page>
-      <q-card v-if="showCard" class="welcome-card shadow-4">
+       <q-card v-if="showCard" class="welcome-card shadow-4">
         <div class="card-header">
           <h4>👋 Olá, seja bem-vindo!</h4>
           <q-btn
@@ -81,11 +81,20 @@
             class="close-btn"
           />
         </div>
+      
         <div class="card-body">
           <p>
-            Primeira vez ? <br />
+            ⏳ O sistema está carregando.<br />
+            Por favor, aguarde alguns instantes.
+          </p>
+      
+          <q-separator class="q-my-sm" />
+      
+          <p>
+            Primeira vez?<br />
             Para acessar o projeto, utilize:
           </p>
+      
           <p class="credentials">
             Email: <strong>admin@gmail.com</strong><br />
             Senha: <strong>12345678</strong>
