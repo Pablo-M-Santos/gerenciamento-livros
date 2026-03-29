@@ -1,41 +1,12 @@
-<h1 align="center">
-  💻<br>Gerenciamento de Livros -  Pablo Santos
-</h1>
+# 📚 Locadora de Livros Java
+<br>
 
+> Este projeto faz parte de um treinamento da empresa WDA, relacionado ao estágio no curso de informática. O objetivo principal é criar uma plataforma para a gestão de uma locadora de livros, proporcionando uma experiência intuitiva e eficiente para o administrador, com QUASAR e Spring Boot.
+<br>
 
-<h4 align="center"><a href="https://gerenciamentolivros.netlify.app/">Clique aqui para acessar minha locadora</a></h4><br>
-
-## 👤 Credenciais para acesso
-
-Para acessar o sistema, utilize as seguintes credenciais:
-
-- **Email:** `admin@gmail.com`
-- **Senha:** `12345678`
-## 🌳 Projeto
-
-O **Gerenciamento de Livros** é um sistema desenvolvido para gerenciar e otimizar a administração de uma locadora de livros. O objetivo principal é fornecer um conjunto de ferramentas que permita o controle eficiente de livros, locatários, usuários e outros aspectos fundamentais para o bom funcionamento da locadora. A aplicação foi construída utilizando tecnologias modernas, garantindo uma experiência fluida e intuitiva para os usuários.
-
-## 📃 Seções
-
-A locadora é composta por 7 seções diferentes:
-
-- Seção Login: Nessa parte o usuário vai fazer o login com suas credenciais;
-- Seção Home: O Usuário tem acesso a dashboards e tabela sobre o gerenciamento de livros o locatários do sistema;
-- Seção Editora: Nessa seção fica todas as editora e suas devidas funcionalidades;
-- Seção Livro: Nessa seção fica todos os livros e suas devidas funções;
-- Seção Locatário: Nessa seção fica todos os locatários suas informações;
-- Seção Aluguel: Nessa seção fica todos os alugueis e seus status de aluguel;
-- Seção Usuário: Nessa parte fica todos os usuários cadastrados no sistema e suas permissões;
-
-## 👨🏽‍💻 Tecnologias utilizadas
-
-Para o desenvolvimento da locadora usei as seguintes tecnologias:
-
-- Visual Studio Code;
-- FIGMA;
-- Vue.js
-- Quasar
-- Java
-- Spring Boot
-- PostgresSQL
-- Robot Framework
+## ⚙ Tecnologias utilizada
+Para o desenvolvimento da Locadora de Livros estou usando as seguintes tecnologias:
+  - IntelliJ IDEA
+  - Spring Boot
+  - Postman
+  - PostgreSQL

@@ -1,74 +1,99 @@
+// src/router/routes.js
+const LoginLayout = () => import("layouts/LoginLayout.vue");
+const MainLayout = () => import("layouts/MainLayout.vue");
+
+const LoginPage = () => import("pages/auth/LoginPage.vue");
+const RegisterPage = () => import("pages/auth/RegisterPage.vue");
+const RecuperarSenhaPage = () => import("pages/RecuperarSenhaPage.vue");
+const ResetPasswordPage = () => import("pages/ResetPasswordPage.vue");
+
+const HomePage = () => import("pages/HomePage.vue");
+const EditoraPage = () => import("pages/editora/EditoraPage.vue");
+const LivroPage = () => import("pages/livros/LivroPage.vue");
+const LocatarioPage = () => import("pages/locatario/LocatarioPage.vue");
+const AluguelPage = () => import("pages/aluguel/AluguelPage.vue");
+const UsuarioPage = () => import("pages/usuarios/UsuarioPage.vue");
+
+const ErrorNotFound = () => import("pages/error/ErrorNotFound.vue");
+
 const routes = [
   {
     path: "/",
-    component: () => import("layouts/LoginLayout.vue"),
+    component: LoginLayout,
     children: [
       {
         path: "",
         name: "login",
-        component: () => import("src/pages/LoginPage.vue"),
+        component: LoginPage,
         meta: { title: "Login" },
+      },
+      {
+        path: "register",
+        name: "cadastro",
+        component: RegisterPage,
+        meta: { title: "Cadastro" },
       },
       {
         path: "recuperar-senha",
         name: "recuperarSenha",
-        component: () => import("src/pages/RecuperarSenhaPage.vue"),
+        component: RecuperarSenhaPage,
         meta: { title: "Recuperar Senha" },
       },
       {
-        path: "/reset-password",
+        path: "reset-password",
         name: "resetPassword",
-        component: () => import("src/pages/ResetPasswordPage.vue"),
+        component: ResetPasswordPage,
         meta: { title: "Redefinir Senha" },
       },
     ],
   },
-
   {
     path: "/main",
-    component: () => import("layouts/MainLayout.vue"),
+    component: MainLayout,
     children: [
       {
         path: "home",
         name: "home",
-        component: () => import("src/pages/HomePage.vue"),
+        component: HomePage,
         meta: { title: "Página Inicial" },
       },
       {
         path: "editora",
         name: "editora",
-        component: () => import("src/pages/EditoraPage.vue"),
+        component: EditoraPage,
         meta: { title: "Controle de Editoras" },
       },
       {
         path: "livros",
         name: "livros",
-        component: () => import("src/pages/LivroPage.vue"),
+        component: LivroPage,
         meta: { title: "Controle de Livros" },
       },
       {
         path: "locatario",
         name: "locatario",
-        component: () => import("src/pages/LocatarioPage.vue"),
+        component: LocatarioPage,
         meta: { title: "Controle Locatário" },
       },
       {
         path: "aluguel",
         name: "aluguel",
-        component: () => import("src/pages/AluguelPage.vue"),
+        component: AluguelPage,
         meta: { title: "Controle de Aluguel" },
       },
       {
         path: "usuario",
         name: "usuario",
-        component: () => import("src/pages/UsuarioPage.vue"),
+        component: UsuarioPage,
         meta: { title: "Controle de Usuário" },
       },
     ],
   },
   {
     path: "/:catchAll(.*)*",
-    component: () => import("pages/ErrorNotFound.vue"),
+    name: "notfound",
+    component: ErrorNotFound,
+    meta: { title: "Página não encontrada" },
   },
 ];
 
