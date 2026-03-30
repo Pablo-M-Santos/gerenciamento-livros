@@ -1,594 +1,421 @@
-  <template>
-    <div class="content">
-      <!-- Button cadastrar -->
-      <div class="containerButton">
-        <q-btn style="width: 200px; background-color: #008080; color: white;" v-if="userRole === 'ADMIN'"
-          itemid="cadastroBtnEditora" @click="openRegisterDialog">
-          <div class="buttonCadastrar">
-            CADASTRAR EDITORA
-          </div>
-        </q-btn>
-      </div>
+<template>
+  <q-page class="editoras-page">
+    <section class="editoras-header animate-header">
+      <h1>Gerenciamento de Editoras</h1>
+      <p>Gerencie as editoras da sua biblioteca digital</p>
+    </section>
 
-      <!-- Barra de Pesquisa -->
-      <q-form @submit="getRows(srch)" class="q-ml-sm col container">
-        <q-input v-model="srch" label="Pesquisar Editora" class="q-ml-sm col" input-style="min-width: 100%"
-          itemid="searchInput">
-          <template v-slot:append>
-            <q-icon v-if="srch !== ''" name="close" @click="srch = '', getRows(srch)" class="cursor-pointer"
-              itemid="closeSearchBtn" />
-          </template>
+    <section class="stats-grid">
+      <PublisherStatsCard
+        :card-index="1"
+        icon="business"
+        label="Total de Editoras"
+        :value="summary.total"
+        type="total"
+      />
+      <PublisherStatsCard
+        :card-index="2"
+        icon="library_books"
+        label="Com Livros"
+        :value="summary.withBooks"
+        type="with-books"
+      />
+      <PublisherStatsCard
+        :card-index="3"
+        icon="menu_book"
+        label="Sem Livros"
+        :value="summary.withoutBooks"
+        type="without-books"
+      />
+    </section>
 
-          <template v-slot:after>
-            <q-btn @click="getRows(srch)" round dense flat icon="search" itemid="searchBtn" />
-          </template>
-        </q-input>
-      </q-form>
+    <PublisherSearchBar
+      :search-query="searchQuery"
+      :can-add="userRole === 'ADMIN'"
+      @update:search="searchQuery = $event"
+      @search="handleSearch"
+      @clear="clearSearch"
+      @add="openRegisterCadastro"
+    />
 
-      <!-- Modal Cadastro -->
-      <q-dialog v-model="showModalCadastro">
-        <q-card class="modal-card">
-          <q-card-section>
-            <div class="titulo-cadastro">Cadastro de Editora</div>
-          </q-card-section>
+    <PublisherTable
+      :rows="rows"
+      :loading="loading"
+      :is-admin="userRole === 'ADMIN'"
+      :publishers-with-books="publishersWithBooks"
+      @view="showDetails"
+      @edit="editRow"
+      @delete="askDelete"
+    />
 
-          <q-card-section>
-            <q-form @submit.prevent="saveNewPublisher">
-              <q-input filled v-model="newPublisher.name" label="Nome da Editora" required lazy-rules
-                :rules="[val => !!val || 'Nome da Editora é obrigatório']" itemid="cadastroNomeEditora" />
-
-              <q-input filled v-model="newPublisher.telephone" label="Telefone" type="tel" required lazy-rules
-                mask="(##) #####-####"
-                :rules="[val => !!val || 'Telefone é obrigatório', val => /^\(\d{2}\) \d{5}-\d{4}$/.test(val) || 'Telefone inválido']"
-                itemid="cadastroTelefoneEditora" />
-
-              <q-input filled v-model="newPublisher.email" label="Email" type="email" required lazy-rules
-                :rules="[val => !!val || 'Email é obrigatório', val => /^.+@gmail\.com$/.test(val) || 'O e-mail deve ser um endereço Gmail válido']"
-                itemid="cadastrarEmailEditora" />
-
-              <q-input filled v-model="newPublisher.site" label="Site " lazy-rules :rules="[
-                val => !val || /^https:\/\/.+/.test(val) || 'O site deve começar com https://'
-              ]" itemid="cadastrarSiteEditora" />
-
-              <div class="button-container">
-                <q-btn type="submit" label="CADASTRAR" class="center-width q-mt-md" itemid="BtnCadastrarEditora" />
-              </div>
-            </q-form>
-          </q-card-section>
-        </q-card>
-      </q-dialog>
-
-      <!-- Modal Editar -->
-      <q-dialog v-model="showModalEditar">
-        <q-card class="modal-card">
-          <q-card-section>
-            <div class="titulo-cadastro">Editar Editora</div>
-          </q-card-section>
-          <q-card-section>
-            <q-form>
-              <q-input filled v-model="editPublisher.name" label="Nome da Editora" required lazy-rules
-                :rules="[val => !!val || 'Nome da Editora é obrigatório']" itemid="editarNomeEditora" />
-
-              <q-input filled v-model="editPublisher.telephone" label="Telefone" type="tel" required lazy-rules
-                mask="(##) #####-####"
-                :rules="[val => !!val || 'Telefone é obrigatório', val => /^\(\d{2}\) \d{5}-\d{4}$/.test(val) || 'Telefone inválido']"
-                itemid="editarTelefoneEditora" />
-
-              <q-input filled v-model="editPublisher.email" label="Email" type="email" required lazy-rules
-                :rules="[val => !!val || 'Email é obrigatório', val => /^.+@gmail\.com$/.test(val) || 'O e-mail deve ser um endereço Gmail válido']"
-                itemid="editarEmailEditora" />
-
-              <q-input filled v-model="editPublisher.site" label="Site " lazy-rules :rules="[
-                val => !val || /^https:\/\/.+/.test(val) || 'O site deve começar com https://'
-              ]" itemid="editarSiteEditora" />
-              <div class="button-container">
-                <q-btn type="submit" label="ATUALIZAR" @click="saveEdit" class="center-width q-mt-md"
-                  itemid="BtnEditarEditora" />
-              </div>
-            </q-form>
-          </q-card-section>
-        </q-card>
-      </q-dialog>
-
-      <!-- Modal Sobre -->
-      <q-dialog v-model="showModalSobre">
-        <q-card class="modal-card">
-          <q-card-section>
-            <div class="titulo-sobre text-center">Detalhes da Editora</div>
-          </q-card-section>
-          <q-card-section>
-            <div class="form-grid">
-              <q-input filled v-model="selectedRow.name" label="Nome" readonly />
-              <br>
-              <q-input filled v-model="selectedRow.telephone" label="Telefone" readonly />
-              <br>
-              <q-input filled v-model="selectedRow.email" label="Email" readonly />
-              <br>
-              <q-input filled v-model="selectedRow.site" label="Site" readonly />
-            </div>
-          </q-card-section>
-          <q-card-actions class="button-sobre">
-            <q-btn label="Fechar" @click="showModalSobre = false" itemid="BtnSobreUsuario" />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
-
-      <!-- Modal Exclusão -->
-      <q-dialog v-model="showModalExcluir">
-        <q-card class="modal-card-exclusao">
-          <q-card-section class="text-center">
-            <div class="circulo">
-              <i class="fa-solid fa-exclamation"></i>
-            </div>
-            <h3 class="titulo-exclusao">Tem certeza que deseja excluir?</h3>
-          </q-card-section>
-
-          <q-card-actions class="button-exclusao">
-            <q-btn label="SIM" color="negative" @click="confirmDelete" class="q-mr-sm" itemid="BtnExcluirUsuario" />
-            <q-btn label="NÃO" color="secondary" @click="cancelDelete" />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
-
-      <!-- Table -->
-      <div class="table-container">
-        <q-table class="custom-table" :pagination="pagination" :rows="paginatedRows" :columns="columns" row-key="id"
-          hide-bottom>
-          <template v-slot:body-cell-actions="props">
-            <q-td :props="props" class="text-center">
-              <q-btn flat color="primary" @click="showDetails(props.row)" icon="visibility" aria-label="View"
-                :itemid="'visibility' + '-' + props.row.name">
-                <q-tooltip class="bg-primary" :offset="[10, 10]">Visualizar detalhes</q-tooltip>
-              </q-btn>
-
-              <q-btn flat color="secondary" v-if="userRole === 'ADMIN'" @click="editRow(props.row)" icon="edit"
-                :itemid="'edit' + '-' + props.row.name" aria-label="Edit">
-                <q-tooltip class="bg-secondary" :offset="[10, 10]">Editar Editora</q-tooltip>
-              </q-btn>
-
-              <q-btn flat color="negative" v-if="userRole === 'ADMIN' && !isPublisherWithBooks(props.row.id)"
-                @click="showDeleteModal(props.row)" icon="delete" :itemid="'delete' + '-' + props.row.name"
-                aria-label="Delete">
-                <q-tooltip class="bg-negative" :offset="[10, 10]">Excluir Editora</q-tooltip>
-              </q-btn>
-            </q-td>
-          </template>
-        </q-table>
-
-
-      </div>
-      <div class="row justify-center q-my-md">
-        <q-btn :disable="page.value <= 0" @click="prevPage" class="q-mx-sm">
-          <q-icon name="chevron_left" />
-        </q-btn>
-        <q-btn :disable="page.value >= totalPages - 1" @click="nextPage" class="q-mx-sm">
-          <q-icon name="chevron_right" />
-        </q-btn>
-      </div>
-
+    <div v-if="totalPages > 1" class="pagination-wrap">
+      <q-pagination
+        :model-value="page"
+        :max="totalPages"
+        direction-links
+        boundary-links
+        color="positive"
+        active-design="unelevated"
+        class="editoras-pagination"
+        @update:model-value="handlePageChange"
+      />
     </div>
-  </template>
+
+    <PublisherFormModal
+      v-model="showModalCadastro"
+      :is-edit-mode="false"
+      :initial-data="{ id: null, name: '', email: '', telephone: '', site: '' }"
+      @submit="submitFormCadastro"
+    />
+
+    <PublisherFormModal
+      v-model="showModalEditar"
+      :is-edit-mode="true"
+      :initial-data="formEditar"
+      @submit="submitFormEditar"
+    />
+
+    <PublisherDetailsModal
+      v-model="showModalSobre"
+      :publisher-data="selectedRow"
+    />
+
+    <PublisherDeleteModal
+      v-model="showModalExcluir"
+      :target-name="deleteTarget?.name || ''"
+      @confirm="confirmDelete"
+    />
+  </q-page>
+</template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { api } from 'src/boot/axios.js';
-import { Notify } from 'quasar';
+import { computed, ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { api } from "src/boot/axios.js";
+import { Notify } from "quasar";
 
-const showModalCadastro = ref(false);
-const showModalSobre = ref(false);
-const showModalEditar = ref(false);
-const showModalExcluir = ref(false);
-const rowToDelete = ref(null);
-const selectedRow = ref(null);
-const search = ref('');
-const srch = ref('');
-const page = ref(0);
-const rowsPerPage = 10;
-const currentPage = ref(1);
-const maxRowsPerPage = 10;
+import PublisherStatsCard from "src/components/editoras/PublisherStatsCard.vue";
+import PublisherSearchBar from "src/components/editoras/PublisherSearchBar.vue";
+import PublisherTable from "src/components/editoras/PublisherTable.vue";
+import PublisherFormModal from "src/components/editoras/PublisherFormModal.vue";
+import PublisherDetailsModal from "src/components/editoras/PublisherDetailsModal.vue";
+import PublisherDeleteModal from "src/components/editoras/PublisherDeleteModal.vue";
 
-const newPublisher = ref({ name: '', email: '', telephone: '', site: '' });
-const editPublisher = ref([]);
+const router = useRouter();
 
-
-const columns = [
-  { name: 'name', required: true, label: 'Nome da Editora', align: 'center', field: row => row.name, format: val => `${val}`, sortable: true },
-  { name: 'email', required: true, label: 'Email', align: 'center', field: row => row.email, format: val => `${val}`, sortable: true },
-  { name: 'telephone', required: true, label: 'Telefone', align: 'center', field: row => row.telephone, format: val => `${val}`, sortable: true },
-  { name: 'actions', align: 'center', label: 'Ações', field: 'actions' },
-];
+const userRole = ref("");
+const searchQuery = ref("");
 const rows = ref([]);
-
-const pagination = ref({
-  page: 1,
-  rowsPerPage: 8,
-});
-
-
-
-const saveNewPublisher = async () => {
-  try {
-    const response = await api.post('/publisher', newPublisher.value, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    rows.value.push(response.data);
-    Notify.create({
-      color: 'green',
-      textColor: 'white',
-      icon: 'check_circle',
-      message: 'Editora criada com sucesso!',
-      position: 'top'
-    });
-    getRows();
-    showModalCadastro.value = false;
-  } catch (error) {
-    let errorMessage = 'Erro ao criar editora!';
-
-    if (error.response) {
-      if (error.response.status === 400) {
-        errorMessage = Object.values(error.response.data).join(', ') || errorMessage;
-      } else if (error.response.data.message) {
-        errorMessage = error.response.data.message;
-      }
-    }
-
-    console.error('Erro ao criar nova editora:', error.response ? error.response.data : error.message);
-    Notify.create({
-      color: 'red',
-      textColor: 'white',
-      icon: 'error',
-      message: errorMessage,
-      position: 'top'
-    });
-  }
-};
-
-const performSearch = () => {
-  onSearch();
-};
-
-const getRows = (srch = '') => {
-  api.get('/publisher', { params: { search: srch, page: page.value } })
-    .then(response => {
-      if (Array.isArray(response.data.content)) {
-        rows.value = response.data.content;
-      } else {
-        console.error('A resposta da API não é um array:', response.data);
-        rows.value = [];
-      }
-      console.log('Resposta da API:', response.data);
-    })
-    .catch(error => {
-      console.error("Erro ao obter dados:", error);
-    });
-}
-
-
-const confirmDelete = async () => {
-  if (rowToDelete.value && rowToDelete.value.id) {
-    try {
-      const response = await api.delete(`/publisher/${rowToDelete.value.id}`);
-      const index = rows.value.findIndex(r => r.id === rowToDelete.value.id);
-      if (index !== -1) {
-        rows.value.splice(index, 1);
-      }
-      Notify.create({
-        color: 'red',
-        textColor: 'white',
-        icon: 'delete',
-        message: response.data.message || 'Registro excluído com sucesso!',
-        position: 'top'
-      });
-    } catch (error) {
-      let errorMessage = 'Erro ao excluir registro!';
-
-      if (error.response) {
-        if (error.response.data.message) {
-          errorMessage = error.response.data.message;
-        } else if (error.response.status === 400) {
-          errorMessage = Object.values(error.response.data).join(', ') || errorMessage;
-        }
-      }
-
-      console.error("Erro ao excluir:", error.response ? error.response.data : error.message);
-      Notify.create({
-        color: 'red',
-        textColor: 'white',
-        icon: 'error',
-        message: errorMessage,
-        position: 'top'
-      });
-    } finally {
-      showModalExcluir.value = false;
-    }
-  }
-};
-
-
-const onSearch = () => {
-};
-
-
-const totalPages = computed(() => {
-  return Math.ceil(rows.value.length / rowsPerPage);
-});
-
-
-
-const paginatedRows = computed(() => {
-  const start = (currentPage.value - 1) * maxRowsPerPage;
-  return rows.value.slice(start, start + maxRowsPerPage);
-});
-
-const prevPage = () => {
-  if (page.value > 0) {
-    page.value--;
-    getRows(search.value);
-  }
-};
-
-const nextPage = () => {
-  page.value++;
-  getRows(search.value);
-};
-
-const loadPublisherDetails = (id) => {
-  api.get(`/publisher/${id}`)
-    .then(response => {
-      if (response.data) {
-        selectedRow.value = response.data;
-        showModalSobre.value = true;
-      } else {
-        console.error('Editora não encontrada:', response.data);
-      }
-    })
-    .catch(error => {
-      console.error("Erro ao obter detalhes da editora:", error);
-    });
-};
-
-
-const showNotification = (type, message) => {
-  Notify.create({
-    color: type === 'positive' ? 'green' : 'red',
-    textColor: 'white',
-    icon: type === 'positive' ? 'check_circle' : 'error',
-    message: message,
-    position: 'top',
-  });
-};
-const userRole = ref('');
-
-onMounted(() => {
-  const token = localStorage.getItem('authToken');
-  if (!token) {
-    router.push('/login');
-  } else {
-    userRole.value = localStorage.getItem('role')
-    getRows();
-    loadBooks();
-  }
-});
-
-const isPublisherWithBooks = (publisherId) => {
-  return publishersWithBooks.value.includes(publisherId);
-};
-
+const page = ref(1);
+const rowsNumber = ref(0);
+const pageSize = 8;
+const loading = ref(false);
 const publishersWithBooks = ref([]);
 
-const loadBooks = (search = '') => {
-  api.get('/book', { params: { search: search, page: page.value } })
-    .then(response => {
-      console.log('Dados dos livros:', response.data);
-      const books = response.data.content;
+const showModalCadastro = ref(false);
+const showModalEditar = ref(false);
+const showModalSobre = ref(false);
+const showModalExcluir = ref(false);
 
-      publishersWithBooks.value = books.map(book => book.publisher.id);
-    })
-    .catch(error => {
-      console.error('Erro ao carregar livros:', error);
+const formEditar = ref({
+  id: null,
+  name: "",
+  email: "",
+  telephone: "",
+  site: "",
+});
+
+const selectedRow = ref({
+  id: null,
+  name: "",
+  email: "",
+  telephone: "",
+  site: "",
+});
+
+const deleteTarget = ref(null);
+
+const summary = computed(() => {
+  const publisherIdsWithBooks = new Set(publishersWithBooks.value);
+  const total = rowsNumber.value;
+  const withBooks = rows.value.filter((publisher) =>
+    publisherIdsWithBooks.has(publisher.id)
+  ).length;
+  const withoutBooks = Math.max(total - withBooks, 0);
+
+  return {
+    total,
+    withBooks,
+    withoutBooks,
+  };
+});
+
+const totalPages = computed(() => {
+  return Math.max(1, Math.ceil(rowsNumber.value / pageSize));
+});
+
+const notify = (type, message) => {
+  Notify.create({ type, message, position: "top", timeout: 2200 });
+};
+
+const extractPageData = (payload) => {
+  const list = Array.isArray(payload?.content)
+    ? payload.content
+    : Array.isArray(payload)
+    ? payload
+    : [];
+
+  const total =
+    typeof payload?.totalElements === "number"
+      ? payload.totalElements
+      : list.length;
+  const currentPage =
+    typeof payload?.number === "number" ? payload.number + 1 : 1;
+
+  return { list, total, currentPage };
+};
+
+const loadPublishers = async (search = "", targetPage = page.value) => {
+  loading.value = true;
+  try {
+    const response = await api.get("/publisher", {
+      params: { search: search || undefined, page: targetPage - 1 },
     });
+    const { list, total, currentPage } = extractPageData(response.data);
+    rows.value = list;
+    rowsNumber.value = total;
+    page.value = currentPage;
+  } catch (error) {
+    notify("negative", "Erro ao carregar editoras.");
+    rows.value = [];
+    rowsNumber.value = 0;
+  } finally {
+    loading.value = false;
+  }
 };
 
-
-
-const openRegisterDialog = () => {
-  showModalCadastro.value = true;
+const loadBooks = async () => {
+  try {
+    const response = await api.get("/book");
+    const books = Array.isArray(response.data?.content)
+      ? response.data.content
+      : Array.isArray(response.data)
+      ? response.data
+      : [];
+    publishersWithBooks.value = books
+      .map((book) => book?.publisher?.id)
+      .filter((id) => typeof id === "number");
+  } catch (error) {
+    publishersWithBooks.value = [];
+  }
 };
 
-const showDetails = (row) => {
-  loadPublisherDetails(row.id);
-};
+const submitFormCadastro = async (formData) => {
+  if (!formData.name || !formData.email || !formData.telephone) {
+    notify("negative", "Preencha todos os campos obrigatorios.");
+    return;
+  }
 
-const showDeleteModal = (row) => {
-  rowToDelete.value = row;
-  showModalExcluir.value = true;
-};
+  try {
+    await api.post("/publisher", {
+      name: formData.name,
+      email: formData.email,
+      telephone: formData.telephone,
+      site: formData.site,
+    });
 
-const cancelDelete = () => {
-  showModalExcluir.value = false;
+    notify("positive", "Editora cadastrada com sucesso.");
+    showModalCadastro.value = false;
+    await loadPublishers(searchQuery.value);
+  } catch (error) {
+    notify(
+      "negative",
+      error.response?.data?.message || "Erro ao cadastrar editora."
+    );
+  }
 };
 
 const editRow = (row) => {
-  api.get(`/publisher/${row.id}`)
-    .then(response => {
-      if (response.data) {
-        editPublisher.value = { ...response.data };
-        showModalEditar.value = true;
-      } else {
-        Notify.create({
-          color: 'red',
-          textColor: 'white',
-          icon: 'error',
-          message: 'Editora não encontrada!',
-          position: 'top'
-        });
-        console.error('Editora não encontrada:', response.data);
-      }
-    })
-    .catch(error => {
-      Notify.create({
-        color: 'red',
-        textColor: 'white',
-        icon: 'error',
-        message: 'Erro ao obter dados da editora!',
-        position: 'top'
-      });
-      console.error("Erro ao obter dados da editora:", error);
-    });
+  formEditar.value = { ...row };
+  showModalEditar.value = true;
 };
 
+const submitFormEditar = async (formData) => {
+  if (!formData.name || !formData.email || !formData.telephone) {
+    notify("negative", "Preencha todos os campos obrigatorios.");
+    return;
+  }
 
-const saveEdit = async () => {
   try {
-    const response = await api.put(`/publisher/${editPublisher.value.id}`, editPublisher.value, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    await api.put(`/publisher/${formEditar.value.id}`, {
+      id: formEditar.value.id,
+      name: formData.name,
+      email: formData.email,
+      telephone: formData.telephone,
+      site: formData.site,
     });
 
-    const index = rows.value.findIndex(r => r.id === editPublisher.value.id);
-    if (index !== -1) {
-      rows.value[index] = response.data;
-    }
-
-    Notify.create({
-      color: 'green',
-      textColor: 'white',
-      icon: 'check_circle',
-      message: 'Editora atualizada com sucesso!',
-      position: 'top',
-    });
+    notify("positive", "Editora atualizada com sucesso.");
     showModalEditar.value = false;
+    await loadPublishers(searchQuery.value);
   } catch (error) {
-    let errorMessage = 'Erro ao atualizar editora!';
-
-    if (error.response) {
-      if (error.response.status === 400) {
-        errorMessage = Object.values(error.response.data).join(', ') || errorMessage;
-      } else if (error.response.data.message) {
-        errorMessage = error.response.data.message;
-      }
-    }
-
-    console.error('Erro ao atualizar editora:', error.response ? error.response.data : error.message);
-    Notify.create({
-      color: 'red',
-      textColor: 'white',
-      icon: 'error',
-      message: errorMessage,
-      position: 'top',
-    });
+    notify(
+      "negative",
+      error.response?.data?.message || "Erro ao atualizar editora."
+    );
   }
 };
 
+const showDetails = async (row) => {
+  try {
+    const response = await api.get(`/publisher/${row.id}`);
+    selectedRow.value = response.data || row;
+  } catch (error) {
+    selectedRow.value = row;
+  } finally {
+    showModalSobre.value = true;
+  }
+};
 
+const askDelete = (row) => {
+  deleteTarget.value = row;
+  showModalExcluir.value = true;
+};
+
+const confirmDelete = async () => {
+  if (!deleteTarget.value?.id) return;
+
+  try {
+    await api.delete(`/publisher/${deleteTarget.value.id}`);
+    notify("positive", "Editora excluida com sucesso.");
+    showModalExcluir.value = false;
+    deleteTarget.value = null;
+    await loadPublishers(searchQuery.value);
+  } catch (error) {
+    notify(
+      "negative",
+      error.response?.data?.message || "Erro ao excluir editora."
+    );
+  }
+};
+
+const handleSearch = () => {
+  page.value = 1;
+  loadPublishers(searchQuery.value, 1);
+};
+
+const clearSearch = () => {
+  searchQuery.value = "";
+  page.value = 1;
+  loadPublishers("", 1);
+};
+
+const handlePageChange = (newPage) => {
+  if (!newPage || newPage === page.value) return;
+  page.value = newPage;
+  loadPublishers(searchQuery.value, newPage);
+};
+
+const openRegisterCadastro = () => {
+  showModalCadastro.value = true;
+};
+
+onMounted(async () => {
+  const token = localStorage.getItem("authToken");
+  if (!token) {
+    router.push("/login");
+    return;
+  }
+
+  userRole.value = localStorage.getItem("role") || "";
+  await Promise.all([loadPublishers(), loadBooks()]);
+});
 </script>
 
-
 <style scoped>
-.content {
-  padding: 16px;
-}
-
-.containerButton {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 16px;
-}
-
-.titulo-sobre {
-  font-size: 1.2rem;
-  text-align: center;
-  margin-bottom: 16px;
-}
-
-.modal-card {
-  width: 600px;
-  padding: 10px;
-  border-radius: 20px;
-  max-width: 90vw;
-  box-shadow: 15px 13px 61px -17px rgba(0, 0, 0, 0.49);
-}
-
-.modal-card-exclusao {
-  width: 400px;
-  border-radius: 10px;
-  box-shadow: 15px 13px 61px -17px rgba(0, 0, 0, 0.49);
-}
-
-.titulo-cadastro {
-  font-size: 18px;
-  text-align: center;
-}
-
-.button-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 16px;
-}
-
-.center-width {
-  width: 100%;
-  max-width: 200px;
+.editoras-page {
+  padding: 34px 60px;
+  background: #f5f5f3;
+  min-height: 100vh;
   margin: 0 auto;
 }
 
-.table-container {
-  margin-top: 16px;
+.editoras-header {
+  margin-bottom: 12px;
+  animation: slideInUp 0.35s ease-out forwards;
+  opacity: 0;
 }
 
-.titulo-exclusao {
-  font-size: 18px;
-  margin: 16px 0;
+.editoras-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f1f1f;
+  margin: 0 0 8px 0;
 }
 
-.button-exclusao {
-  display: flex;
-  justify-content: center;
+.editoras-header p {
+  font-size: 1rem;
+  color: #75736a;
+  margin: 0;
 }
 
-.custom-table {
-  max-width: 1300px;
-  width: 100%;
-  margin: 0 auto;
+.stats-grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: 16px;
 }
 
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  padding-bottom: 20px;
-  max-width: 1300px;
-  width: 100%;
-  margin: 0 auto;
+.pagination-wrap {
+  margin: 18px auto 0;
+  width: fit-content;
+  padding: 8px 10px;
+  border: 1px solid #e7e6e2;
+  border-radius: 12px;
+  background: #fff;
 }
 
-.pesquisa {
-  display: flex;
-  max-width: 1300px;
-  height: 53px;
-  border-radius: 4px;
-  width: 100%;
-  margin: 0 auto;
+:deep(.editoras-pagination .q-btn) {
+  min-width: 34px;
+  min-height: 34px;
+  border-radius: 8px;
+  font-weight: 600;
 }
 
-.q-input.pesquisa {
-  font-size: 16px;
-  font-weight: 800;
-  color: rgba(0, 0, 0, 0.60);
+:deep(.editoras-pagination .q-btn:not(.bg-positive)) {
+  background: #f2f2ef;
+  color: #5f5c54;
 }
 
-.button-pesquisar {
-  font-size: 15px;
-  font-weight: 800;
+:deep(.editoras-pagination .q-btn.bg-positive) {
+  background: #1f722c !important;
+  box-shadow: 0 3px 10px rgba(31, 114, 44, 0.22);
 }
-@media (max-width: 700px) {
-  .button-pesquisar {
-    display: none;
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 980px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .editoras-page {
+    padding: 18px;
+  }
+
+  .editoras-header h1 {
+    font-size: 1.5rem;
   }
 }
 </style>

@@ -2,7 +2,6 @@ package com.locadora.locadoraLivro.Publishers.services;
 
 import com.locadora.locadoraLivro.Books.models.BookModel;
 import com.locadora.locadoraLivro.Books.repositories.BookRepository;
-import com.locadora.locadoraLivro.Exceptions.ModelNotFoundException;
 import com.locadora.locadoraLivro.Publishers.DTOs.CreatePublisherRequestDTO;
 import com.locadora.locadoraLivro.Publishers.DTOs.UpdatePublisherRecordDTO;
 import com.locadora.locadoraLivro.Publishers.Validation.PublisherValidation;
@@ -20,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -56,19 +54,15 @@ public class PublisherServices {
         int size = 8;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
-        if (Objects.equals(search, "")) {
-            Page<PublisherModel> publishers = publisherRepository.findAllByIsDeletedFalse(pageable);
-            if (publishers.isEmpty()) throw new ModelNotFoundException();
-            return publishers;
+        if (search == null || search.isBlank()) {
+            return publisherRepository.findAllByIsDeletedFalse(pageable);
         } else {
-            Page<PublisherModel> publisherSearch = publisherRepository.findAllBySearchTerm(search, pageable);
-            if (publisherSearch.isEmpty()) throw new ModelNotFoundException();
-            return publisherSearch;
+            return publisherRepository.findAllBySearchTerm(search, pageable);
         }
     }
 
     public List<PublisherModel> findAllWithoutPagination(String search) {
-        if (Objects.equals(search, "")) {
+        if (search == null || search.isBlank()) {
             return publisherRepository.findAllByIsDeletedFalse(Sort.by(Sort.Direction.DESC, "id"));
         } else {
             return publisherRepository.findAllBySearchTerm(search, Sort.by(Sort.Direction.DESC, "id"));

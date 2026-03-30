@@ -2,7 +2,6 @@ package com.locadora.locadoraLivro.Rents.services;
 
 import com.locadora.locadoraLivro.Books.models.BookModel;
 import com.locadora.locadoraLivro.Books.repositories.BookRepository;
-import com.locadora.locadoraLivro.Exceptions.ModelNotFoundException;
 import com.locadora.locadoraLivro.Renters.models.RenterModel;
 import com.locadora.locadoraLivro.Renters.repositories.RenterRepository;
 import com.locadora.locadoraLivro.Rents.DTOs.CreateRentRequestDTO;
@@ -61,11 +60,9 @@ public class RentServices {
         int size = 8;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
-
-        if (search.isEmpty()) {
+        if (search == null || search.isBlank()) {
 
             Page<RentModel> rents = rentRepository.findAll(pageable);
-            if (rents.isEmpty()) throw new ModelNotFoundException();
 
             for (RentModel rent : rents) {
                 rentValidation.setRentStatus(rent);
@@ -87,13 +84,11 @@ public class RentServices {
 
 
     public Page<RentModel> findAllByStatus(String search, int page, String status) {
-        int size = 5;
+        int size = 8;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
-        if (search.isEmpty()) {
-            Page<RentModel> rents = rentRepository.findAllByStatus(status, pageable);
-            if (rents.isEmpty()) throw new ModelNotFoundException();
-            return rents;
+        if (search == null || search.isBlank()) {
+            return rentRepository.findAllByStatus(status, pageable);
         } else {
 
             return rentRepository.findAllByRenterNameOrBookNameAndStatus(search, status, pageable);
@@ -103,7 +98,7 @@ public class RentServices {
     public List<RentModel> findAllWithoutPagination(String search) {
         Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, "id"));
 
-        if (search.isEmpty()) {
+        if (search == null || search.isBlank()) {
             return rentRepository.findAll(pageable).getContent();
         } else {
             return rentRepository.findAllBySearch(search, pageable).getContent();  

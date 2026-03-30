@@ -1,6 +1,5 @@
 package com.locadora.locadoraLivro.Renters.services;
 
-import com.locadora.locadoraLivro.Exceptions.ModelNotFoundException;
 import com.locadora.locadoraLivro.Renters.DTOs.CreateRenterRequestDTO;
 import com.locadora.locadoraLivro.Renters.DTOs.UpdateRenterRequestDTO;
 import com.locadora.locadoraLivro.Renters.Validation.RenterValidation;
@@ -18,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -59,19 +57,15 @@ public class RenterServices {
         int size = 8;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
-        if (Objects.equals(search, "")) {
-            Page<RenterModel> renters = renterRepository.findAllByIsDeletedFalse(pageable);
-            if (renters.isEmpty()) throw new ModelNotFoundException();
-            return renters;
+        if (search == null || search.isBlank()) {
+            return renterRepository.findAllByIsDeletedFalse(pageable);
         } else {
-            Page<RenterModel> renterSearch = renterRepository.findAllBySearchTerm(search, pageable);
-            if (renterSearch.isEmpty()) throw new ModelNotFoundException();
-            return renterSearch;
+            return renterRepository.findAllBySearchTerm(search, pageable);
         }
     }
 
     public List<RenterModel> findAllWithoutPagination(String search) {
-        if (Objects.equals(search, "")) {
+        if (search == null || search.isBlank()) {
             return renterRepository.findAllByIsDeletedFalse(Sort.by(Sort.Direction.DESC, "id"));
         } else {
             return renterRepository.findAllBySearchTerm(search, Sort.by(Sort.Direction.DESC, "id"));

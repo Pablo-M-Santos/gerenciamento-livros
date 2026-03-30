@@ -1,633 +1,546 @@
 <template>
-  <div class="content">
-    <!-- Button cadastrar -->
-    <div class="containerButton">
-      <q-btn style="width: 200px; background-color: #008080; color: white;" v-if="userRole === 'ADMIN'"
-        itemid="cadastroBtnAluguel" @click="openRegisterDialog">
-        <div class="buttonCadastrar">
-          CADASTRAR ALUGUEL
-        </div>
-      </q-btn>
+  <q-page class="rents-page">
+    <section class="rents-header animate-header">
+      <h1>Gerenciamento de Alugueis</h1>
+      <p>Gerencie os alugueis da sua biblioteca digital</p>
+    </section>
+
+    <section class="stats-grid">
+      <RentStatsCard
+        :card-index="1"
+        icon="receipt_long"
+        label="Total de Alugueis"
+        :value="summary.total"
+        type="total"
+      />
+      <RentStatsCard
+        :card-index="2"
+        icon="schedule"
+        label="Ativos"
+        :value="summary.active"
+        type="active"
+      />
+      <RentStatsCard
+        :card-index="3"
+        icon="done_all"
+        label="Finalizados"
+        :value="summary.finished"
+        type="finished"
+      />
+    </section>
+
+    <RentSearchBar
+      :search-query="searchQuery"
+      :status-filter="statusFilter"
+      :can-add="userRole === 'ADMIN'"
+      @update:search="searchQuery = $event"
+      @update:status="handleStatusChange"
+      @search="handleSearch"
+      @clear="clearSearch"
+      @add="openRegisterDialog"
+    />
+
+    <RentTable
+      :rows="rows"
+      :loading="loading"
+      :is-admin="userRole === 'ADMIN'"
+      @edit="openEditDialog"
+      @return="openReturnDialog"
+    />
+
+    <div v-if="totalPages > 1" class="pagination-wrap">
+      <q-pagination
+        :model-value="page"
+        :max="totalPages"
+        direction-links
+        boundary-links
+        color="positive"
+        active-design="unelevated"
+        class="rents-pagination"
+        @update:model-value="handlePageChange"
+      />
     </div>
 
-    <!-- Barra de Pesquisa -->
-    <q-form @submit="getRows(srch)" class="q-ml-sm col container">
-      <q-input v-model="srch" label="Pesquisar Aluguel" class="q-ml-sm col" input-style="min-width: 100%"
-        itemid="searchInput">
-        <template v-slot:append>
-          <q-icon v-if="srch !== ''" name="close" @click="srch = '', getRows(srch)" class="cursor-pointer"
-            itemid="closeSearchBtn" />
-        </template>
+    <RentFormModal
+      v-model="showModalCadastro"
+      :is-edit-mode="false"
+      :initial-data="rentCreate"
+      :renter-options="renterOptions"
+      :book-options="bookOptions"
+      :today="today"
+      :max-return-date="maxReturnDate"
+      @submit="submitCreate"
+      @filter-renter="filterRenter"
+      @filter-book="filterBook"
+    />
 
-        <template v-slot:after>
-          <q-btn @click="getRows(srch)" round dense flat icon="search" itemid="searchBtn" />
-        </template>
-      </q-input>
+    <RentFormModal
+      v-model="showModalEditar"
+      :is-edit-mode="true"
+      :initial-data="rentEdit"
+      :renter-options="renterOptions"
+      :book-options="bookOptions"
+      :today="today"
+      :max-return-date="maxReturnDate"
+      @submit="submitEdit"
+      @filter-renter="filterRenter"
+      @filter-book="filterBook"
+    />
 
-    </q-form>
-
-
-    <!-- Modal Cadastro -->
-    <q-dialog v-model="showModalCadastro">
-      <q-card class="modal-card">
-        <q-card-section>
-          <div class="titulo-cadastro">Cadastro de Aluguel</div>
-        </q-card-section>
-        <q-card-section>
-          <q-form @submit.prevent="saveNewRent">
-
-            <q-select v-model="newRent.renterId" label="Selecione o Locatário" filled use-input input-debounce="0"
-              :options="renterOptions" @filter="filterPublisher" option-label="name" option-value="id" emit-value
-              map-options class="q-mb-md" :rules="[val => !!val || 'É obrigatório selecionar um locatário']"
-              itemid="cadastrarLocatarioAluguel" />
-
-            <q-select v-model="newRent.bookId" label="Selecione o Livro" filled use-input input-debounce="0"
-              :options="bookOptions" @filter="filterBook" option-label="name" option-value="id" emit-value map-options
-              class="q-mb-md" :rules="[val => !!val || 'É obrigatório selecionar um livro']"
-              itemid="cadastrarLivroAluguel" />
-
-            <q-input v-model="newRent.deadLine" label="Prazo final" type="date" :min="today" :max="maxReturnDate"
-              :rules="[val => !!val || 'É obrigatório informar um prazo']" itemid="cadastrarDataAluguel" />
-
-            <div class="button-container">
-              <q-btn type="submit" label="CADASTRAR" class="center-width q-mt-md" itemid="BtnCadastrarAluguel" />
-            </div>
-          </q-form>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
-
-    <!-- Modal Edição -->
-    <q-dialog v-model="showModalEdicao">
-      <q-card class="modal-card">
-        <q-card-section>
-          <div class="titulo-cadastro">Editar Aluguel</div>
-        </q-card-section>
-        <q-card-section>
-          <q-form @submit.prevent="editRent">
-            <q-select v-model="rentToEdit.renterId" label="Selecione o Locatário" filled use-input input-debounce="0"
-              :options="renterOptions" @filter="filterPublisher" option-label="name" option-value="id" emit-value
-              map-options class="q-mb-md" :rules="[val => !!val || 'É obrigatório selecionar um locatário']"
-              itemid="editarLocatarioAluguel" />
-
-            <q-select v-model="rentToEdit.bookId" label="Selecione o Livro" filled use-input input-debounce="0"
-              :options="bookOptions" @filter="filterBook" option-label="name" option-value="id" emit-value map-options
-              class="q-mb-md" :rules="[val => !!val || 'É obrigatório selecionar um livro']"
-              itemid="editarLivroAluguel" />
-
-            <q-input v-model="rentToEdit.deadLine" label="Prazo final" type="date" :min="today" :max="maxReturnDate"
-              :rules="[val => !!val || 'É obrigatório informar um prazo']" itemid="editarDataAluguel" />
-
-            <div class="button-container">
-              <q-btn type="submit" label="SALVAR" class="center-width q-mt-md" itemid="BtnEditarAluguel" />
-            </div>
-          </q-form>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
-
-
-
-    <!-- Modal Devolução -->
-    <q-dialog v-model="showModalDevolucao">
-      <q-card class="modal-card-confirmacao">
-        <q-card-section class="text-center">
-          <div class="circulo">
-            <i class="fa-solid fa-exclamation"></i>
-          </div>
-          <h3 class="titulo-confirmacao">Tem certeza que deseja devolver?</h3>
-        </q-card-section>
-        <q-card-actions class="button-confirmacao">
-          <q-btn label="SIM" color="secondary" @click="confirmReturn" class="q-mr-sm" itemid="BtnEntregaAluguel" />
-          <q-btn label="NÃO" color="negative" @click="cancelReturn" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
-    <!-- Tabela de livros -->
-    <div class="table-container">
-      <q-table class="custom-table" :pagination="pagination" :rows="paginatedRows" :columns="columns" row-key="id"
-        hide-bottom>
-
-        <template v-slot:body-cell-actions="props">
-          <q-td :props="props" style="vertical-align: middle;">
-            <q-btn flat color="accent"
-              v-if="userRole === 'ADMIN' && props.row.status !== 'DELIVERED_WITH_DELAY' && props.row.status !== 'IN_TIME'"
-              @click="showReturnModal(props.row)" icon="check" aria-label="Confirm"
-              :itemid="'confirmar' + '-' + props.row.id"><q-tooltip class="bg-accent" :ffset="[10, 10]">
-                Devolução de Livro
-              </q-tooltip></q-btn>
-            <q-btn flat color="secondary"
-              v-if="userRole === 'ADMIN' && props.row.status !== 'DELIVERED_WITH_DELAY' && props.row.status !== 'IN_TIME'"
-              @click="editRow(props.row)" icon="edit" aria-label="Edit" :itemid="'edit' + '-' + props.row.id"><q-tooltip
-                class="bg-secondary" :ffset="[10, 10]">
-                Editar Aluguel
-              </q-tooltip></q-btn>
-          </q-td>
-        </template>
-      </q-table>
-    </div>
-    <div class="row justify-center q-my-md">
-      <q-btn :disable="page.value <= 0" @click="prevPage" class="q-mx-sm">
-        <q-icon name="chevron_left" />
-      </q-btn>
-      <q-btn :disable="page.value >= totalPages - 1" @click="nextPage" class="q-mx-sm">
-        <q-icon name="chevron_right" />
-      </q-btn>
-    </div>
-  </div>
+    <RentReturnModal
+      v-model="showModalDevolucao"
+      :target-name="returnTargetLabel"
+      @confirm="confirmReturn"
+    />
+  </q-page>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
-import { useQuasar } from 'quasar'
-import { api } from 'src/boot/axios.js'
+import { computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import { Notify } from "quasar";
+import { api } from "src/boot/axios.js";
 
-const $q = useQuasar()
+import RentStatsCard from "src/components/aluguel/RentStatsCard.vue";
+import RentSearchBar from "src/components/aluguel/RentSearchBar.vue";
+import RentTable from "src/components/aluguel/RentTable.vue";
+import RentFormModal from "src/components/aluguel/RentFormModal.vue";
+import RentReturnModal from "src/components/aluguel/RentReturnModal.vue";
 
-const showModalCadastro = ref(false)
-const showModalDevolucao = ref(false)
-const showModalEdicao = ref(false)
-const rowToReturn = ref(null)
-const search = ref('')
-const currentPage = ref(1);
-const maxRowsPerPage = 10;
+const router = useRouter();
 
+const loading = ref(false);
+const userRole = ref(localStorage.getItem("role") || "");
+const searchQuery = ref("");
+const statusFilter = ref("");
+const page = ref(1);
+const rowsNumber = ref(0);
+const pageSize = 8;
 
-const today = new Date().toISOString().split('T')[0];
+const rows = ref([]);
 
+const showModalCadastro = ref(false);
+const showModalEditar = ref(false);
+const showModalDevolucao = ref(false);
 
-const maxReturnDate = ref(new Date(new Date().setDate(new Date().getDate() + 29)).toISOString().split('T')[0]);
+const returnTarget = ref(null);
 
-
-
-
-const page = ref(0);
-const rowsPerPage = 5;
-const srch = ref('');
-const newRent = ref({
-  renterId: '',
-  bookId: '',
-  deadLine: ''
-})
-
-const rentToEdit = ref({
-  renterId: '',
-  bookId: '',
-  deadLine: '',
+const rentCreate = ref({
+  id: null,
+  renterId: null,
+  bookId: null,
+  deadLine: "",
 });
 
-const filterLabel = ref('Filtrar');
+const rentEdit = ref({
+  id: null,
+  renterId: null,
+  bookId: null,
+  deadLine: "",
+});
 
-const rows = ref([])
-const columns = computed(() => {
-  const baseColumns = [
-    { name: 'renter.name', align: 'center', label: 'Nome do Locatário', field: row => row.renter.name },
-    { name: 'book.name', align: 'center', label: 'Título do Livro', field: row => row.book.name },
-    { name: 'rentDate', align: 'center', label: 'Data do Aluguel', field: 'rentDate' },
-    { name: 'deadLine', align: 'center', label: 'Data Prevista para Devolução', field: 'deadLine' },
-    { name: 'devolutionDate', align: 'center', label: 'Data da Devolução', field: row => row.devolutionDate || '' },
-    { name: 'status', align: 'center', label: 'Status do Aluguel', field: row => traduzirStatus(row.status) },
-  ];
+const renterOptions = ref([]);
+const allRenters = ref([]);
+const bookOptions = ref([]);
+const allBooks = ref([]);
 
-  if (userRole.value === 'ADMIN') {
-    baseColumns.push({ name: 'actions', align: 'center', label: 'Ações', field: 'actions' });
+const today = new Date().toISOString().split("T")[0];
+const maxReturnDate = new Date(new Date().setDate(new Date().getDate() + 29))
+  .toISOString()
+  .split("T")[0];
+
+const notify = (type, message) => {
+  Notify.create({ type, message, position: "top", timeout: 2200 });
+};
+
+const mapStatus = (status) => {
+  switch (status) {
+    case "RENTED":
+      return "Alugado";
+    case "LATE":
+      return "Atrasado";
+    case "IN_TIME":
+      return "Devolvido no prazo";
+    case "DELIVERED_WITH_DELAY":
+      return "Devolvido fora prazo";
+    default:
+      return status || "-";
   }
+};
 
-  return baseColumns;
+const normalizeDate = (val) => {
+  if (!val) return "";
+  if (typeof val === "string" && val.length >= 10) return val.slice(0, 10);
+  return "";
+};
+
+const normalizeRent = (row) => ({
+  id: row?.id ?? null,
+  renter: row?.renter ?? null,
+  renterId: row?.renterId ?? row?.renter?.id ?? null,
+  book: row?.book ?? null,
+  bookId: row?.bookId ?? row?.book?.id ?? null,
+  rentDate: normalizeDate(row?.rentDate),
+  deadLine: normalizeDate(row?.deadLine),
+  devolutionDate: normalizeDate(row?.devolutionDate),
+  status: row?.status ?? "",
+  statusLabel: mapStatus(row?.status),
 });
 
+const extractPageData = (payload) => {
+  const list = Array.isArray(payload?.content)
+    ? payload.content
+    : Array.isArray(payload)
+    ? payload
+    : [];
 
-const editRow = (row) => {
-  rentToEdit.value = {
-    id: row.id,
-    renterId: row.renter.id,
-    bookId: row.book.id,
-    deadLine: row.deadLine
+  const total =
+    typeof payload?.totalElements === "number"
+      ? payload.totalElements
+      : list.length;
+  const currentPage =
+    typeof payload?.number === "number" ? payload.number + 1 : 1;
+
+  return { list, total, currentPage };
+};
+
+const summary = computed(() => {
+  const total = rowsNumber.value;
+  const active = rows.value.filter((row) =>
+    ["RENTED", "LATE"].includes(row.status)
+  ).length;
+  const finished = rows.value.filter((row) =>
+    ["IN_TIME", "DELIVERED_WITH_DELAY"].includes(row.status)
+  ).length;
+
+  return { total, active, finished };
+});
+
+const totalPages = computed(() => {
+  return Math.max(1, Math.ceil(rowsNumber.value / pageSize));
+});
+
+const returnTargetLabel = computed(() => {
+  if (!returnTarget.value) return "";
+  const renter = returnTarget.value.renter?.name || "locatario";
+  const book = returnTarget.value.book?.name || "livro";
+  return `${renter} (${book})`;
+});
+
+const loadRows = async (
+  search = "",
+  status = statusFilter.value,
+  targetPage = page.value
+) => {
+  loading.value = true;
+  try {
+    const response = await api.get("/rent", {
+      params: {
+        search: search || undefined,
+        page: targetPage - 1,
+        status: status || undefined,
+      },
+    });
+
+    const { list, total, currentPage } = extractPageData(response.data);
+    rows.value = list.map(normalizeRent);
+    rowsNumber.value = total;
+    page.value = currentPage;
+  } catch (error) {
+    rows.value = [];
+    rowsNumber.value = 0;
+    notify("negative", "Erro ao carregar alugueis.");
+  } finally {
+    loading.value = false;
+  }
+};
+
+const loadRenters = async (search = "") => {
+  try {
+    const response = await api.get("/renter", {
+      params: { search: search || undefined },
+    });
+    const data = response.data?.content || response.data || [];
+    allRenters.value = Array.isArray(data) ? data : [];
+    renterOptions.value = [...allRenters.value];
+  } catch (error) {
+    allRenters.value = [];
+    renterOptions.value = [];
+  }
+};
+
+const loadBooks = async (search = "") => {
+  try {
+    const response = await api.get("/book", {
+      params: { search: search || undefined },
+    });
+    const data = response.data?.content || response.data || [];
+    allBooks.value = Array.isArray(data) ? data : [];
+    bookOptions.value = [...allBooks.value];
+  } catch (error) {
+    allBooks.value = [];
+    bookOptions.value = [];
+  }
+};
+
+const openRegisterDialog = () => {
+  rentCreate.value = {
+    id: null,
+    renterId: null,
+    bookId: null,
+    deadLine: "",
   };
-  showModalEdicao.value = true;
+  showModalCadastro.value = true;
 };
 
-const performSearch = () => {
-  console.log("Executando pesquisa para:", search.value);
-  getRows(search.value);
-};
-
-const editRent = () => {
-  if (!rentToEdit.value.renterId || !rentToEdit.value.bookId || !rentToEdit.value.deadLine) {
-    showNotification('negative', "Todos os campos são obrigatórios!");
+const submitCreate = async (formData) => {
+  if (!formData.renterId || !formData.bookId || !formData.deadLine) {
+    notify("negative", "Preencha os campos obrigatorios para cadastrar.");
     return;
   }
 
-  api.put('/rent/update/' + rentToEdit.value.id, rentToEdit.value)
-    .then(response => {
-      console.log("Sucesso", response);
-      showNotification('positive', "Aluguel atualizado com sucesso!");
-      showModalEdicao.value = false;
-      getRows();
-    })
-    .catch(error => {
-      console.log("Erro ao editar aluguel", error);
-      showNotification('negative', "Erro ao atualizar aluguel!");
+  try {
+    await api.post("/rent", {
+      renterId: Number(formData.renterId),
+      bookId: Number(formData.bookId),
+      rentDate: today,
+      deadLine: normalizeDate(formData.deadLine),
     });
-};
 
-
-
-const pagination = ref({
-  page: 1,
-  rowsPerPage: 8,
-});
-
-const filter = ref('')
-
-const openRegisterDialog = () => {
-  newRent.value = { renterId: '', bookId: '', deadLine: '' }
-  showModalCadastro.value = true
-}
-
-
-
-const saveNewRent = () => {
-  const rentDate = new Date().toISOString().split('T')[0];
-  const deadLine = newRent.value.deadLine
-    ? newRent.value.deadLine
-    : new Date(new Date().setDate(new Date().getDate() + 29))
-      .toISOString()
-      .split('T')[0];
-
-  console.log("Dados enviados para o backend:", {
-    renterId: newRent.value.renterId,
-    bookId: newRent.value.bookId,
-    rentDate,
-    deadLine,
-  });
-
-  api.post('/rent', {
-    renterId: newRent.value.renterId,
-    bookId: newRent.value.bookId,
-    rentDate,
-    deadLine,
-  })
-    .then(response => {
-      showModalCadastro.value = false;
-      showNotification('positive', "Aluguel cadastrado com sucesso!");
-      getRows();
-    })
-    .catch(error => {
-      let errorMessage = 'Erro desconhecido ao cadastrar aluguel.';
-      if (error.response) {
-        if (error.response.status === 400) {
-          errorMessage = Object.values(error.response.data).join(', ') || errorMessage;
-        } else if (error.response.data.message) {
-          errorMessage = error.response.data.message;
-        }
-      }
-      console.error("Erro ao cadastrar aluguel:", error.response ? error.response.data : error.message);
-      showNotification('negative', errorMessage);
-    });
-};
-
-
-const confirmReturn = () => {
-  if (!rowToReturn.value) {
-    showNotification('negative', "Nenhuma linha selecionada para devolução.")
-    return
-  }
-
-  const row = rowToReturn.value
-  const updatedStatus = "ENTREGUE"
-
-  if (!row.id) {
-    showNotification('negative', "ID do livro não disponível.")
-    return
-  }
-
-  if (row.status === updatedStatus) {
-    showNotification('negative', "Este aluguel já foi devolvido.")
-    return
-  }
-
-  api.put(`/rent/${row.id}`, { status: updatedStatus })
-    .then(response => {
-      const index = rows.value.findIndex(r => r.id === row.id)
-      if (index !== -1) {
-        rows.value[index].status = updatedStatus
-      }
-      showNotification('positive', "Status atualizado com sucesso!")
-      showModalDevolucao.value = false
-      getRows()
-    }).catch(error => {
-      handleError(error, "Erro ao atualizar status!")
-    })
-}
-
-
-const showReturnModal = (row) => {
-  if (row.status === "ENTREGUE" || row.status === "ENTREGUE_COM_ATRASO" || row.status === "NO_PRAZO") {
-    showNotification('negative', "Este aluguel já foi devolvido.")
-    return
-  }
-  rowToReturn.value = row
-  showModalDevolucao.value = true
-}
-
-const cancelReturn = () => {
-  showModalDevolucao.value = false
-}
-
-const showNotification = (type, message) => {
-  $q.notify({
-    type: type,
-    message: message,
-    timeout: 3000,
-    position: 'top'
-  })
-}
-
-const formatStatus = (status) => {
-  return status
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, (l) => l.toUpperCase())
-}
-
-const onSearch = () => {
-}
-
-const statusFiltered = ref('');
-
-const statusFilter = (rentStatus, label) => {
-  console.log('Filtro selecionado:', rentStatus);
-  statusFiltered.value = rentStatus;
-  filterLabel.value = label;
-  getRows();
-}
-
-
-const traduzirStatus = (status) => {
-  switch (status) {
-    case 'RENTED':
-      return 'Alugado';
-
-    case 'IN_TIME':
-      return 'Devolvido no prazo';
-
-    case 'LATE':
-      return 'Atrasado';
-
-    case 'DELIVERED_WITH_DELAY':
-      return 'Devolvido fora prazo';
+    notify("positive", "Aluguel cadastrado com sucesso.");
+    showModalCadastro.value = false;
+    await loadRows(searchQuery.value, statusFilter.value);
+  } catch (error) {
+    notify(
+      "negative",
+      error.response?.data?.message || "Erro ao cadastrar aluguel."
+    );
   }
 };
 
-const getRows = (srch = '', status = statusFiltered.value) => {
-  api.get('/rent', { params: { search: srch, page: page.value, status: status } })
-    .then(response => {
-      if (Array.isArray(response.data.content)) {
-        rows.value = response.data.content;
-      } else {
-        console.error('A resposta da API não é um array:', response.data);
-        rows.value = [];
-      }
-    })
-    .catch(error => {
-      console.error("Erro ao obter dados:", error);
-    });
+const openEditDialog = (row) => {
+  rentEdit.value = {
+    id: row.id,
+    renterId: row.renter?.id || null,
+    bookId: row.book?.id || null,
+    deadLine: normalizeDate(row.deadLine),
+  };
+  showModalEditar.value = true;
 };
 
-const totalPages = computed(() => Math.ceil(rows.value.length / rowsPerPage));
+const submitEdit = async (formData) => {
+  if (!rentEdit.value.id) {
+    notify("negative", "Aluguel nao selecionado.");
+    return;
+  }
 
-const paginatedRows = computed(() => {
-  const start = (currentPage.value - 1) * maxRowsPerPage;
-  return rows.value.slice(start, start + maxRowsPerPage);
-});
+  if (!formData.renterId || !formData.bookId || !formData.deadLine) {
+    notify("negative", "Preencha os campos obrigatorios para atualizar.");
+    return;
+  }
 
-const prevPage = () => {
-  if (page.value > 0) {
-    page.value--;
-    getRows(search.value);
+  try {
+    await api.put(`/rent/update/${rentEdit.value.id}`, {
+      id: rentEdit.value.id,
+      renterId: Number(formData.renterId),
+      bookId: Number(formData.bookId),
+      deadLine: normalizeDate(formData.deadLine),
+    });
+
+    notify("positive", "Aluguel atualizado com sucesso.");
+    showModalEditar.value = false;
+    await loadRows(searchQuery.value, statusFilter.value);
+  } catch (error) {
+    notify(
+      "negative",
+      error.response?.data?.message || "Erro ao atualizar aluguel."
+    );
   }
 };
 
-const nextPage = () => {
-  page.value++;
-  getRows(search.value);
-};
-const renters = ref([])
-const books = ref([])
+const openReturnDialog = (row) => {
+  if (!row || ["IN_TIME", "DELIVERED_WITH_DELAY"].includes(row.status)) {
+    notify("negative", "Este aluguel ja foi finalizado.");
+    return;
+  }
 
-const getBooks = (search = '') => {
-  api.get('/book', { params: { search: search, page: page.value } })
-    .then(response => {
-      if (Array.isArray(response.data)) {
-        books.value = response.data;
-      } else {
-        books.value = [];
-      }
-    })
-    .catch(error => {
-      console.error("Erro ao obter dados do Livro:", error);
-    });
+  returnTarget.value = row;
+  showModalDevolucao.value = true;
 };
 
-const getRenters = (search = '') => {
-  api.get('/renter', { params: { search: search } })
-    .then(response => {
-      if (Array.isArray(response.data)) {
-        renters.value = response.data;
-      } else {
-        renters.value = [];
-      }
-    })
-    .catch(error => {
-      console.error("Erro ao obter dados do locatário:", error);
-    });
+const confirmReturn = async () => {
+  if (!returnTarget.value?.id) {
+    notify("negative", "Nenhum aluguel selecionado para devolucao.");
+    return;
+  }
+
+  try {
+    await api.put(`/rent/${returnTarget.value.id}`, { status: "ENTREGUE" });
+    notify("positive", "Status atualizado com sucesso.");
+    showModalDevolucao.value = false;
+    returnTarget.value = null;
+    await loadRows(searchQuery.value, statusFilter.value);
+  } catch (error) {
+    notify(
+      "negative",
+      error.response?.data?.message || "Erro ao atualizar status."
+    );
+  }
 };
 
-
-const renterOptions = ref([]);
-const allRenter = ref([]);
-const bookOptions = ref([]);
-const allbook = ref([]);
-
-const loadRenter = (search = '') => {
-  api.get('/renter', { params: { search: search } })
-    .then(response => {
-      allRenter.value = response.data;
-      renterOptions.value = response.data;
-    })
-    .catch(error => {
-      console.error('Erro ao carregar locatários:', error);
-    });
-};
-
-const loadBook = (search = '') => {
-  api.get('/book', { params: { search: search} })
-    .then(response => {
-      allbook.value = response.data;
-      bookOptions.value = response.data;
-    })
-    .catch(error => {
-      console.error('Erro ao carregar livros:', error);
-    });
-};
-
-
-const filterPublisher = (val, update) => {
-  if (val === '') {
+const filterRenter = (val, update) => {
+  if (val === "") {
     update(() => {
-      renterOptions.value = allRenter.value;
+      renterOptions.value = [...allRenters.value];
     });
     return;
   }
 
   const needle = val.toLowerCase();
   update(() => {
-    renterOptions.value = allRenter.value.filter(publisher =>
-      publisher.name.toLowerCase().includes(needle)
+    renterOptions.value = allRenters.value.filter((renter) =>
+      String(renter.name || "")
+        .toLowerCase()
+        .includes(needle)
     );
   });
 };
 
 const filterBook = (val, update) => {
-  if (val === '') {
+  if (val === "") {
     update(() => {
-      bookOptions.value = allbook.value;
+      bookOptions.value = [...allBooks.value];
     });
     return;
   }
 
   const needle = val.toLowerCase();
   update(() => {
-    bookOptions.value = allbook.value.filter(renter =>
-      renter.name.toLowerCase().includes(needle)
+    bookOptions.value = allBooks.value.filter((book) =>
+      String(book.name || "")
+        .toLowerCase()
+        .includes(needle)
     );
   });
 };
 
-const userRole = ref('');
+const handleSearch = () => {
+  page.value = 1;
+  loadRows(searchQuery.value, statusFilter.value, 1);
+};
 
-onMounted(() => {
-  userRole.value = localStorage.getItem('role')
-  getRows()
-  getBooks()
-  getRenters()
-  loadRenter()
-  loadBook()
+const clearSearch = () => {
+  searchQuery.value = "";
+  page.value = 1;
+  loadRows("", statusFilter.value, 1);
+};
+
+const handleStatusChange = (value) => {
+  statusFilter.value = value || "";
+  page.value = 1;
+  loadRows(searchQuery.value, statusFilter.value, 1);
+};
+
+const handlePageChange = (newPage) => {
+  if (!newPage || newPage === page.value) return;
+  page.value = newPage;
+  loadRows(searchQuery.value, statusFilter.value, newPage);
+};
+
+onMounted(async () => {
+  const token = localStorage.getItem("authToken");
+  if (!token) {
+    router.push("/login");
+    return;
+  }
+
+  userRole.value = localStorage.getItem("role") || "";
+  await Promise.all([loadRows(), loadRenters(), loadBooks()]);
 });
 </script>
 
-
 <style scoped>
-.content {
-  padding: 16px;
-}
-
-.containerButton {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 16px;
-}
-
-.modal-card {
-  width: 600px;
-  padding: 10px;
-  border-radius: 20px;
-  box-shadow: 15px 13px 61px -17px rgba(0, 0, 0, 0.49);
-}
-
-.modal-card-confirmacao {
-  width: 400px;
-  border-radius: 10px;
-  box-shadow: 15px 13px 61px -17px rgba(0, 0, 0, 0.49);
-}
-
-.titulo-cadastro {
-  font-size: 1.2rem;
-  text-align: center;
-  margin-bottom: 16px;
-}
-
-.checkbox {
-  display: flex;
-  justify-content: space-around;
-}
-
-.button-container {
-  display: flex;
-  justify-content: center;
-}
-
-.table-container {
-  margin-top: 16px;
-}
-
-.buttonCadastrar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-
-.text-center {
-  text-align: center;
-}
-
-.titulo-confirmacao {
-  font-size: 1.2rem;
-  margin-bottom: 16px;
-}
-
-.button-confirmacao {
-  display: flex;
-  justify-content: center;
-}
-
-.center-width {
-  width: 100%;
-}
-
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  padding-bottom: 20px;
-  max-width: 1300px;
-  width: 100%;
+.rents-page {
+  padding: 34px 60px;
+  background: #f5f5f3;
+  min-height: 100vh;
   margin: 0 auto;
 }
 
-
-.q-input.pesquisa {
-  font-size: 16px;
-  font-weight: 800;
-  color: rgba(0, 0, 0, 0.60);
+.rents-header {
+  animation: slideInDown 0.35s ease-out forwards;
+  opacity: 0;
 }
 
-.custom-table {
-  max-width: 1300px;
-  width: 100%;
-  margin: 0 auto;
+.rents-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: #222;
+  font-weight: 700;
 }
 
-.pesquisa {
-  display: flex;
-  max-width: 1300px;
-  height: 53px;
-  border-radius: 4px;
-  width: 100%;
-  margin: 0 auto;
+.rents-header p {
+  color: #6b6b64;
+  font-size: 1rem;
 }
 
-.button-pesquisar {
-  font-size: 15px;
-  font-weight: 800;
+.stats-grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: 16px;
 }
 
-@media (max-width: 700px) {
-  .button-pesquisar {
-    display: none;
+.pagination-wrap {
+  margin: 18px auto 0;
+  width: fit-content;
+  padding: 8px 10px;
+  border: 1px solid #e7e6e2;
+  border-radius: 12px;
+  background: #fff;
+}
+
+:deep(.rents-pagination .q-btn) {
+  min-width: 34px;
+  min-height: 34px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+:deep(.rents-pagination .q-btn:not(.bg-positive)) {
+  background: #f2f2ef;
+  color: #5f5c54;
+}
+
+:deep(.rents-pagination .q-btn.bg-positive) {
+  background: #1f722c !important;
+  box-shadow: 0 3px 10px rgba(31, 114, 44, 0.22);
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 980px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .rents-page {
+    padding: 18px;
+  }
+
+  .rents-header h1 {
+    font-size: 1.5rem;
   }
 }
 </style>

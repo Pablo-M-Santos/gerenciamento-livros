@@ -5,7 +5,6 @@ import com.locadora.locadoraLivro.Books.DTOs.UpdateBookRecordDTO;
 import com.locadora.locadoraLivro.Books.Validation.BookValidation;
 import com.locadora.locadoraLivro.Books.models.BookModel;
 import com.locadora.locadoraLivro.Books.repositories.BookRepository;
-import com.locadora.locadoraLivro.Exceptions.ModelNotFoundException;
 import com.locadora.locadoraLivro.Publishers.models.PublisherModel;
 import com.locadora.locadoraLivro.Publishers.repositories.PublisherRepository;
 import com.locadora.locadoraLivro.Rents.models.RentModel;
@@ -22,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -56,9 +54,8 @@ public class BookServices {
     public Page<BookModel> findAll(String search, int page){
         int size = 8;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-        if (Objects.equals(search, "")){
+        if (search == null || search.isBlank()){
             Page<BookModel> books = bookRepository.findAllByIsDeletedFalse(pageable);
-            if(books.isEmpty()) throw new ModelNotFoundException();
 
             for (BookModel book : books) {
                 List<RentModel> totalRented = rentRepository.findAllByBookIdAndStatus(book.getId(), RentStatusEnum.RENTED);
@@ -76,7 +73,7 @@ public class BookServices {
     }
 
     public List<BookModel> findAllWithoutPagination(String search) {
-        if (Objects.equals(search, "")) {
+        if (search == null || search.isBlank()) {
             return bookRepository.findAllByIsDeletedFalse(Sort.by(Sort.Direction.DESC, "id"));
         } else {
             return bookRepository.findAllBySearchTerm(search, Sort.by(Sort.Direction.DESC, "id"));

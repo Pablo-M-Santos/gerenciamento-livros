@@ -49,6 +49,15 @@
       bordered
       class="custom-drawer"
     >
+      <div class="drawer-header">
+        <div class="drawer-logo">
+          <q-icon name="book" size="28px" color="primary" />
+          <span class="drawer-logo-text">Gerenciamento de Livros</span>
+        </div>
+      </div>
+
+      <q-separator class="drawer-separator" />
+
       <q-list class="drawer-content">
         <q-item
           v-for="link in linksList"
@@ -57,26 +66,34 @@
           clickable
           active-class="menu-item-active"
           :itemid="'menu-item-' + link.title.toLowerCase().replace(' ', '-')"
+          class="menu-item-animated"
         >
-          <q-item-section avatar>
-            <q-icon :name="link.icon" />
+          <q-item-section avatar class="menu-icon-section">
+            <q-icon :name="link.icon" class="menu-icon" />
           </q-item-section>
-          <q-item-section>
-            <q-item-label>{{ link.title }}</q-item-label>
-            <q-item-label caption>{{ link.caption }}</q-item-label>
+          <q-item-section class="menu-label-section">
+            <q-item-label class="menu-label">{{ link.title }}</q-item-label>
+            <q-item-label caption class="menu-caption">{{
+              link.caption
+            }}</q-item-label>
           </q-item-section>
         </q-item>
       </q-list>
 
-      <q-separator />
+      <q-separator class="drawer-separator" />
 
       <q-list class="drawer-footer logout-item">
-        <q-item clickable @click="handleLogout" itemid="logoutBtn">
-          <q-item-section avatar>
-            <q-icon name="logout" />
+        <q-item
+          clickable
+          @click="handleLogout"
+          itemid="logoutBtn"
+          class="menu-item-animated"
+        >
+          <q-item-section avatar class="menu-icon-section">
+            <q-icon name="logout" class="menu-icon" />
           </q-item-section>
-          <q-item-section>
-            <q-item-label>Logout</q-item-label>
+          <q-item-section class="menu-label-section">
+            <q-item-label class="menu-label">Logout</q-item-label>
           </q-item-section>
         </q-item>
       </q-list>
@@ -194,35 +211,137 @@ function formatRole(role) {
 }
 
 .custom-drawer {
-  background: #ffffff;
+  background: linear-gradient(135deg, #fafaf8 0%, #ffffff 100%);
   color: #1f1f1f;
   border-right: 1px solid #e8e8e5;
   box-shadow: 8px 0 28px rgba(20, 20, 20, 0.06);
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
-.custom-drawer .q-item {
-  margin: 2px 10px;
-  border-radius: 10px;
+/* Header do Drawer */
+.drawer-header {
+  padding: 24px 16px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.custom-drawer .q-item:hover {
-  background: #f2f5f2;
+.drawer-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(31, 114, 44, 0.08);
 }
 
-.menu-item-active {
-  background: #e7f0e8;
-  color: #235f2f;
+.drawer-logo-text {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #1f722c;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.drawer-separator {
+  background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
+  margin: 0;
+}
+
+/* Conteúdo do Drawer */
+.drawer-content {
+  flex: 1;
+  padding: 12px 8px;
+}
+
+.menu-item-animated {
+  margin: 6px 8px;
+  border-radius: 12px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-item-animated::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #1f722c;
+  transform: scaleY(0);
+  transform-origin: center;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu-item-animated:hover {
+  background: rgba(31, 114, 44, 0.08);
+}
+
+.menu-item-animated:hover .menu-icon {
+  color: #1f722c;
+}
+
+.custom-drawer .menu-item-active {
+  background: rgba(31, 114, 44, 0.12);
+  color: #1f722c;
   font-weight: 700;
 }
 
-.drawer-content {
-  flex: 1;
+.custom-drawer .menu-item-active::before {
+  transform: scaleY(1);
 }
 
+.custom-drawer .menu-item-active .menu-icon {
+  color: #1f722c;
+  animation: iconBounce 0.4s ease;
+}
+
+.menu-icon-section {
+  min-width: 40px;
+  padding: 0 4px;
+}
+
+.menu-icon {
+  color: #6b6b64;
+  transition: color 0.25s ease;
+  font-size: 1.3rem;
+}
+
+.custom-drawer .menu-item-active .menu-icon {
+  color: #1f722c;
+  animation: iconBounce 0.4s ease;
+}
+
+.menu-label-section {
+  padding: 6px 0;
+}
+
+.menu-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #222;
+  transition: color 0.25s ease;
+}
+
+.menu-caption {
+  font-size: 0.8rem;
+  color: #999;
+  margin-top: 2px;
+}
+
+.custom-drawer .menu-item-active .menu-label {
+  color: #1f722c;
+}
+
+/* Footer */
 .drawer-footer {
   margin-top: auto;
+  margin-bottom: 0;
+  padding: 8px;
 }
 
 .logout-item {
@@ -230,10 +349,26 @@ function formatRole(role) {
   box-shadow: none;
 }
 
-.logout-item:hover {
-  background-color: #f5f5f3;
+.logout-item .q-item {
+  margin: 8px 8px;
+  border-radius: 12px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
 }
 
+.logout-item .q-item:hover {
+  background-color: rgba(220, 38, 38, 0.08);
+}
+
+.logout-item .q-item:hover .menu-icon {
+  color: #dc2626;
+}
+
+.logout-item .q-item:hover .menu-label {
+  color: #dc2626;
+}
+
+/* Elementos antigos mantidos para compatibilidade */
 .logo {
   width: 110.62px;
   height: 56px;
@@ -274,5 +409,18 @@ h6 {
 
 .q-toolbar-title {
   font-weight: 700;
+}
+
+/* Animação dos ícones */
+@keyframes iconBounce {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 </style>

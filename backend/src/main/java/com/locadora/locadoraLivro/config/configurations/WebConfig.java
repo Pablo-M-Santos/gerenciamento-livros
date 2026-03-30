@@ -15,7 +15,12 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://gerenciamentolivros.netlify.app/", "http://localhost:9001/"));
+        configuration.setAllowedOrigins(Arrays.asList(
+            "https://gerenciamentolivros.netlify.app",
+            "http://localhost:9000",
+            "http://localhost:9001",
+            "http://localhost:5173"
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
