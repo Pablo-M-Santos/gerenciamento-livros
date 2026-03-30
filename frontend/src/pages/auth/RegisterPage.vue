@@ -60,20 +60,6 @@
                 </q-input>
               </div>
 
-              <!-- Role -->
-              <div class="input">
-                <q-select
-                  filled
-                  :options="roles"
-                  label="Nível de acesso"
-                  option-label="label"
-                  option-value="value"
-                  v-model="role"
-                  @update:model-value="(val) => (role = val)"
-                  :rules="[(val) => !!val || 'Selecione um nível de acesso']"
-                />
-              </div>
-
               <div class="button">
                 <q-btn
                   type="submit"
@@ -115,12 +101,6 @@ const isPwd = ref(true);
 const name = ref("");
 const email = ref("");
 const password = ref("");
-const role = ref(null);
-
-const roles = [
-  { label: "Usuário", value: "USER" },
-  { label: "Administrador", value: "ADMIN" },
-];
 
 const showNotification = (type, msg) => {
   $q.notify({
@@ -132,7 +112,7 @@ const showNotification = (type, msg) => {
 };
 
 const onSubmit = async () => {
-  if (!name.value || !email.value || !password.value || !role.value) {
+  if (!name.value || !email.value || !password.value) {
     showNotification("negative", "Preencha todos os campos corretamente!");
     return;
   }
@@ -142,7 +122,7 @@ const onSubmit = async () => {
       name: name.value,
       email: email.value,
       password: password.value,
-      role: typeof role.value === "string" ? role.value : role.value.value,
+      role: "ADMIN",
     });
 
     showNotification("positive", "Cadastro realizado com sucesso!");
@@ -159,7 +139,6 @@ const onReset = () => {
   name.value = "";
   email.value = "";
   password.value = "";
-  role.value = null;
 };
 </script>
 
