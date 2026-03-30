@@ -82,12 +82,12 @@ import { computed, onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { Notify } from "quasar";
 import { api } from "src/boot/axios";
-import UserStatsCard from "src/components/UserStatsCard.vue";
-import UserSearchBar from "src/components/UserSearchBar.vue";
-import UserTable from "src/components/UserTable.vue";
-import UserFormModal from "src/components/UserFormModal.vue";
-import UserDetailsModal from "src/components/UserDetailsModal.vue";
-import UserDeleteModal from "src/components/UserDeleteModal.vue";
+import UserStatsCard from "src/components/usuarios/UserStatsCard.vue";
+import UserSearchBar from "src/components/usuarios/UserSearchBar.vue";
+import UserTable from "src/components/usuarios/UserTable.vue";
+import UserFormModal from "src/components/usuarios/UserFormModal.vue";
+import UserDetailsModal from "src/components/usuarios/UserDetailsModal.vue";
+import UserDeleteModal from "src/components/usuarios/UserDeleteModal.vue";
 
 const router = useRouter();
 
@@ -142,7 +142,6 @@ const metricsConfig = {
   },
 };
 
-// Computed
 const filteredRows = computed(() => {
   const query = srch.value.trim().toLowerCase();
 
