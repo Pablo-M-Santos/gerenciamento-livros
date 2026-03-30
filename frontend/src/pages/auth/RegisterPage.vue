@@ -122,7 +122,6 @@ const onSubmit = async () => {
       name: name.value,
       email: email.value,
       password: password.value,
-      role: "ADMIN",
     });
 
     showNotification("positive", "Cadastro realizado com sucesso!");
