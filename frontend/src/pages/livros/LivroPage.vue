@@ -39,7 +39,7 @@
     />
 
     <BookTable
-      :rows="filteredRows"
+      :rows="rows"
       :loading="loading"
       :is-admin="userRole === 'ADMIN'"
       :books-with-rentals="booksWithRentals"
@@ -47,6 +47,19 @@
       @edit="editRow"
       @delete="askDelete"
     />
+
+    <div v-if="totalPages > 1" class="pagination-wrap">
+      <q-pagination
+        :model-value="page"
+        :max="totalPages"
+        direction-links
+        boundary-links
+        color="positive"
+        active-design="unelevated"
+        class="books-pagination"
+        @update:model-value="handlePageChange"
+      />
+    </div>
 
     <BookFormModal
       v-model="showModalCadastro"
@@ -95,6 +108,9 @@ const router = useRouter();
 
 const loading = ref(false);
 const searchQuery = ref("");
+const page = ref(1);
+const rowsNumber = ref(0);
+const pageSize = 8;
 const userRole = ref(localStorage.getItem("role") || "");
 
 const showModalCadastro = ref(false);
@@ -145,6 +161,23 @@ const notify = (type, message) => {
   Notify.create({ type, message, position: "top", timeout: 2200 });
 };
 
+const extractList = (payload) => {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.content)) return payload.content;
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload?.data?.content)) return payload.data.content;
+  return [];
+};
+
+const extractPageData = (payload) => {
+  const list = extractList(payload);
+  const total =
+    typeof payload?.totalElements === "number" ? payload.totalElements : list.length;
+  const currentPage = typeof payload?.number === "number" ? payload.number + 1 : 1;
+
+  return { list, total, currentPage };
+};
+
 const normalizeDate = (value) => {
   if (!value) return "";
   if (typeof value === "string" && value.length >= 10)
@@ -167,23 +200,8 @@ const normalizeBook = (book) => ({
   publisherId: book?.publisherId ?? book?.publisher?.id ?? null,
 });
 
-const filteredRows = computed(() => {
-  const query = searchQuery.value.trim().toLowerCase();
-  if (!query) return rows.value;
-
-  return rows.value.filter((row) => {
-    return (
-      String(row.name).toLowerCase().includes(query) ||
-      String(row.author).toLowerCase().includes(query) ||
-      String(row.publisher?.name || "")
-        .toLowerCase()
-        .includes(query)
-    );
-  });
-});
-
 const summary = computed(() => {
-  const total = rows.value.length;
+  const total = rowsNumber.value;
   const available = rows.value.reduce(
     (acc, row) =>
       acc + Math.max(Number(row.totalQuantity) - Number(row.totalInUse), 0),
@@ -201,17 +219,24 @@ const summary = computed(() => {
   };
 });
 
-const loadBooks = async (search = "") => {
+const totalPages = computed(() => {
+  return Math.max(1, Math.ceil(rowsNumber.value / pageSize));
+});
+
+const loadBooks = async (search = "", targetPage = page.value) => {
   loading.value = true;
   try {
     const response = await api.get("/book", {
-      params: { search: search || undefined, page: 0 },
+      params: { search: search || undefined, page: targetPage - 1 },
     });
 
-    const data = response.data?.content || response.data || [];
-    rows.value = Array.isArray(data) ? data.map(normalizeBook) : [];
+    const { list, total, currentPage } = extractPageData(response.data);
+    rows.value = list.map(normalizeBook);
+    rowsNumber.value = total;
+    page.value = currentPage;
   } catch (error) {
     rows.value = [];
+    rowsNumber.value = 0;
     notify("negative", "Erro ao carregar livros.");
   } finally {
     loading.value = false;
@@ -223,7 +248,7 @@ const loadPublishers = async (search = "") => {
     const response = await api.get("/publisher", {
       params: { search: search || undefined },
     });
-    const data = response.data?.content || response.data || [];
+    const data = extractList(response.data);
     allPublishers.value = Array.isArray(data) ? data : [];
     publisherOptions.value = [...allPublishers.value];
   } catch (error) {
@@ -238,7 +263,7 @@ const loadRents = async () => {
       params: { page: 0, status: "" },
     });
 
-    const rentals = response.data?.content || [];
+    const rentals = extractList(response.data);
     booksWithRentals.value = [
       ...new Set(
         rentals
@@ -379,12 +404,20 @@ const confirmDelete = async () => {
 };
 
 const handleSearch = () => {
-  loadBooks(searchQuery.value);
+  page.value = 1;
+  loadBooks(searchQuery.value, 1);
 };
 
 const clearSearch = () => {
   searchQuery.value = "";
-  loadBooks();
+  page.value = 1;
+  loadBooks("", 1);
+};
+
+const handlePageChange = (newPage) => {
+  if (!newPage || newPage === page.value) return;
+  page.value = newPage;
+  loadBooks(searchQuery.value, newPage);
 };
 
 const filterPublisher = (val, update) => {
@@ -448,6 +481,32 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: repeat(3, minmax(180px, 1fr));
   gap: 16px;
+}
+
+.pagination-wrap {
+  margin: 18px auto 0;
+  width: fit-content;
+  padding: 8px 10px;
+  border: 1px solid #e7e6e2;
+  border-radius: 12px;
+  background: #fff;
+}
+
+:deep(.books-pagination .q-btn) {
+  min-width: 34px;
+  min-height: 34px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+:deep(.books-pagination .q-btn:not(.bg-positive)) {
+  background: #f2f2ef;
+  color: #5f5c54;
+}
+
+:deep(.books-pagination .q-btn.bg-positive) {
+  background: #1f722c !important;
+  box-shadow: 0 3px 10px rgba(31, 114, 44, 0.22);
 }
 
 @keyframes slideInDown {
