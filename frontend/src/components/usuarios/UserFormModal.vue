@@ -58,7 +58,7 @@
             :itemid="isEditMode ? 'emailNomeUsuario' : 'cadastrarEmailUsuario'"
             :rules="[
               (val) => !!val || 'E-mail é obrigatório',
-              (val) => /.+@.+\\..+/.test(val) || 'E-mail inválido',
+              (val) => /.+@.+\..+/.test(val) || 'E-mail inválido',
             ]"
             class="form-input"
             prefix-icon="email"
@@ -73,7 +73,10 @@
             :type="isPwdVisible ? 'password' : 'text'"
             label="Senha"
             itemid="cadastrarSenhaUsuario"
-            :rules="[(val) => !!val || 'Senha é obrigatória']"
+            :rules="[
+              (val) => !!val || 'Senha é obrigatória',
+              (val) => val.length > 8 || 'Senha deve ter mais de 8 caracteres',
+            ]"
             class="form-input"
             prefix-icon="lock"
           >

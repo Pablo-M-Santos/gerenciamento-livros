@@ -6,6 +6,7 @@
       row-key="id"
       flat
       :loading="loading"
+      :pagination="{ rowsPerPage: 0 }"
       hide-bottom
     >
       <template #loading>
@@ -13,7 +14,7 @@
       </template>
 
       <template #body-cell-actions="props">
-        <q-td :props="props" class="actions-cell">
+        <q-td :props="props">
           <q-btn
             flat
             round
@@ -62,7 +63,7 @@
 </template>
 
 <script setup>
-defineProps({
+const props = defineProps({
   rows: {
     type: Array,
     required: true,
@@ -103,7 +104,7 @@ const columns = [
 ];
 
 const hasBooks = (publisherId) => {
-  return publishersWithBooks.includes(publisherId);
+  return props.publishersWithBooks.includes(publisherId);
 };
 </script>
 
@@ -139,11 +140,6 @@ const hasBooks = (publisherId) => {
 
 :deep(.q-table tbody tr:hover) {
   background: #fafaf8;
-}
-
-.actions-cell {
-  display: flex;
-  gap: 4px;
 }
 
 @keyframes fadeInScale {

@@ -6,6 +6,7 @@
       row-key="id"
       flat
       :loading="loading"
+      :pagination="{ rowsPerPage: 0 }"
       hide-bottom
     >
       <template #loading>
@@ -24,7 +25,7 @@
       </template>
 
       <template #body-cell-actions="props">
-        <q-td :props="props" class="actions-cell">
+        <q-td :props="props">
           <q-btn
             flat
             round
@@ -172,11 +173,6 @@ const mapRole = (role) => roleMap[role] || role;
 .role-user {
   background: #edece8;
   color: #615e54;
-}
-
-.actions-cell {
-  display: flex;
-  gap: 4px;
 }
 
 @keyframes fadeInScale {

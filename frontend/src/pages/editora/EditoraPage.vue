@@ -48,6 +48,19 @@
       @delete="askDelete"
     />
 
+    <div v-if="totalPages > 1" class="pagination-wrap">
+      <q-pagination
+        :model-value="page"
+        :max="totalPages"
+        direction-links
+        boundary-links
+        color="positive"
+        active-design="unelevated"
+        class="editoras-pagination"
+        @update:model-value="handlePageChange"
+      />
+    </div>
+
     <PublisherFormModal
       v-model="showModalCadastro"
       :is-edit-mode="false"
@@ -93,6 +106,9 @@ const router = useRouter();
 const userRole = ref("");
 const searchQuery = ref("");
 const rows = ref([]);
+const page = ref(1);
+const rowsNumber = ref(0);
+const pageSize = 8;
 const loading = ref(false);
 const publishersWithBooks = ref([]);
 
@@ -121,7 +137,7 @@ const deleteTarget = ref(null);
 
 const summary = computed(() => {
   const publisherIdsWithBooks = new Set(publishersWithBooks.value);
-  const total = rows.value.length;
+  const total = rowsNumber.value;
   const withBooks = rows.value.filter((publisher) =>
     publisherIdsWithBooks.has(publisher.id)
   ).length;
@@ -134,21 +150,42 @@ const summary = computed(() => {
   };
 });
 
+const totalPages = computed(() => {
+  return Math.max(1, Math.ceil(rowsNumber.value / pageSize));
+});
+
 const notify = (type, message) => {
   Notify.create({ type, message, position: "top", timeout: 2200 });
 };
 
-const loadPublishers = async (search = "") => {
+const extractPageData = (payload) => {
+  const list = Array.isArray(payload?.content)
+    ? payload.content
+    : Array.isArray(payload)
+      ? payload
+      : [];
+
+  const total =
+    typeof payload?.totalElements === "number" ? payload.totalElements : list.length;
+  const currentPage = typeof payload?.number === "number" ? payload.number + 1 : 1;
+
+  return { list, total, currentPage };
+};
+
+const loadPublishers = async (search = "", targetPage = page.value) => {
   loading.value = true;
   try {
     const response = await api.get("/publisher", {
-      params: { search, page: 0 },
+      params: { search: search || undefined, page: targetPage - 1 },
     });
-    const data = response.data?.content || response.data || [];
-    rows.value = Array.isArray(data) ? data : [];
+    const { list, total, currentPage } = extractPageData(response.data);
+    rows.value = list;
+    rowsNumber.value = total;
+    page.value = currentPage;
   } catch (error) {
     notify("negative", "Erro ao carregar editoras.");
     rows.value = [];
+    rowsNumber.value = 0;
   } finally {
     loading.value = false;
   }
@@ -156,8 +193,12 @@ const loadPublishers = async (search = "") => {
 
 const loadBooks = async () => {
   try {
-    const response = await api.get("/book", { params: { page: 0 } });
-    const books = response.data?.content || [];
+    const response = await api.get("/book");
+    const books = Array.isArray(response.data?.content)
+      ? response.data.content
+      : Array.isArray(response.data)
+        ? response.data
+        : [];
     publishersWithBooks.value = books
       .map((book) => book?.publisher?.id)
       .filter((id) => typeof id === "number");
@@ -256,12 +297,20 @@ const confirmDelete = async () => {
 };
 
 const handleSearch = () => {
-  loadPublishers(searchQuery.value);
+  page.value = 1;
+  loadPublishers(searchQuery.value, 1);
 };
 
 const clearSearch = () => {
   searchQuery.value = "";
-  loadPublishers();
+  page.value = 1;
+  loadPublishers("", 1);
+};
+
+const handlePageChange = (newPage) => {
+  if (!newPage || newPage === page.value) return;
+  page.value = newPage;
+  loadPublishers(searchQuery.value, newPage);
 };
 
 const openRegisterCadastro = () => {
@@ -312,6 +361,32 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: repeat(3, minmax(180px, 1fr));
   gap: 16px;
+}
+
+.pagination-wrap {
+  margin: 18px auto 0;
+  width: fit-content;
+  padding: 8px 10px;
+  border: 1px solid #e7e6e2;
+  border-radius: 12px;
+  background: #fff;
+}
+
+:deep(.editoras-pagination .q-btn) {
+  min-width: 34px;
+  min-height: 34px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+:deep(.editoras-pagination .q-btn:not(.bg-positive)) {
+  background: #f2f2ef;
+  color: #5f5c54;
+}
+
+:deep(.editoras-pagination .q-btn.bg-positive) {
+  background: #1f722c !important;
+  box-shadow: 0 3px 10px rgba(31, 114, 44, 0.22);
 }
 
 @keyframes slideInUp {

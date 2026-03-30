@@ -48,6 +48,19 @@
       @return="openReturnDialog"
     />
 
+    <div v-if="totalPages > 1" class="pagination-wrap">
+      <q-pagination
+        :model-value="page"
+        :max="totalPages"
+        direction-links
+        boundary-links
+        color="positive"
+        active-design="unelevated"
+        class="rents-pagination"
+        @update:model-value="handlePageChange"
+      />
+    </div>
+
     <RentFormModal
       v-model="showModalCadastro"
       :is-edit-mode="false"
@@ -100,6 +113,9 @@ const loading = ref(false);
 const userRole = ref(localStorage.getItem("role") || "");
 const searchQuery = ref("");
 const statusFilter = ref("");
+const page = ref(1);
+const rowsNumber = ref(0);
+const pageSize = 8;
 
 const rows = ref([]);
 
@@ -171,8 +187,22 @@ const normalizeRent = (row) => ({
   statusLabel: mapStatus(row?.status),
 });
 
+const extractPageData = (payload) => {
+  const list = Array.isArray(payload?.content)
+    ? payload.content
+    : Array.isArray(payload)
+      ? payload
+      : [];
+
+  const total =
+    typeof payload?.totalElements === "number" ? payload.totalElements : list.length;
+  const currentPage = typeof payload?.number === "number" ? payload.number + 1 : 1;
+
+  return { list, total, currentPage };
+};
+
 const summary = computed(() => {
-  const total = rows.value.length;
+  const total = rowsNumber.value;
   const active = rows.value.filter((row) =>
     ["RENTED", "LATE"].includes(row.status)
   ).length;
@@ -183,6 +213,10 @@ const summary = computed(() => {
   return { total, active, finished };
 });
 
+const totalPages = computed(() => {
+  return Math.max(1, Math.ceil(rowsNumber.value / pageSize));
+});
+
 const returnTargetLabel = computed(() => {
   if (!returnTarget.value) return "";
   const renter = returnTarget.value.renter?.name || "locatario";
@@ -190,21 +224,28 @@ const returnTargetLabel = computed(() => {
   return `${renter} (${book})`;
 });
 
-const loadRows = async (search = "", status = statusFilter.value) => {
+const loadRows = async (
+  search = "",
+  status = statusFilter.value,
+  targetPage = page.value
+) => {
   loading.value = true;
   try {
     const response = await api.get("/rent", {
       params: {
         search: search || undefined,
-        page: 0,
+        page: targetPage - 1,
         status: status || undefined,
       },
     });
 
-    const data = response.data?.content || response.data || [];
-    rows.value = Array.isArray(data) ? data.map(normalizeRent) : [];
+    const { list, total, currentPage } = extractPageData(response.data);
+    rows.value = list.map(normalizeRent);
+    rowsNumber.value = total;
+    page.value = currentPage;
   } catch (error) {
     rows.value = [];
+    rowsNumber.value = 0;
     notify("negative", "Erro ao carregar alugueis.");
   } finally {
     loading.value = false;
@@ -380,16 +421,27 @@ const filterBook = (val, update) => {
   });
 };
 
-const handleSearch = () => loadRows(searchQuery.value, statusFilter.value);
+const handleSearch = () => {
+  page.value = 1;
+  loadRows(searchQuery.value, statusFilter.value, 1);
+};
 
 const clearSearch = () => {
   searchQuery.value = "";
-  loadRows("", statusFilter.value);
+  page.value = 1;
+  loadRows("", statusFilter.value, 1);
 };
 
 const handleStatusChange = (value) => {
   statusFilter.value = value || "";
-  loadRows(searchQuery.value, statusFilter.value);
+  page.value = 1;
+  loadRows(searchQuery.value, statusFilter.value, 1);
+};
+
+const handlePageChange = (newPage) => {
+  if (!newPage || newPage === page.value) return;
+  page.value = newPage;
+  loadRows(searchQuery.value, statusFilter.value, newPage);
 };
 
 onMounted(async () => {
@@ -434,6 +486,32 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: repeat(3, minmax(180px, 1fr));
   gap: 16px;
+}
+
+.pagination-wrap {
+  margin: 18px auto 0;
+  width: fit-content;
+  padding: 8px 10px;
+  border: 1px solid #e7e6e2;
+  border-radius: 12px;
+  background: #fff;
+}
+
+:deep(.rents-pagination .q-btn) {
+  min-width: 34px;
+  min-height: 34px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+:deep(.rents-pagination .q-btn:not(.bg-positive)) {
+  background: #f2f2ef;
+  color: #5f5c54;
+}
+
+:deep(.rents-pagination .q-btn.bg-positive) {
+  background: #1f722c !important;
+  box-shadow: 0 3px 10px rgba(31, 114, 44, 0.22);
 }
 
 @keyframes slideInDown {

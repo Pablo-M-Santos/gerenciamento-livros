@@ -6,6 +6,7 @@
       row-key="id"
       flat
       :loading="loading"
+      :pagination="{ rowsPerPage: 0 }"
       hide-bottom
     >
       <template #loading>
@@ -21,7 +22,7 @@
       </template>
 
       <template #body-cell-actions="props">
-        <q-td :props="props" class="actions-cell">
+        <q-td :props="props">
           <q-btn
             v-if="isAdmin && canManage(props.row.status)"
             flat
@@ -171,11 +172,6 @@ const statusClass = (status) => {
 
 :deep(.q-table tbody tr:hover) {
   background: #fafaf8;
-}
-
-.actions-cell {
-  display: flex;
-  gap: 4px;
 }
 
 .status-chip {
