@@ -1,595 +1,421 @@
 <template>
-  <div class="content">
-    <!-- Button cadastrar -->
-    <div class="containerButton">
-      <q-btn style="width: 200px; background-color: #008080; color: white;" v-if="userRole === 'ADMIN'"
-        itemid="cadastroBtnLocatario" class="buttonCadastrar" @click="showModalCadastro = true">
-        CADASTRAR LOCATÁRIO
-      </q-btn>
-    </div>
+  <q-page class="renters-page">
+    <section class="renters-header animate-header">
+      <h1>Gerenciamento de Locatarios</h1>
+      <p>Gerencie os locatarios da sua biblioteca digital</p>
+    </section>
 
-    <!-- Barra de Pesquisa -->
-    <q-form @submit="getRows(srch)" class="q-ml-sm col container">
-      <q-input v-model="srch" label="Pesquisar Locatário" class="q-ml-sm col" input-style="min-width: 100%"
-        itemid="searchInput">
-        <template v-slot:append>
-          <q-icon v-if="srch !== ''" name="close" @click="srch = '', getRows(srch)" class="cursor-pointer"
-            itemid="closeSearchBtn" />
-        </template>
+    <section class="stats-grid">
+      <RenterStatsCard
+        :card-index="1"
+        icon="groups"
+        label="Total de Locatarios"
+        :value="summary.total"
+        type="total"
+      />
+      <RenterStatsCard
+        :card-index="2"
+        icon="library_books"
+        label="Com Alugueis"
+        :value="summary.withRentals"
+        type="with-rentals"
+      />
+      <RenterStatsCard
+        :card-index="3"
+        icon="person_outline"
+        label="Sem Alugueis"
+        :value="summary.withoutRentals"
+        type="without-rentals"
+      />
+    </section>
 
-        <template v-slot:after>
-          <q-btn @click="getRows(srch)" round dense flat icon="search" itemid="searchBtn" />
-        </template>
-      </q-input>
-    </q-form>
+    <RenterSearchBar
+      :search-query="searchQuery"
+      :can-add="userRole === 'ADMIN'"
+      @update:search="searchQuery = $event"
+      @search="handleSearch"
+      @clear="clearSearch"
+      @add="openRegisterDialog"
+    />
 
-    <!-- Modal Cadastro -->
-    <q-dialog v-model="showModalCadastro">
-      <q-card class="modal-card">
-        <q-card-section>
-          <div class="titulo-cadastro">Cadastro de Locatário</div>
-        </q-card-section>
+    <RenterTable
+      :rows="filteredRows"
+      :loading="loading"
+      :is-admin="userRole === 'ADMIN'"
+      :renters-with-rentals="rentersWithRentals"
+      @view="showDetails"
+      @edit="editRow"
+      @delete="askDelete"
+    />
 
-        <q-card-section>
-          <q-form @submit.prevent="saveNewRenter">
-            <div class="form-grid">
-              <q-input filled v-model="newRenter.name" label="Nome" required lazy-rules
-                :rules="[val => !!val || 'Nome do Locatário é obrigatório']" itemid="cadastroNomeLocatario" />
+    <RenterFormModal
+      v-model="showModalCadastro"
+      :is-edit-mode="false"
+      :initial-data="renterCreate"
+      @submit="submitFormCadastro"
+    />
 
-              <q-input filled v-model="newRenter.email" label="Email" type="email" required lazy-rules
-                :rules="[val => !!val || 'Email é obrigatório', val => /^.+@gmail\.com$/.test(val) || 'O e-mail deve ser um endereço Gmail válido']"
-                itemid="cadastrarEmailLocatario" />
+    <RenterFormModal
+      v-model="showModalEditar"
+      :is-edit-mode="true"
+      :initial-data="renterEdit"
+      @submit="submitFormEditar"
+    />
 
-              <q-input filled v-model="newRenter.telephone" label="Celular" type="tel" required lazy-rules
-                mask="(##) #####-####"
-                :rules="[val => !!val || 'Telefone é obrigatório', val => /^\(\d{2}\) \d{5}-\d{4}$/.test(val) || 'Telefone inválido']"
-                itemid="cadastroTelefoneLocatario" />
+    <RenterDetailsModal
+      v-model="showModalSobre"
+      :renter-data="selectedRenter"
+    />
 
-              <q-input filled v-model="newRenter.address" label="Endereço" required lazy-rules
-                :rules="[val => !!val || 'Endereço é obrigatório']" itemid="cadastroEnderecoLocatario" />
-
-              <q-input filled v-model="newRenter.cpf" label="CPF" lazy-rules mask="###.###.###-##"
-                itemid="cadastrarCPFLocatario" />
-            </div>
-
-            <div class="button-container">
-              <q-btn type="submit" label="CADASTRAR" class="center-width q-mt-md"
-                itemid="BtnCadastrarLocatario" />
-            </div>
-          </q-form>
-
-        </q-card-section>
-      </q-card>
-    </q-dialog>
-
-    <!-- Modal Sobre -->
-    <q-dialog v-model="showModalSobre">
-      <q-card class="modal-card">
-        <q-card-section>
-          <div class="titulo-sobre text-center">Detalhes do Locatário</div>
-        </q-card-section>
-
-        <q-card-section>
-          <div class="form-grid">
-            <q-input filled v-model="InfosEdit.name" label="Nome" readonly />
-            <br>
-            <q-input filled v-model="InfosEdit.email" label="Email" readonly />
-            <br>
-            <q-input filled v-model="InfosEdit.telephone" label="Celular" readonly />
-            <br>
-            <q-input filled v-model="InfosEdit.address" label="Endereço" readonly />
-            <br>
-            <q-input filled v-model="InfosEdit.cpf" label="CPF" readonly />
-
-          </div>
-        </q-card-section>
-
-        <q-card-actions class="button-sobre">
-          <q-btn label="Fechar" @click="showModalSobre = false" itemid="BtnSobreLocatario" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
-    <!-- Modal Editar -->
-    <q-dialog v-model="showModalEditar">
-      <q-card class="modal-card">
-        <q-card-section>
-          <div class="titulo-cadastro">Editar Locatário</div>
-        </q-card-section>
-
-        <q-card-section>
-          <q-form @submit.prevent="saveEdit">
-            <div class="form-grid">
-              <q-input filled v-model="formEdit.name" label="Nome" required lazy-rules
-                :rules="[val => !!val || 'Nome do Locatário é obrigatório']" itemid="editarNomeLocatario" />
-
-              <q-input filled v-model="formEdit.email" label="Email" type="email" required lazy-rules
-                :rules="[val => !!val || 'Email é obrigatório', val => /^.+@gmail\.com$/.test(val) || 'O e-mail deve ser um endereço Gmail válido']"
-                itemid="editarEmailLocatario" />
-
-              <q-input filled v-model="formEdit.telephone" label="Celular" type="tel" required lazy-rules
-                mask="(##) #####-####"
-                :rules="[val => !!val || 'Telefone é obrigatório', val => /^\(\d{2}\) \d{5}-\d{4}$/.test(val) || 'Telefone inválido']"
-                itemid="editarTelefoneLocatario" />
-
-              <q-input filled v-model="formEdit.address" label="Endereço" required lazy-rules
-                :rules="[val => !!val || 'Endereço é obrigatório']" itemid="editarEnderecoLocatario" />
-
-              <q-input filled v-model="formEdit.cpf" label="CPF" required lazy-rules mask="###.###.###-##"
-                :rules="[val => !!val || 'CPF é obrigatório', validateCPF]" itemid="editarCPFLocatario" />
-            </div>
-
-            <div class="button-container">
-              <q-btn type="submit" label="ATUALIZAR"  class="custom-button q-mt-md"
-                itemid="BtnEditarLocatario" />
-            </div>
-          </q-form>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
-
-    <!-- Modal Exclusão -->
-    <q-dialog v-model="showModalExcluir">
-      <q-card class="modal-card-exclusao">
-        <q-card-section class="text-center">
-          <div class="circulo">
-            <i class="fa-solid fa-exclamation"></i>
-          </div>
-          <h3 class="titulo-exclusao">Tem certeza que deseja excluir?</h3>
-        </q-card-section>
-
-        <q-card-actions class="button-exclusao">
-          <q-btn label="SIM" color="negative" @click="confirmDelete" class="q-mr-sm" itemid="BtnExcluirLocatario" />
-          <q-btn label="NÃO" color="secondary" @click="cancelDelete" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
-    <!-- Table -->
-    <div class="table-container">
-      <q-table class="custom-table" :pagination="pagination" :rows="paginatedRows" :columns="columns" row-key="id"
-        hide-bottom>
-        <template v-slot:body-cell-actions="props">
-          <q-td :props="props" class="text-center">
-            <q-btn flat color="primary" @click="showDetails(props.row)" icon="visibility" aria-label="View"
-              :itemid="'visibility' + '-' + props.row.name"><q-tooltip class="bg-primary" :ffset="[10, 10]">
-                Visualizar detalhes
-              </q-tooltip></q-btn>
-            <q-btn flat color="secondary" v-if="userRole === 'ADMIN'" @click="editRow(props.row)" icon="edit"
-              :itemid="'edit' + '-' + props.row.name" aria-label="Edit"><q-tooltip class="bg-secondary"
-                :ffset="[10, 10]">
-                Editar Locatário
-              </q-tooltip></q-btn>
-            <q-btn flat color="negative" v-if="userRole === 'ADMIN' && !isRenterWithRentals(props.row.id)" @click="showDeleteModal(props.row)" icon="delete"
-              :itemid="'delete' + '-' + props.row.name" aria-label="Delete"><q-tooltip class="bg-negative"
-                :ffset="[10, 10]">
-                Excluir Locatário
-              </q-tooltip></q-btn>
-          </q-td>
-        </template>
-      </q-table>
-    </div>
-    <div class="row justify-center q-my-md">
-      <q-btn :disable="page.value <= 0" @click="prevPage" class="q-mx-sm">
-        <q-icon name="chevron_left" />
-      </q-btn>
-      <q-btn :disable="page.value >= totalPages - 1" @click="nextPage" class="q-mx-sm">
-        <q-icon name="chevron_right" />
-      </q-btn>
-    </div>
-  </div>
+    <RenterDeleteModal
+      v-model="showModalExcluir"
+      :target-name="deleteTarget?.name || ''"
+      @confirm="confirmDelete"
+    />
+  </q-page>
 </template>
-<script setup>
-import { useQuasar, Notify } from 'quasar';
-import { ref, computed, onMounted } from 'vue';
-import { api } from 'src/boot/axios.js';
-import { cpf as cpfValidator } from 'cpf-cnpj-validator';
 
-const $q = useQuasar();
+<script setup>
+import { computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import { Notify } from "quasar";
+import { api } from "src/boot/axios.js";
+
+import RenterStatsCard from "src/components/locatarios/RenterStatsCard.vue";
+import RenterSearchBar from "src/components/locatarios/RenterSearchBar.vue";
+import RenterTable from "src/components/locatarios/RenterTable.vue";
+import RenterFormModal from "src/components/locatarios/RenterFormModal.vue";
+import RenterDetailsModal from "src/components/locatarios/RenterDetailsModal.vue";
+import RenterDeleteModal from "src/components/locatarios/RenterDeleteModal.vue";
+
+const router = useRouter();
+
+const loading = ref(false);
+const userRole = ref(localStorage.getItem("role") || "");
+const searchQuery = ref("");
+
+const rows = ref([]);
+const rentersWithRentals = ref([]);
 
 const showModalCadastro = ref(false);
-const showModalSobre = ref(false);
 const showModalEditar = ref(false);
+const showModalSobre = ref(false);
 const showModalExcluir = ref(false);
-const rowToDelete = ref(null);
-const search = ref('');
-const page = ref(0);
-const rowsPerPage = 5;
-const currentPage = ref(1);
-const maxRowsPerPage = 10;
-const newRenter = ref({
-  name: '',
-  email: '',
-  telephone: '',
-  address: '',
-  cpf: '',
-});
-const formEdit = ref({
-  name: '',
-  email: '',
-  telephone: '',
-  address: '',
-  cpf: '',
+
+const deleteTarget = ref(null);
+
+const renterCreate = ref({
+  id: null,
+  name: "",
+  email: "",
+  telephone: "",
+  address: "",
+  cpf: "",
 });
 
-
-const selectedRow = ref(null);
-const InfosEdit = ref({});
-const rows = ref([]);
-const columns = [
-  { name: 'name', required: true, label: 'Nome do locatário', align: 'center', field: row => row.name, format: val => `${val}` },
-  { name: 'email', align: 'center', label: 'Email', field: 'email' },
-  { name: 'telephone', align: 'center', label: 'Telefone', field: 'telephone' },
-  { name: 'actions', align: 'center', label: 'Ações', field: 'actions' },
-];
-
-const userRole = ref('');
-
-
-
-const pagination = ref({
-  page: 1,
-  rowsPerPage: 8,
+const renterEdit = ref({
+  id: null,
+  name: "",
+  email: "",
+  telephone: "",
+  address: "",
+  cpf: "",
 });
 
-const getRows = (search = '') => {
-  api.get('/renter', { params: { search: search, page: page.value } })
-    .then(response => {
-      if (Array.isArray(response.data.content)) {
-        rows.value = response.data.content;
-      } else {
-        rows.value = [];
-      }
-    })
-    .catch(error => {
-      console.error('Erro ao obter dados:', error);
-    });
+const selectedRenter = ref({
+  id: null,
+  name: "",
+  email: "",
+  telephone: "",
+  address: "",
+  cpf: "",
+});
+
+const notify = (type, message) => {
+  Notify.create({ type, message, position: "top", timeout: 2200 });
 };
 
-function validateCPF(value) {
-  if (!value) return true;
-  return cpfValidator.isValid(value) ? true : 'CPF inválido';
-}
+const normalizeRenter = (row) => ({
+  id: row?.id ?? null,
+  name: row?.name ?? "-",
+  email: row?.email ?? "-",
+  telephone: row?.telephone ?? "-",
+  address: row?.address ?? "-",
+  cpf: row?.cpf ?? "",
+});
 
-const saveNewRenter = async () => {
-  const formattedRenter = {
-    name: newRenter.value.name.trim(),
-    email: newRenter.value.email.trim(),
-    address: newRenter.value.address.trim(),
-    telephone: newRenter.value.telephone.trim(),
+const sanitizePayload = (formData) => {
+  const payload = {
+    name: String(formData.name || "").trim(),
+    email: String(formData.email || "").trim(),
+    telephone: String(formData.telephone || "").trim(),
+    address: String(formData.address || "").trim(),
   };
 
+  const cpf = String(formData.cpf || "").trim();
+  if (cpf) payload.cpf = cpf;
 
-  if (newRenter.value.cpf && newRenter.value.cpf.trim() !== '') {
-    formattedRenter.cpf = newRenter.value.cpf.trim();
-  }
+  return payload;
+};
 
+const filteredRows = computed(() => {
+  const query = searchQuery.value.trim().toLowerCase();
+  if (!query) return rows.value;
+
+  return rows.value.filter((row) => {
+    return (
+      String(row.name).toLowerCase().includes(query) ||
+      String(row.email).toLowerCase().includes(query) ||
+      String(row.telephone).toLowerCase().includes(query) ||
+      String(row.address).toLowerCase().includes(query) ||
+      String(row.cpf || "")
+        .toLowerCase()
+        .includes(query)
+    );
+  });
+});
+
+const summary = computed(() => {
+  const rentersWithRentSet = new Set(rentersWithRentals.value);
+  const total = rows.value.length;
+  const withRentals = rows.value.filter((renter) =>
+    rentersWithRentSet.has(renter.id)
+  ).length;
+  const withoutRentals = Math.max(total - withRentals, 0);
+
+  return {
+    total,
+    withRentals,
+    withoutRentals,
+  };
+});
+
+const loadRenters = async (search = "") => {
+  loading.value = true;
   try {
-    const response = await api.post('/renter', formattedRenter, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    const response = await api.get("/renter", {
+      params: { search: search || undefined, page: 0 },
     });
 
-    rows.value.push(response.data);
-    showNotification('positive', 'Locatário criado com sucesso!');
-    newRenter.value = { name: '', email: '', telephone: '', address: '', cpf: '' };
-    showModalCadastro.value = false;
-    getRows();
+    const data = response.data?.content || response.data || [];
+    rows.value = Array.isArray(data) ? data.map(normalizeRenter) : [];
   } catch (error) {
-    let errorMessage = 'Erro ao criar locatário!';
-
-    if (error.response) {
-      if (error.response.status === 400) {
-        errorMessage = Object.values(error.response.data).join(', ') || errorMessage;
-      } else if (error.response.data.message) {
-        errorMessage = error.response.data.message;
-      }
-    }
-
-    console.error('Erro ao criar novo locatário:', error.response ? error.response.data : error.message);
-    showNotification('negative', errorMessage);
+    rows.value = [];
+    notify("negative", "Erro ao carregar locatarios.");
+  } finally {
+    loading.value = false;
   }
 };
 
+const loadRentals = async () => {
+  try {
+    const response = await api.get("/rent", {
+      params: { search: "", page: 0 },
+    });
 
+    const rentals = response.data?.content || [];
+    rentersWithRentals.value = [
+      ...new Set(
+        rentals
+          .map((rental) => rental?.renter?.id)
+          .filter((id) => typeof id === "number")
+      ),
+    ];
+  } catch (error) {
+    rentersWithRentals.value = [];
+  }
+};
 
+const openRegisterDialog = () => {
+  renterCreate.value = {
+    id: null,
+    name: "",
+    email: "",
+    telephone: "",
+    address: "",
+    cpf: "",
+  };
+  showModalCadastro.value = true;
+};
 
-const saveEdit = async () => {
-  if (!formEdit.value.id) {
-    showNotification('negative', 'Locatário não selecionado!');
+const submitFormCadastro = async (formData) => {
+  if (
+    !formData.name ||
+    !formData.email ||
+    !formData.telephone ||
+    !formData.address
+  ) {
+    notify("negative", "Preencha os campos obrigatorios para cadastrar.");
     return;
   }
 
   try {
-    await api.put(`/renter/${formEdit.value.id}`, formEdit.value, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    const index = rows.value.findIndex(r => r.id === formEdit.value.id);
-    if (index !== -1) {
-      rows.value[index] = { ...formEdit.value };
-    }
-
-    showNotification('positive', 'Locatário atualizado com sucesso!');
-    showModalEditar.value = false;
+    await api.post("/renter", sanitizePayload(formData));
+    notify("positive", "Locatario criado com sucesso.");
+    showModalCadastro.value = false;
+    await loadRenters(searchQuery.value);
   } catch (error) {
-    let errorMessage = 'Erro ao atualizar locatário!';
-
-    if (error.response) {
-      if (error.response.status === 400) {
-        errorMessage = Object.values(error.response.data).join(', ') || errorMessage;
-      } else if (error.response.data && error.response.data.message) {
-        errorMessage = error.response.data.message;
-      }
-    }
-
-    console.error('Erro ao editar locatário:', error.response ? error.response.data : error.message);
-    showNotification('negative', errorMessage);
+    notify(
+      "negative",
+      error.response?.data?.message || "Erro ao criar locatario."
+    );
   }
 };
 
-
-const showDetails = (row) => {
-  getApi(row.id);
-  selectedRow.value = row;
-  showModalSobre.value = true;
+const editRow = async (row) => {
+  try {
+    const response = await api.get(`/renter/${row.id}`);
+    renterEdit.value = normalizeRenter(response.data || row);
+    showModalEditar.value = true;
+  } catch (error) {
+    notify("negative", "Erro ao carregar dados para edicao.");
+  }
 };
 
-const editRow = (row) => {
-  showModalEditar.value = true;
-  getApi(row.id).then(() => {
-    formEdit.value = {
-      id: InfosEdit.value.id,
-      name: InfosEdit.value.name,
-      email: InfosEdit.value.email,
-      telephone: InfosEdit.value.telephone,
-      address: InfosEdit.value.address,
-      cpf: InfosEdit.value.cpf,
-    };
-  }).catch(error => {
-    console.error('Erro ao obter dados para edição:', error);
-    showNotification('negative', 'Erro ao obter dados para edição!');
-  });
+const submitFormEditar = async (formData) => {
+  if (!renterEdit.value.id) {
+    notify("negative", "Locatario nao selecionado.");
+    return;
+  }
+
+  if (
+    !formData.name ||
+    !formData.email ||
+    !formData.telephone ||
+    !formData.address
+  ) {
+    notify("negative", "Preencha os campos obrigatorios para atualizar.");
+    return;
+  }
+
+  try {
+    await api.put(`/renter/${renterEdit.value.id}`, {
+      id: renterEdit.value.id,
+      ...sanitizePayload(formData),
+    });
+
+    notify("positive", "Locatario atualizado com sucesso.");
+    showModalEditar.value = false;
+    await loadRenters(searchQuery.value);
+  } catch (error) {
+    notify(
+      "negative",
+      error.response?.data?.message || "Erro ao atualizar locatario."
+    );
+  }
 };
 
-const showDeleteModal = (row) => {
-  rowToDelete.value = row;
+const showDetails = async (row) => {
+  try {
+    const response = await api.get(`/renter/${row.id}`);
+    selectedRenter.value = normalizeRenter(response.data || row);
+  } catch (error) {
+    selectedRenter.value = normalizeRenter(row);
+  } finally {
+    showModalSobre.value = true;
+  }
+};
+
+const askDelete = (row) => {
+  deleteTarget.value = row;
   showModalExcluir.value = true;
 };
 
-const performSearch = () => {
-  onSearch();
-}
+const confirmDelete = async () => {
+  if (!deleteTarget.value?.id) return;
 
-const confirmDelete = () => {
-  const index = rows.value.findIndex(r => r.id === rowToDelete.value.id);
-  if (index !== -1) {
-    api.delete(`/renter/${rowToDelete.value.id}`)
-      .then(() => {
-        rows.value.splice(index, 1);
-        showNotification('positive', 'Locatário excluído com sucesso!');
-        showModalExcluir.value = false;
-      })
-      .catch(error => {
-        if (error.response.status == 403) {
-          showNotification('negative', "Você não tem permissao!");
-        } else {
-          showNotification('negative', error.response.data.error);
-        }
-
-        console.log("Erro ao deletar locatário", error.response.status);
-      });
+  try {
+    await api.delete(`/renter/${deleteTarget.value.id}`);
+    notify("positive", "Locatario excluido com sucesso.");
+    showModalExcluir.value = false;
+    deleteTarget.value = null;
+    await Promise.all([loadRenters(searchQuery.value), loadRentals()]);
+  } catch (error) {
+    notify(
+      "negative",
+      error.response?.data?.message || "Erro ao excluir locatario."
+    );
   }
 };
 
-const cancelDelete = () => {
-  rowToDelete.value = null;
-  showModalExcluir.value = false;
+const handleSearch = () => {
+  loadRenters(searchQuery.value);
 };
 
-const onSearch = () => {
+const clearSearch = () => {
+  searchQuery.value = "";
+  loadRenters();
 };
 
-const totalPages = computed(() => Math.ceil(rows.value.length / rowsPerPage));
+onMounted(async () => {
+  const token = localStorage.getItem("authToken");
 
-
-const paginatedRows = computed(() => {
-  const start = (currentPage.value - 1) * maxRowsPerPage;
-  return rows.value.slice(start, start + maxRowsPerPage);
-});
-
-const prevPage = () => {
-  if (page.value > 0) {
-    page.value--;
-    getRows(search.value);
-  }
-};
-
-const nextPage = () => {
-  page.value++;
-  getRows(search.value);
-};
-
-
-
-const getApi = (id) => {
-  return api.get(`/renter/${id}`)
-    .then(response => {
-      InfosEdit.value = response.data;
-      return response.data;
-    })
-    .catch(error => {
-      console.error('Erro', error);
-      showNotification('negative', 'Erro ao obter dados do locatário!');
-      throw error;
-    });
-};
-
-const showNotification = (type, message) => {
-  Notify.create({
-    color: type === 'positive' ? 'green' : 'red',
-    textColor: 'white',
-    icon: type === 'positive' ? 'check_circle' : 'error',
-    message: message,
-    position: 'top',
-  });
-};
-
-onMounted(() => {
-  const token = localStorage.getItem('authToken');
   if (!token) {
-    router.push('/login');
-  } else {
-    userRole.value = localStorage.getItem('role')
-    getRows();
-    loadRentals();
+    router.push("/login");
+    return;
   }
+
+  userRole.value = localStorage.getItem("role") || "";
+  await Promise.all([loadRenters(), loadRentals()]);
 });
-
-const isRenterWithRentals = (renterId) => {
-  return rentersWithRentals.value.includes(renterId);
-};
-
-const rentersWithRentals = ref([]);
-
-const loadRentals = (srch = '') => {
-  api.get('/rent', { params: { search: srch, page: page.value} })
-    .then(response => {
-      console.log('Dados dos alugueis:', response.data);
-      const rentals = response.data.content;
-
-      rentersWithRentals.value = rentals.map(rental => rental.renter.id);
-    })
-    .catch(error => {
-      console.error('Erro ao carregar alugueis:', error);
-    });
-};
-
-
-const srch = ref('');
-
 </script>
 
-
 <style scoped>
-.content {
-  padding: 16px;
-}
-
-.containerButton {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 16px;
-}
-
-.modal-card {
-  width: 600px;
-  padding: 10px;
-  border-radius: 20px;
-  box-shadow: 15px 13px 61px -17px rgba(0, 0, 0, 0.49);
-}
-
-.modal-card-exclusao {
-  width: 400px;
-  border-radius: 10px;
-  box-shadow: 15px 13px 61px -17px rgba(0, 0, 0, 0.49);
-}
-
-.titulo-cadastro {
-  font-size: 1.2rem;
-  text-align: center;
-  margin-bottom: 16px;
-}
-
-.checkbox {
-  display: flex;
-  justify-content: space-around;
-}
-
-.titulo-sobre {
-  font-size: 1.2rem;
-  text-align: center;
-  margin-bottom: 16px;
-}
-
-.button-container {
-  display: flex;
-  justify-content: center;
-}
-
-.table-container {
-  margin-top: 16px;
-}
-
-.buttonCadastrar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-
-.text-center {
-  text-align: center;
-}
-
-.titulo-exclusao {
-  font-size: 1.2rem;
-  margin-bottom: 16px;
-}
-
-.button-exclusao {
-  display: flex;
-  justify-content: center;
-}
-
-.center-width {
-  width: 100%;
-}
-
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  padding-bottom: 20px;
-  max-width: 1300px;
-  width: 100%;
+.renters-page {
+  padding: 34px 60px;
+  background: #f5f5f3;
+  min-height: 100vh;
   margin: 0 auto;
 }
 
-
-.q-input.pesquisa {
-  font-size: 16px;
-  font-weight: 800;
-  color: rgba(0, 0, 0, 0.60);
+.renters-header {
+  animation: slideInDown 0.35s ease-out forwards;
+  opacity: 0;
 }
 
-.custom-table {
-  max-width: 1300px;
-  width: 100%;
-  margin: 0 auto;
+.renters-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: #222;
+  font-weight: 700;
 }
 
-.pesquisa {
-  display: flex;
-  max-width: 1300px;
-  height: 53px;
-  border-radius: 4px;
-  width: 100%;
-  margin: 0 auto;
+.renters-header p {
+  color: #6b6b64;
+  font-size: 1rem;
 }
 
-.button-pesquisar {
-  font-size: 15px;
-  font-weight: 800;
+.stats-grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: 16px;
 }
 
-@media (max-width: 700px) {
-  .button-pesquisar {
-    display: none;
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 980px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .renters-page {
+    padding: 18px;
+  }
+
+  .renters-header h1 {
+    font-size: 1.5rem;
   }
 }
 </style>
