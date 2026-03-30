@@ -1,530 +1,909 @@
 <template>
-  <div class="content">
-    <!-- Button cadastrar -->
-    <div class="containerButton">
-      <q-btn style="width: 200px; background-color: #008080; color: white;" v-if="userRole === 'ADMIN'" itemid="cadastroBtnUsuario"
-        @click="openRegisterDialog">
-        <div class="buttonCadastrar">
-          CADASTRAR USUÁRIO
-        </div>s
-      </q-btn>
-    </div>
+  <q-page class="users-page">
+    <section class="users-header">
+      <h1>Gerenciamento de Usuarios</h1>
+      <p>Gerencie os usuarios da sua biblioteca digital</p>
+    </section>
 
-    <!-- Barra de Pesquisa -->
-    <q-form @submit="getRows(srch)" class="q-ml-sm col container">
-      <q-input v-model="srch" label="Pesquisar Usuário" class="q-ml-sm col" input-style="min-width: 100%"
-        itemid="searchInput">
-        <template v-slot:append>
-          <q-icon v-if="srch !== ''" name="close" @click="srch = '', getRows(srch)" class="cursor-pointer"
-            itemid="closeSearchBtn" />
+    <section class="stats-grid">
+      <q-card flat bordered class="stat-card">
+        <div class="stat-icon stat-icon-total">
+          <q-icon name="groups_2" size="20px" />
+        </div>
+        <div class="stat-info">
+          <span>Total de Usuarios</span>
+          <strong>{{ summary.total }}</strong>
+        </div>
+      </q-card>
+
+      <q-card flat bordered class="stat-card">
+        <div class="stat-icon stat-icon-admin">
+          <q-icon name="verified_user" size="20px" />
+        </div>
+        <div class="stat-info">
+          <span>Administradores</span>
+          <strong>{{ summary.admins }}</strong>
+        </div>
+      </q-card>
+
+      <q-card flat bordered class="stat-card">
+        <div class="stat-icon stat-icon-user">
+          <q-icon name="badge" size="20px" />
+        </div>
+        <div class="stat-info">
+          <span>Locatarios</span>
+          <strong>{{ summary.users }}</strong>
+        </div>
+      </q-card>
+    </section>
+
+    <section class="toolbar-row">
+      <q-input
+        v-model="srch"
+        outlined
+        dense
+        rounded
+        class="search-input"
+        placeholder="Buscar usuarios..."
+        itemid="searchInput"
+        @keyup.enter="onSearch"
+      >
+        <template #prepend>
+          <q-icon name="search" />
         </template>
 
-        <template v-slot:after>
-          <q-btn @click="getRows(srch)" round dense flat icon="search" itemid="searchBtn" />
+        <template #append>
+          <q-icon
+            v-if="srch"
+            name="close"
+            class="cursor-pointer"
+            itemid="closeSearchBtn"
+            @click="clearSearch"
+          />
         </template>
+
+     
       </q-input>
 
-    </q-form>
+      <q-btn
+        v-if="userRole === 'ADMIN'"
+        unelevated
+        no-caps
+        class="add-user-btn"
+        itemid="cadastroBtnUsuario"
+        icon="add"
+        label="Adicionar Usuario"
+        @click="openRegisterDialog"
+      />
+    </section>
 
+    <q-card flat bordered class="table-card">
+      <q-table
+        :rows="filteredRows"
+        :columns="columns"
+        row-key="id"
+        flat
+        :loading="loading"
+        hide-bottom
+      >
+        <template #loading>
+          <q-inner-loading showing color="primary" />
+        </template>
 
-    <!-- Modal Cadastro -->
-    <q-dialog v-model="showModalCadastro">
+        <template #body-cell-role="props">
+          <q-td :props="props">
+            <span
+              class="role-chip"
+              :class="props.row.role === 'ADMIN' ? 'role-admin' : 'role-user'"
+            >
+              {{ mapRole(props.row.role) }}
+            </span>
+          </q-td>
+        </template>
+
+        <template #body-cell-createdAt="props">
+          <q-td :props="props">
+            {{ formatDate(props.row.createdAt) }}
+          </q-td>
+        </template>
+
+        <template #body-cell-actions="props">
+          <q-td :props="props" class="actions-cell">
+            <q-btn
+              flat
+              round
+              dense
+              icon="visibility"
+              color="primary"
+              :itemid="'visibility-' + props.row.name"
+              @click="showDetails(props.row)"
+            >
+              <q-tooltip>Visualizar detalhes</q-tooltip>
+            </q-btn>
+
+            <q-btn
+              v-if="props.row.id !== adminId && userRole === 'ADMIN'"
+              flat
+              round
+              dense
+              icon="edit"
+              color="secondary"
+              :itemid="'edit-' + props.row.name"
+              @click="editRow(props.row)"
+            >
+              <q-tooltip>Editar usuario</q-tooltip>
+            </q-btn>
+
+            <q-btn
+              v-if="props.row.id !== adminId && userRole === 'ADMIN'"
+              flat
+              round
+              dense
+              icon="delete"
+              color="negative"
+              :itemid="'delete-' + props.row.name"
+              @click="askDelete(props.row)"
+            >
+              <q-tooltip>Excluir usuario</q-tooltip>
+            </q-btn>
+          </q-td>
+        </template>
+
+        <template #no-data>
+          <div class="q-pa-lg text-grey-7">Nenhum usuario encontrado.</div>
+        </template>
+      </q-table>
+    </q-card>
+
+    <q-dialog v-model="showModalCadastro" persistent>
       <q-card class="modal-card">
-        <q-card-section>
-          <div class="titulo-cadastro">Cadastro de Usuário</div>
-        </q-card-section>
+        <q-card-section class="modal-title">Cadastrar Usuario</q-card-section>
 
         <q-card-section>
-          <q-form @submit="submitFormCadastro">
-            <q-input filled v-model="userCreate.name" label="Nome" required lazy-rules :rules="[
-              val => !!val || 'Nome é obrigatório']"  itemid="cadastroNomeUsuario"/>
+          <q-form @submit="submitFormCadastro" class="modal-form">
+            <q-input
+              v-model="userCreate.name"
+              outlined
+              dense
+              rounded
+              label="Nome"
+              itemid="cadastroNomeUsuario"
+              :rules="[(val) => !!val || 'Nome e obrigatorio']"
+            />
 
-            <q-input filled v-model="userCreate.email" label="Email" type="email" required lazy-rules :rules="[
-              val => !!val || 'Email é obrigatório',
-              val => /.+@.+\..+/.test(val) || 'Email inválido']" itemid="cadastrarEmailUsuario" />
+            <q-input
+              v-model="userCreate.email"
+              outlined
+              dense
+              rounded
+              label="E-mail"
+              type="email"
+              itemid="cadastrarEmailUsuario"
+              :rules="[
+                (val) => !!val || 'E-mail e obrigatorio',
+                (val) => /.+@.+\\..+/.test(val) || 'E-mail invalido',
+              ]"
+            />
 
-            <q-input filled :type="isPwd ? 'password' : 'text'" v-model="userCreate.password" required label="Senha"
-              prepend-icon="fa-solid fa-lock" lazy-rules :rules="[val => !!val || 'Senha é obrigatório']" itemid="cadastrarSenhaUsuario">
-              <template v-slot:append>
-                <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer"
-                  @click="isPwd = !isPwd"></q-icon>
+            <q-input
+              v-model="userCreate.password"
+              outlined
+              dense
+              rounded
+              :type="isPwd ? 'password' : 'text'"
+              label="Senha"
+              itemid="cadastrarSenhaUsuario"
+              :rules="[(val) => !!val || 'Senha e obrigatoria']"
+            >
+              <template #append>
+                <q-icon
+                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="isPwd = !isPwd"
+                />
               </template>
             </q-input>
 
-            <div class="q-mt-md checkbox">
-              <q-radio v-model="userCreate.role" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="ADMIN"
-                label="Editor" :error="roleError" :error-message="roleErrorMessage" itemid="cadastrarAdministradorUsuario" />
-              <q-radio v-model="userCreate.role" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="USER"
-                label="Locatario" :error="roleError" :error-message="roleErrorMessage" itemid="cadastrarLocatarioUsuario" />
+            <div class="role-group">
+              <q-radio
+                v-model="userCreate.role"
+                checked-icon="task_alt"
+                unchecked-icon="panorama_fish_eye"
+                val="ADMIN"
+                label="Administrador"
+                itemid="cadastrarAdministradorUsuario"
+              />
+              <q-radio
+                v-model="userCreate.role"
+                checked-icon="task_alt"
+                unchecked-icon="panorama_fish_eye"
+                val="USER"
+                label="Locatario"
+                itemid="cadastrarLocatarioUsuario"
+              />
             </div>
 
-
-            <div class="button-container">
-              <q-btn type="submit" label="CADASTRAR" class="center-width q-mt-md" itemid="BtnCadastrarUsuario" />
+            <div class="modal-actions">
+              <q-btn flat no-caps label="Cancelar" v-close-popup />
+              <q-btn
+                unelevated
+                no-caps
+                type="submit"
+                label="Cadastrar"
+                class="submit-modal-btn"
+                itemid="BtnCadastrarUsuario"
+              />
             </div>
           </q-form>
         </q-card-section>
       </q-card>
     </q-dialog>
 
-    <!-- Modal Editar -->
-    <q-dialog v-model="showModalEditar">
+    <q-dialog v-model="showModalEditar" persistent>
       <q-card class="modal-card">
-        <q-card-section>
-          <div class="titulo-cadastro">Editar Usuário</div>
-        </q-card-section>
+        <q-card-section class="modal-title">Editar Usuario</q-card-section>
 
         <q-card-section>
-          <q-form @submit.prevent="submitFormEditar">
-            <q-input filled v-model="formEditar.name" label="Nome" required lazy-rules
-              :rules="[val => !!val || 'Nome é obrigatório']" itemid="editarNomeUsuario" />
+          <q-form @submit="submitFormEditar" class="modal-form">
+            <q-input
+              v-model="formEditar.name"
+              outlined
+              dense
+              rounded
+              label="Nome"
+              itemid="editarNomeUsuario"
+              :rules="[(val) => !!val || 'Nome e obrigatorio']"
+            />
 
-            <q-input filled v-model="formEditar.email" label="Email" type="email" required lazy-rules
-              :rules="[val => !!val || 'Email é obrigatório', val => /.+@.+\..+/.test(val) || 'Email inválido']"  itemid="emailNomeUsuario"/>
+            <q-input
+              v-model="formEditar.email"
+              outlined
+              dense
+              rounded
+              label="E-mail"
+              type="email"
+              itemid="emailNomeUsuario"
+              :rules="[
+                (val) => !!val || 'E-mail e obrigatorio',
+                (val) => /.+@.+\\..+/.test(val) || 'E-mail invalido',
+              ]"
+            />
 
-            <div class="q-mt-md checkbox">
-              <q-radio v-model="formEditar.role" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="ADMIN"
-                label="Editor" />
-              <q-radio v-model="formEditar.role" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="USER"
-                label="Locatario" itemid="editarLocatarioUsuario" />
+            <div class="role-group">
+              <q-radio
+                v-model="formEditar.role"
+                checked-icon="task_alt"
+                unchecked-icon="panorama_fish_eye"
+                val="ADMIN"
+                label="Administrador"
+              />
+              <q-radio
+                v-model="formEditar.role"
+                checked-icon="task_alt"
+                unchecked-icon="panorama_fish_eye"
+                val="USER"
+                label="Locatario"
+                itemid="editarLocatarioUsuario"
+              />
             </div>
 
-            <div class="button-container">
-              <q-btn type="submit" label="ATUALIZAR" class="center-width q-mt-md" itemid="BtnEditarUsuario" />
+            <div class="modal-actions">
+              <q-btn flat no-caps label="Cancelar" v-close-popup />
+              <q-btn
+                unelevated
+                no-caps
+                type="submit"
+                label="Atualizar"
+                class="submit-modal-btn"
+                itemid="BtnEditarUsuario"
+              />
             </div>
           </q-form>
         </q-card-section>
       </q-card>
     </q-dialog>
 
-
-    <!-- Modal Sobre -->
     <q-dialog v-model="showModalSobre">
       <q-card class="modal-card">
-        <q-card-section>
-          <div class="titulo-sobre text-center">Detalhes do Usuário</div>
+        <q-card-section class="modal-title">Detalhes do Usuario</q-card-section>
+
+        <q-card-section class="modal-form">
+          <q-input
+            outlined
+            dense
+            rounded
+            readonly
+            v-model="selectedRow.name"
+            label="Nome"
+          />
+          <q-input
+            outlined
+            dense
+            rounded
+            readonly
+            v-model="selectedRow.email"
+            label="E-mail"
+          />
+          <q-input
+            outlined
+            dense
+            rounded
+            readonly
+            :model-value="mapRole(selectedRow.role)"
+            label="Perfil"
+          />
         </q-card-section>
-        <q-card-section>
-          <div class="form-grid">
-            <q-input filled v-model="selectedRow.name" label="Nome" readonly />
-            <br>
-            <q-input filled v-model="selectedRow.email" label="Email" readonly />
-            <br>
-            <q-input filled v-model="mappedRole" label="Permissão" readonly />
-          </div>
-        </q-card-section>
-        <q-card-actions class="button-sobre">
-          <q-btn label="Fechar" @click="showModalSobre = false" itemid="BtnSobreUsuario" />
+
+        <q-card-actions align="right">
+          <q-btn
+            flat
+            no-caps
+            label="Fechar"
+            itemid="BtnSobreUsuario"
+            @click="showModalSobre = false"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
 
-    <!-- Tabela de usuários -->
-    <div class="table-container">
-      <q-table class="custom-table" :pagination="pagination" :rows="paginatedRows" :columns="columns" row-key="email" hide-bottom
-        :footer-props="{ show: false }">
-        <template v-slot:body-cell-role="props">
-          <q-td :props="props" style="vertical-align: middle;">
-            <div>{{ mapRole(props.row.role) }}</div>
-          </q-td>
-        </template>
-        <template v-slot:body-cell-actions="props">
-          <q-td :props="props" style="vertical-align: middle;">
-            <q-btn flat color="primary" @click="showDetails(props.row)" icon="visibility" aria-label="View" :itemid="'visibility' + '-' + props.row.name"><q-tooltip
-                class="bg-primary" :ffset="[10, 10]">
-                Visualizar detalhes
-              </q-tooltip></q-btn>
-            <q-btn v-if="props.row.id !== adminId && userRole === 'ADMIN'" flat color="secondary" :itemid="'edit' + '-' + props.row.name"
-              @click="editRow(props.row)" icon="edit" aria-label="Edit" ><q-tooltip class="bg-secondary"
-                :ffset="[10, 10]">
-                Editar Usuário
-              </q-tooltip></q-btn>
-          </q-td>
-        </template>
-      </q-table>
-    </div>
-    <div class="row justify-center q-my-md">
-      <q-btn :disable="page.value <= 0" @click="prevPage" class="q-mx-sm">
-        <q-icon name="chevron_left" />
-      </q-btn>
-      <q-btn :disable="page.value >= totalPages - 1" @click="nextPage" class="q-mx-sm">
-        <q-icon name="chevron_right" />
-      </q-btn>
-    </div>
-  </div>
+    <q-dialog v-model="showModalExcluir" persistent>
+      <q-card class="confirm-card">
+        <q-card-section class="modal-title">Excluir Usuario</q-card-section>
+        <q-card-section>
+          Tem certeza que deseja excluir
+          <strong>{{ deleteTarget?.name }}</strong
+          >?
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat no-caps label="Cancelar" v-close-popup />
+          <q-btn
+            unelevated
+            no-caps
+            color="negative"
+            label="Excluir"
+            @click="confirmDelete"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+  </q-page>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { api } from 'src/boot/axios';
-import { Notify } from 'quasar';
+import { computed, onMounted, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+import { Notify } from "quasar";
+import { api } from "src/boot/axios";
+
+const router = useRouter();
 
 const showModalCadastro = ref(false);
 const showModalEditar = ref(false);
 const showModalSobre = ref(false);
-const search = ref('');
-const srch= ref('');
-const totalPages = (0);
-const currentPage = ref(1);
-const maxRowsPerPage = 10;
+const showModalExcluir = ref(false);
+const loading = ref(false);
 const isPwd = ref(true);
+const srch = ref("");
 
-const userCreate = ref({
-  name: '',
-  email: '',
-  password: '',
-  role: ''
-});
-
-const formEditar = ref({
-  id: null,
-  name: '',
-  email: '',
-  role: ''
-});
-
-const selectedRow = ref({
-  name: '',
-  email: '',
-  password: '',
-  role: ''
-});
-
-const adminId = 1;
-
-
-
-
-const openRegisterDialog = () => {
-  showModalCadastro.value = true;
-};
-
-const columns = [
-  { name: 'name', required: true, label: 'Nome do usuário', align: 'center', field: row => row.name, format: val => `${val}`, sortable: true },
-  { name: 'email', required: true, label: 'Email do usuário', align: 'center', field: row => row.email, format: val => `${val}`, sortable: true },
-  { name: 'role', align: 'center', label: 'Permissão', field: row => traduzirRole(row.role), sortable: true },
-  { name: 'actions', align: 'center', label: 'Ações', field: 'actions', sortable: true },
-]
+const userRole = ref(localStorage.getItem("role") || "");
+const adminId = Number(localStorage.getItem("userId") || 0);
 
 const rows = ref([]);
-
-const performSearch = () => {
-  console.log("Executando pesquisa para:", search.value);
-  getRows(search.value);
-};
-
-const page = ref(0)
-
-const prevPage = () => {
-  if (page.value > 0) {
-    page.value--;
-    getRows(search.value);
-  }
-};
-
-
-const nextPage = () => {
-  page.value++;
-  getRows(search.value);
-};
-
-
-const getRows = (srch = '', role = roleFilter.value) => {
-  api.get('/user', { params: { search: srch, page: page.value, role: role } })
-    .then(response => {
-      rows.value = response.data.content;
-    })
-    .catch(error => {
-      console.error("Erro ao obter dados:", error);
-    });
-};
-
-const checkUserExists = (name, email) => {
-  const userExists = rows.value.some(user => user.name === name);
-  const emailExists = rows.value.some(user => user.email === email);
-
-  return {
-    userExists,
-    emailExists,
-  };
-};
-
-const userRole = ref('');
-
-onMounted(() => {
-  const token = localStorage.getItem('authToken');
-  if (!token) {
-    router.push('/login');
-  } else {
-    userRole.value = localStorage.getItem('role')
-    getRows();
-  }
+const summary = reactive({
+  total: 0,
+  admins: 0,
+  users: 0,
 });
+
+const metricsConfig = {
+  enabled: false,
+  endpoints: {
+    total: "/user/metrics/total",
+    admins: "/user/metrics/admins",
+    users: "/user/metrics/users",
+  },
+};
+
+const userCreate = reactive({
+  name: "",
+  email: "",
+  password: "",
+  role: "",
+});
+
+const formEditar = reactive({
+  id: null,
+  name: "",
+  email: "",
+  role: "USER",
+});
+
+const selectedRow = reactive({
+  id: null,
+  name: "",
+  email: "",
+  role: "",
+  createdAt: null,
+});
+
+const deleteTarget = ref(null);
+
+const columns = [
+  { name: "name", align: "left", label: "Nome", field: "name", sortable: true },
+  {
+    name: "email",
+    align: "left",
+    label: "E-mail",
+    field: "email",
+    sortable: true,
+  },
+  {
+    name: "role",
+    align: "left",
+    label: "Perfil",
+    field: "role",
+    sortable: true,
+  },
+  {
+    name: "createdAt",
+    align: "left",
+    label: "Criado em",
+    field: "createdAt",
+    sortable: true,
+  },
+  { name: "actions", align: "right", label: "Acoes", field: "actions" },
+];
+
+const roleMap = {
+  ADMIN: "Administrador",
+  USER: "Locatario",
+};
 
 const filteredRows = computed(() => {
-  const searchLower = search.value.toLowerCase();
-  return rows.value.filter(row =>
-    row.name.toLowerCase().includes(searchLower) ||
-    row.role.toLowerCase().includes(searchLower)
-  );
-});
+  const query = srch.value.trim().toLowerCase();
 
-
-const paginatedRows = computed(() => {
-  const start = (currentPage.value - 1) * maxRowsPerPage;
-  return filteredRows.value.slice(start, start + maxRowsPerPage);
-});
-
-const roleFilter = ref('')
-const filterLabel = ref('Filtrar');
-
-const permissionFilter = (permission, label) => {
-  console.log('Filtro selecionado:', permission);
-  roleFilter.value = permission;
-  filterLabel.value = label;
-  getRows();
-};
-
-const submitFormCadastro = () => {
-  if (!userCreate.value.role) {
-    showNotification('negative', 'Você deve selecionar uma dos níveis de acesso editor ou locatário!');
-    return;
+  if (!query) {
+    return rows.value;
   }
 
-  api.post('/user', userCreate.value)
-    .then(response => {
-      showNotification('positive', "Usuário cadastrado com sucesso!");
-      getRows();
-      showModalCadastro.value = false;
-      resetFormCadastro();
-    })
-    .catch(error => {
-      let errorMessage = "Erro ao cadastrar usuário!";
-
-      if (error.response) {
-        if (error.response.status === 400) {
-          errorMessage = Object.values(error.response.data).join(', ') || errorMessage;
-        } else if (error.response.data.message) {
-          errorMessage = error.response.data.message;
-        }
-      }
-
-      console.error("Erro ao cadastrar usuário:", error.response ? error.response.data : error.message);
-      showNotification('negative', errorMessage);
-    });
-};
-
-const pagination = ref({
-  page: 1,
-  rowsPerPage: 8,
+  return rows.value.filter((row) => {
+    return (
+      row.name.toLowerCase().includes(query) ||
+      row.email.toLowerCase().includes(query) ||
+      mapRole(row.role).toLowerCase().includes(query)
+    );
+  });
 });
 
-const resetFormCadastro = () => {
-  userCreate.value = {
-    name: '',
-    email: '',
-    password: '',
-    role: ''
-  };
+const notify = (type, message) => {
+  Notify.create({ type, message, position: "top", timeout: 2200 });
 };
 
-const editRow = (row) => {
-  formEditar.value = { ...row };
-  showModalEditar.value = true;
-};
+const mapRole = (role) => roleMap[role] || role;
 
-const onSearch = () => {
-  if (search.value.trim() === '') {
-    getRows();
-  } else {
-    getRows(search.value);
-  }
-};
+const formatDate = (value) => {
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
 
-
-const submitFormEditar = () => {
-  api.put(`/user/${formEditar.value.id}`, formEditar.value)
-    .then(response => {
-      showNotification('positive', "Usuário atualizado com sucesso!");
-      getRows();
-      showModalEditar.value = false;
-    })
-    .catch(error => {
-      let errorMessage = "Erro ao atualizar usuário!";
-
-      if (error.response) {
-        if (error.response.status === 400) {
-
-          errorMessage = Object.values(error.response.data).join(', ') || errorMessage;
-        } else if (error.response.data.message) {
-          errorMessage = error.response.data.message;
-        }
-      }
-
-      console.error("Erro ao atualizar usuário:", error.response ? error.response.data : error.message);
-      showNotification('negative', errorMessage); 
-    });
-};
-
-
-const roleMapping = {
-  ADMIN: 'Administrador',
-  USER: 'Locatario'
-};
-const roleError = ref(false);
-const roleErrorMessage = ref('');
-
-const current = ref();
-const mappedRole = computed(() => mapRole(selectedRow.value.role));
-const mapRole = (role) => roleMapping[role] || role;
-
-const showNotification = (type, message) => {
-  Notify.create({
-    type: type,
-    message: message,
-    position: 'top'
+  return date.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
   });
 };
 
-const showDetails = (row) => {
-  showModalSobre.value = true;
-  loadUserDetails(row.id);
+const normalizeUser = (row) => {
+  return {
+    id: row.id,
+    name: row.name || "-",
+    email: row.email || "-",
+    role: row.role || "USER",
+    createdAt:
+      row.createdAt ||
+      row.creationDate ||
+      row.created_date ||
+      row.createdAtDate ||
+      null,
+  };
 };
 
-const loadUserDetails = (id) => {
-  api.get(`/user/${id}`)
-    .then(response => {
-      if (response.data) {
-        selectedRow.value = response.data;
-        showModalSobre.value = true;
-      } else {
-        console.error('Usuário não encontrado:', response.data);
-      }
-    })
-    .catch(error => {
-      console.error("Erro ao obter detalhes do usuário:", error);
+const updateSummaryFromRows = () => {
+  summary.total = rows.value.length;
+  summary.admins = rows.value.filter((user) => user.role === "ADMIN").length;
+  summary.users = rows.value.filter((user) => user.role === "USER").length;
+};
+
+const loadSummary = async () => {
+  if (!metricsConfig.enabled) {
+    updateSummaryFromRows();
+    return;
+  }
+
+  try {
+    const [totalRes, adminsRes, usersRes] = await Promise.all([
+      api.get(metricsConfig.endpoints.total),
+      api.get(metricsConfig.endpoints.admins),
+      api.get(metricsConfig.endpoints.users),
+    ]);
+
+    summary.total = Number(totalRes.data?.value ?? totalRes.data ?? 0);
+    summary.admins = Number(adminsRes.data?.value ?? adminsRes.data ?? 0);
+    summary.users = Number(usersRes.data?.value ?? usersRes.data ?? 0);
+  } catch {
+    updateSummaryFromRows();
+  }
+};
+
+const loadUsers = async () => {
+  loading.value = true;
+
+  try {
+    const response = await api.get("/user", {
+      params: { search: srch.value || undefined },
     });
+
+    const data = response.data?.content || response.data || [];
+    rows.value = Array.isArray(data) ? data.map(normalizeUser) : [];
+    await loadSummary();
+  } catch (error) {
+    notify("negative", "Erro ao carregar usuarios.");
+    rows.value = [];
+    updateSummaryFromRows();
+  } finally {
+    loading.value = false;
+  }
 };
 
+const openRegisterDialog = () => {
+  userCreate.name = "";
+  userCreate.email = "";
+  userCreate.password = "";
+  userCreate.role = "";
+  showModalCadastro.value = true;
+};
+
+const onSearch = () => {
+  loadUsers();
+};
+
+const clearSearch = () => {
+  srch.value = "";
+  loadUsers();
+};
+
+const submitFormCadastro = async () => {
+  if (!userCreate.role) {
+    notify("negative", "Selecione um nivel de acesso.");
+    return;
+  }
+
+  try {
+    await api.post("/user", {
+      name: userCreate.name,
+      email: userCreate.email,
+      password: userCreate.password,
+      role: userCreate.role,
+    });
+
+    notify("positive", "Usuario cadastrado com sucesso.");
+    showModalCadastro.value = false;
+    await loadUsers();
+  } catch (error) {
+    notify(
+      "negative",
+      error.response?.data?.message || "Erro ao cadastrar usuario."
+    );
+  }
+};
+
+const editRow = (row) => {
+  formEditar.id = row.id;
+  formEditar.name = row.name;
+  formEditar.email = row.email;
+  formEditar.role = row.role;
+  showModalEditar.value = true;
+};
+
+const submitFormEditar = async () => {
+  try {
+    await api.put(`/user/${formEditar.id}`, {
+      id: formEditar.id,
+      name: formEditar.name,
+      email: formEditar.email,
+      role: formEditar.role,
+    });
+
+    notify("positive", "Usuario atualizado com sucesso.");
+    showModalEditar.value = false;
+    await loadUsers();
+  } catch (error) {
+    notify(
+      "negative",
+      error.response?.data?.message || "Erro ao atualizar usuario."
+    );
+  }
+};
+
+const showDetails = async (row) => {
+  try {
+    const response = await api.get(`/user/${row.id}`);
+    const detail = normalizeUser(response.data || row);
+    selectedRow.id = detail.id;
+    selectedRow.name = detail.name;
+    selectedRow.email = detail.email;
+    selectedRow.role = detail.role;
+    selectedRow.createdAt = detail.createdAt;
+    showModalSobre.value = true;
+  } catch (error) {
+    selectedRow.id = row.id;
+    selectedRow.name = row.name;
+    selectedRow.email = row.email;
+    selectedRow.role = row.role;
+    selectedRow.createdAt = row.createdAt;
+    showModalSobre.value = true;
+  }
+};
+
+const askDelete = (row) => {
+  deleteTarget.value = row;
+  showModalExcluir.value = true;
+};
+
+const confirmDelete = async () => {
+  if (!deleteTarget.value?.id) {
+    return;
+  }
+
+  try {
+    await api.delete(`/user/${deleteTarget.value.id}`);
+    notify("positive", "Usuario excluido com sucesso.");
+    showModalExcluir.value = false;
+    deleteTarget.value = null;
+    await loadUsers();
+  } catch (error) {
+    notify(
+      "negative",
+      error.response?.data?.message || "Erro ao excluir usuario."
+    );
+  }
+};
+
+onMounted(async () => {
+  const token = localStorage.getItem("authToken");
+
+  if (!token) {
+    router.push({ name: "login" });
+    return;
+  }
+
+  await loadUsers();
+});
 </script>
 
 <style scoped>
-.content {
-  padding: 16px;
-  min-height: 90vh;
+.users-page {
+  padding: 34px 60px; 
+  background: #f5f5f3;
+  min-height: 100vh;
+  margin: 0 auto;
 }
 
-.containerButton {
+.users-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: #222;
+  font-weight: 700;
+}
+
+.users-header p {
+  margin: 6px 0 0;
+  color: #6b6b64;
+  font-size: 1rem;
+}
+
+.stats-grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.stat-card {
+  border-radius: 18px;
+  min-height: 98px;
+  padding: 18px 20px;
   display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #fff;
+  border: 1px solid #dfdfdb;
+  box-shadow: 0 4px 16px rgba(22, 24, 22, 0.05);
+}
+
+.stat-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  margin-bottom: 16px;
+}
+
+.stat-icon-total {
+  background: #e8f1e9;
+  color: #286f37;
+}
+
+.stat-icon-admin {
+  background: #e5efe6;
+  color: #2e7a3a;
+}
+
+.stat-icon-user {
+  background: #ece9e1;
+  color: #5d5546;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.stat-info span {
+  color: #75736a;
+  font-size: 0.92rem;
+}
+
+.stat-info strong {
+  color: #1f1f1f;
+  font-size: 2rem;
+  line-height: 1;
+  margin-top: 2px;
+}
+
+.toolbar-row {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.search-input {
+  width: min(100%, 460px);
+}
+
+.add-user-btn {
+  border-radius: 13px;
+  height: 42px;
+  padding: 0 20px;
+  background: #1f722c;
+  color: #fff;
+  font-weight: 700;
+}
+
+.table-card {
+  margin-top: 18px;
+  border-radius: 18px;
+  border: 1px solid #dfdfdb;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 5px 22px rgba(22, 24, 22, 0.06);
+}
+
+:deep(.q-table thead tr th) {
+  background: #f8f8f6;
+  color: #4d4b42;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+:deep(.q-table tbody tr td) {
+  border-color: #ecebe7;
+  color: #34332f;
+  font-size: 0.95rem;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+:deep(.q-table tbody tr:hover) {
+  background: #fafaf8;
+}
+
+
+
+.role-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.role-admin {
+  background: #e8f1e9;
+  color: #2b6d39;
+}
+
+.role-user {
+  background: #edece8;
+  color: #615e54;
 }
 
 .modal-card {
-  width: 600px;
-  padding: 10px;
-  border-radius: 20px;
-  max-width: 90vw;
-  box-shadow: 15px 13px 61px -17px rgba(0, 0, 0, 0.49);
+  width: min(92vw, 540px);
+  border-radius: 16px;
 }
 
+.confirm-card {
+  width: min(92vw, 420px);
+  border-radius: 16px;
+}
 
-.titulo-cadastro {
+.modal-title {
   font-size: 1.2rem;
-  text-align: center;
-  margin-bottom: 16px;
+  font-weight: 700;
+  color: #222;
+  padding-bottom: 4px;
 }
 
-.checkbox {
+.modal-form {
   display: flex;
-  justify-content: space-around;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.button-container {
+.role-group {
   display: flex;
-  justify-content: center;
-}
-
-.table-container {
-  margin-top: 16px;
-}
-
-.buttonCadastrar {
-  display: flex;
-  justify-content: center;
   align-items: center;
+  gap: 18px;
+  padding: 2px 4px;
 }
 
-.titulo-sobre {
-  font-size: 1.2rem;
-  text-align: center;
-  margin-bottom: 16px;
-}
-
-.cursor-pointer {
-  cursor: pointer;
-  margin-left: 5px;
-}
-
-.center-width {
-  width: 100%;
-}
-
-.pagination-container {
+.modal-actions {
   display: flex;
-  justify-content: center;
-  align-items: center
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
 }
 
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  padding-bottom: 20px;
-  max-width: 1300px;
-  width: 100%;
-  margin: 0 auto;
+.submit-modal-btn {
+  background: #1f722c;
+  color: #fff;
 }
 
-.q-input.pesquisa {
-  font-size: 16px;
-  font-weight: 800;
-  color: rgba(0, 0, 0, 0.60);
+@media (max-width: 980px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar-row {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: initial;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  .add-user-btn {
+    width: 100%;
+  }
 }
 
-.custom-table {
-  max-width: 1300px;
-  width: 100%;
-  margin: 0 auto;
-}
+@media (max-width: 600px) {
+  .users-page {
+    padding: 18px;
+  }
 
-.pesquisa {
-  display: flex;
-  max-width: 1300px;
-  height: 53px;
-  border-radius: 4px;
-  width: 100%;
-  margin: 0 auto;
-}
-
-.button-pesquisar {
-  font-size: 15px;
-  font-weight: 800;
-}
-
-
-.footer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 60px;
-  background-color: white;
-}
-
-@media (max-width: 700px) {
-  .button-pesquisar {
-    display: none;
+  .users-header h1 {
+    font-size: 1.5rem;
   }
 }
 </style>

@@ -5,228 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e0d40ea0-cc85-41be-b29e-f97a505216d0" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/.idea/compiler.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/.idea/jarRepositories.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/.idea/locadoraLivro.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/.idea/uiDesigner.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/HELP.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/mvnw" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/mvnw.cmd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Books/DTOs/BookResponseDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Books/DTOs/CreateBookRequestDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Books/DTOs/UpdateBookRecordDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Books/Validation/BookValidation.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Books/controllers/BookController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Books/mappers/BookMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Books/models/BookModel.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Books/repositories/BookRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Books/services/BookServices.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Exceptions/CustomValidationException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Exceptions/GlobalExceptionHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Exceptions/ModelNotFoundException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Exceptions/RestExceptionHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/LocadoraLivroApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Publishers/DTOs/CreatePublisherRequestDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Publishers/DTOs/PublisherResponseDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Publishers/DTOs/UpdatePublisherRecordDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Publishers/Validation/PublisherValidation.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Publishers/controllers/PublisherController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Publishers/mappers/PublisherMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Publishers/models/PublisherModel.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Publishers/repositories/PublisherRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Publishers/services/PublisherServices.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Renters/DTOs/CreateRenterRequestDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Renters/DTOs/RenterResponseDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Renters/DTOs/UpdateRenterRequestDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Renters/Validation/RenterValidation.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Renters/controllers/RenterController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Renters/mappers/RenterMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Renters/models/RenterModel.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Renters/repositories/RenterRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Renters/services/RenterServices.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Rents/DTOs/CreateRentRequestDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Rents/DTOs/RentResponseDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Rents/DTOs/UpdateRentRecordDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Rents/Validation/RentValidation.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Rents/controllers/RentController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Rents/mappers/RentMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Rents/models/RentModel.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Rents/models/RentStatusEnum.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Rents/repositories/RentRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Rents/services/RentServices.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/DTOs/AuthenticationDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/DTOs/CreateUserRequestDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/DTOs/LoginResponseDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/DTOs/UpdateUserRequestDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/DTOs/UserResponseDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/Validation/UserValidation.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/configurations/ErrorResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/configurations/MailConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/configurations/SecurityConfigurations.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/configurations/SecurityFilter.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/configurations/WebConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/controllers/AuthenticationController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/controllers/PasswordResetController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/controllers/UserController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/mappers/UserMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/models/EmailRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/models/PasswordResetRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/models/PasswordResetToken.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/models/TokenValidationRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/models/UserModel.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/models/UserRoleEnum.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/repositories/PasswordResetTokenRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/repositories/UserRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/services/AuthorizationService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/services/DataMigration.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/services/EmailService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/services/TokenService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/services/UserServices.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/Users/swagger/OpenApiConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/dashboard/DTOs/BooksMoreRented.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/dashboard/DTOs/RentsperRenterResponseDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/dashboard/controllers/DashboardController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/dashboard/mappers/BookRentMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/java/com/locadora/locadoraLivro/dashboard/service/DashboardServices.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/main/resources/application.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/test/java/com/locadora/springboot/SpringbootApplicationTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/test/java/com/locadora/springboot/books/services/BookServicesTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/test/java/com/locadora/springboot/books/validations/BookValidationTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/test/java/com/locadora/springboot/publishers/services/PublisherServicesTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/test/java/com/locadora/springboot/publishers/validations/PublisherValidationTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/test/java/com/locadora/springboot/renters/services/RenterServicesTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/test/java/com/locadora/springboot/renters/validations/RenterValidationTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/test/java/com/locadora/springboot/rents/services/RentServicesTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/test/java/com/locadora/springboot/rents/validation/RentValidationTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/test/java/com/locadora/springboot/users/controllers/PasswordResetControllerTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/test/java/com/locadora/springboot/users/services/UserServicesTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/src/test/java/com/locadora/springboot/users/validations/UserValidationTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/application.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Books/DTOs/BookResponseDTO$BookResponseDTOBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Books/DTOs/BookResponseDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Books/DTOs/CreateBookRequestDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Books/DTOs/UpdateBookRecordDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Books/Validation/BookValidation.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Books/controllers/BookController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Books/mappers/BookMapper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Books/models/BookModel.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Books/repositories/BookRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Books/services/BookServices.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Exceptions/CustomValidationException.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Exceptions/GlobalExceptionHandler.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Exceptions/ModelNotFoundException.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Exceptions/RestExceptionHandler.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/LocadoraLivroApplication.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Publishers/DTOs/CreatePublisherRequestDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Publishers/DTOs/PublisherResponseDTO$PublisherResponseDTOBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Publishers/DTOs/PublisherResponseDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Publishers/DTOs/UpdatePublisherRecordDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Publishers/Validation/PublisherValidation.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Publishers/controllers/PublisherController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Publishers/mappers/PublisherMapper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Publishers/models/PublisherModel.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Publishers/repositories/PublisherRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Publishers/services/PublisherServices.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Renters/DTOs/CreateRenterRequestDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Renters/DTOs/RenterResponseDTO$RenterResponseDTOBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Renters/DTOs/RenterResponseDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Renters/DTOs/UpdateRenterRequestDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Renters/Validation/RenterValidation.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Renters/controllers/RenterController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Renters/mappers/RenterMapper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Renters/models/RenterModel.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Renters/repositories/RenterRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Renters/services/RenterServices.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Rents/DTOs/CreateRentRequestDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Rents/DTOs/RentResponseDTO$RentResponseDTOBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Rents/DTOs/RentResponseDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Rents/DTOs/UpdateRentRecordDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Rents/Validation/RentValidation.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Rents/controllers/RentController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Rents/mappers/RentMapper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Rents/models/RentModel.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Rents/models/RentStatusEnum.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Rents/repositories/RentRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Rents/services/RentServices.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/DTOs/AuthenticationDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/DTOs/CreateUserRequestDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/DTOs/LoginResponseDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/DTOs/UpdateUserRequestDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/DTOs/UserResponseDTO$UserResponseDTOBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/DTOs/UserResponseDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/Validation/UserValidation.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/configurations/ErrorResponse.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/configurations/MailConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/configurations/SecurityConfigurations.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/configurations/SecurityFilter.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/configurations/WebConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/controllers/AuthenticationController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/controllers/PasswordResetController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/controllers/UserController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/mappers/UserMapper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/models/EmailRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/models/PasswordResetRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/models/PasswordResetToken.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/models/TokenValidationRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/models/UserModel$UserModelBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/models/UserModel.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/models/UserRoleEnum.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/repositories/PasswordResetTokenRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/repositories/UserRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/services/AuthorizationService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/services/DataMigration.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/services/EmailService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/services/TokenService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/services/UserServices.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/Users/swagger/OpenApiConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/dashboard/DTOs/BooksMoreRented$BooksMoreRentedBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/dashboard/DTOs/BooksMoreRented.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/dashboard/DTOs/RentsperRenterResponseDTO$RentsperRenterResponseDTOBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/dashboard/DTOs/RentsperRenterResponseDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/dashboard/controllers/DashboardController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/dashboard/mappers/BookRentMapper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/classes/com/locadora/locadoraLivro/dashboard/service/DashboardServices.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/test-classes/com/locadora/springboot/SpringbootApplicationTests.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/test-classes/com/locadora/springboot/books/services/BookServicesTest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/test-classes/com/locadora/springboot/books/validations/BookValidationTest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/test-classes/com/locadora/springboot/publishers/services/PublisherServicesTest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/test-classes/com/locadora/springboot/publishers/validations/PublisherValidationTest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/test-classes/com/locadora/springboot/renters/services/RenterServicesTest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/test-classes/com/locadora/springboot/renters/validations/RenterValidationTest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/test-classes/com/locadora/springboot/rents/services/RentServicesTest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/test-classes/com/locadora/springboot/rents/validation/RentValidationTest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/test-classes/com/locadora/springboot/users/controllers/PasswordResetControllerTest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/test-classes/com/locadora/springboot/users/services/UserServicesTest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/locadoraLivro/target/test-classes/com/locadora/springboot/users/validations/UserValidationTest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/quasar.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/quasar.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/assets/Captura de tela 2024-12-09 153655.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/assets/Captura de tela 2024-12-09 153801.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/assets/Captura de tela 2024-12-09 155955.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/assets/locadora.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/assets/quasar-logo-vertical.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/AluguelPage.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/EditoraPage.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/ErrorNotFound.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/HomePage.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/LivroPage.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/LocatarioPage.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/LoginPage.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/RecuperarSenhaPage.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/ResetPasswordPage.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/UsuarioPage.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/router/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/router/routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/router/routes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -239,20 +19,20 @@
     </persistenceIdMap>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/backend" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "Pablo-M-Santos"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Pablo-M-Santos&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/Pablo-M-Santos/gerenciamento-livros.git",
-    "accountId": "76c039b7-9e5f-4a70-b2d5-c5737c365677"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Pablo-M-Santos/gerenciamento-livros.git&quot;,
+    &quot;accountId&quot;: &quot;76c039b7-9e5f-4a70-b2d5-c5737c365677&quot;
   }
-}]]></component>
+}</component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
@@ -276,9 +56,9 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "developer",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/pablo-santos/Documentos/projetos-pessoais/gerenciamento-livros/backend",
+    "last_opened_file_path": "/home/pablo-santos/Documentos/projetos-pessoais/gerenciamento-livros",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -300,6 +80,7 @@
       <updated>1774814106442</updated>
       <workItem from="1774814107800" duration="25000" />
       <workItem from="1774820622143" duration="575000" />
+      <workItem from="1774823692218" duration="386000" />
     </task>
     <servers />
   </component>
