@@ -147,20 +147,42 @@
       </q-table>
     </q-card>
 
-    <q-dialog v-model="showModalCadastro" persistent>
-      <q-card class="modal-card">
-        <q-card-section class="modal-title">Cadastrar Usuario</q-card-section>
+    <q-dialog
+      v-model="showModalCadastro"
+      persistent
+      transition-show="scale"
+      transition-hide="scale"
+    >
+      <q-card class="modal-card modal-animated">
+        <q-linear-progress
+          :value="1"
+          color="primary"
+          class="modal-header-bar"
+        />
+        <q-card-section class="modal-header-section">
+          <div class="modal-title">
+            <q-icon name="person_add" size="24px" color="primary" />
+            <span>Cadastrar Novo Usuário</span>
+          </div>
+          <p class="modal-subtitle">
+            Preencha os dados abaixo para criar um novo usuário
+          </p>
+        </q-card-section>
 
-        <q-card-section>
+        <q-separator />
+
+        <q-card-section class="modal-content">
           <q-form @submit="submitFormCadastro" class="modal-form">
             <q-input
               v-model="userCreate.name"
               outlined
               dense
               rounded
-              label="Nome"
+              label="Nome Completo"
               itemid="cadastroNomeUsuario"
-              :rules="[(val) => !!val || 'Nome e obrigatorio']"
+              :rules="[(val) => !!val || 'Nome é obrigatório']"
+              class="form-input"
+              prefix-icon="person"
             />
 
             <q-input
@@ -172,9 +194,11 @@
               type="email"
               itemid="cadastrarEmailUsuario"
               :rules="[
-                (val) => !!val || 'E-mail e obrigatorio',
-                (val) => /.+@.+\\..+/.test(val) || 'E-mail invalido',
+                (val) => !!val || 'E-mail é obrigatório',
+                (val) => /.+@.+\\..+/.test(val) || 'E-mail inválido',
               ]"
+              class="form-input"
+              prefix-icon="email"
             />
 
             <q-input
@@ -185,7 +209,9 @@
               :type="isPwd ? 'password' : 'text'"
               label="Senha"
               itemid="cadastrarSenhaUsuario"
-              :rules="[(val) => !!val || 'Senha e obrigatoria']"
+              :rules="[(val) => !!val || 'Senha é obrigatória']"
+              class="form-input"
+              prefix-icon="lock"
             >
               <template #append>
                 <q-icon
@@ -196,33 +222,46 @@
               </template>
             </q-input>
 
-            <div class="role-group">
-              <q-radio
-                v-model="userCreate.role"
-                checked-icon="task_alt"
-                unchecked-icon="panorama_fish_eye"
-                val="ADMIN"
-                label="Administrador"
-                itemid="cadastrarAdministradorUsuario"
-              />
-              <q-radio
-                v-model="userCreate.role"
-                checked-icon="task_alt"
-                unchecked-icon="panorama_fish_eye"
-                val="USER"
-                label="Locatario"
-                itemid="cadastrarLocatarioUsuario"
-              />
+            <div class="role-section">
+              <label class="role-label">Nível de Acesso</label>
+              <div class="role-group">
+                <q-radio
+                  v-model="userCreate.role"
+                  checked-icon="task_alt"
+                  unchecked-icon="panorama_fish_eye"
+                  val="ADMIN"
+                  label="Administrador"
+                  itemid="cadastrarAdministradorUsuario"
+                  class="role-radio"
+                />
+                <q-radio
+                  v-model="userCreate.role"
+                  checked-icon="task_alt"
+                  unchecked-icon="panorama_fish_eye"
+                  val="USER"
+                  label="Locatário"
+                  itemid="cadastrarLocatarioUsuario"
+                  class="role-radio"
+                />
+              </div>
             </div>
 
+            <q-separator class="q-my-md" />
+
             <div class="modal-actions">
-              <q-btn flat no-caps label="Cancelar" v-close-popup />
+              <q-btn
+                flat
+                no-caps
+                label="Cancelar"
+                v-close-popup
+                class="btn-cancel"
+              />
               <q-btn
                 unelevated
                 no-caps
                 type="submit"
                 label="Cadastrar"
-                class="submit-modal-btn"
+                class="btn-submit"
                 itemid="BtnCadastrarUsuario"
               />
             </div>
@@ -231,20 +270,40 @@
       </q-card>
     </q-dialog>
 
-    <q-dialog v-model="showModalEditar" persistent>
-      <q-card class="modal-card">
-        <q-card-section class="modal-title">Editar Usuario</q-card-section>
+    <q-dialog
+      v-model="showModalEditar"
+      persistent
+      transition-show="scale"
+      transition-hide="scale"
+    >
+      <q-card class="modal-card modal-animated">
+        <q-linear-progress
+          :value="1"
+          color="secondary"
+          class="modal-header-bar"
+        />
+        <q-card-section class="modal-header-section">
+          <div class="modal-title">
+            <q-icon name="edit" size="24px" color="secondary" />
+            <span>Editar Usuário</span>
+          </div>
+          <p class="modal-subtitle">Atualize as informações do usuário</p>
+        </q-card-section>
 
-        <q-card-section>
+        <q-separator />
+
+        <q-card-section class="modal-content">
           <q-form @submit="submitFormEditar" class="modal-form">
             <q-input
               v-model="formEditar.name"
               outlined
               dense
               rounded
-              label="Nome"
+              label="Nome Completo"
               itemid="editarNomeUsuario"
-              :rules="[(val) => !!val || 'Nome e obrigatorio']"
+              :rules="[(val) => !!val || 'Nome é obrigatório']"
+              class="form-input"
+              prefix-icon="person"
             />
 
             <q-input
@@ -256,37 +315,52 @@
               type="email"
               itemid="emailNomeUsuario"
               :rules="[
-                (val) => !!val || 'E-mail e obrigatorio',
-                (val) => /.+@.+\\..+/.test(val) || 'E-mail invalido',
+                (val) => !!val || 'E-mail é obrigatório',
+                (val) => /.+@.+\\..+/.test(val) || 'E-mail inválido',
               ]"
+              class="form-input"
+              prefix-icon="email"
             />
 
-            <div class="role-group">
-              <q-radio
-                v-model="formEditar.role"
-                checked-icon="task_alt"
-                unchecked-icon="panorama_fish_eye"
-                val="ADMIN"
-                label="Administrador"
-              />
-              <q-radio
-                v-model="formEditar.role"
-                checked-icon="task_alt"
-                unchecked-icon="panorama_fish_eye"
-                val="USER"
-                label="Locatario"
-                itemid="editarLocatarioUsuario"
-              />
+            <div class="role-section">
+              <label class="role-label">Nível de Acesso</label>
+              <div class="role-group">
+                <q-radio
+                  v-model="formEditar.role"
+                  checked-icon="task_alt"
+                  unchecked-icon="panorama_fish_eye"
+                  val="ADMIN"
+                  label="Administrador"
+                  class="role-radio"
+                />
+                <q-radio
+                  v-model="formEditar.role"
+                  checked-icon="task_alt"
+                  unchecked-icon="panorama_fish_eye"
+                  val="USER"
+                  label="Locatário"
+                  itemid="editarLocatarioUsuario"
+                  class="role-radio"
+                />
+              </div>
             </div>
 
+            <q-separator class="q-my-md" />
+
             <div class="modal-actions">
-              <q-btn flat no-caps label="Cancelar" v-close-popup />
+              <q-btn
+                flat
+                no-caps
+                label="Cancelar"
+                v-close-popup
+                class="btn-cancel"
+              />
               <q-btn
                 unelevated
                 no-caps
                 type="submit"
                 label="Atualizar"
-                class="submit-modal-btn"
+                class="btn-submit"
                 itemid="BtnEditarUsuario"
               />
             </div>
@@ -295,18 +369,33 @@
       </q-card>
     </q-dialog>
 
-    <q-dialog v-model="showModalSobre">
-      <q-card class="modal-card">
-        <q-card-section class="modal-title">Detalhes do Usuario</q-card-section>
+    <q-dialog
+      v-model="showModalSobre"
+      transition-show="scale"
+      transition-hide="scale"
+    >
+      <q-card class="modal-card modal-animated">
+        <q-linear-progress :value="1" color="info" class="modal-header-bar" />
+        <q-card-section class="modal-header-section">
+          <div class="modal-title">
+            <q-icon name="person_outline" size="24px" color="info" />
+            <span>Detalhes do Usuário</span>
+          </div>
+          <p class="modal-subtitle">Informações completas do usuário</p>
+        </q-card-section>
 
-        <q-card-section class="modal-form">
+        <q-separator />
+
+        <q-card-section class="modal-content">
           <q-input
             outlined
             dense
             rounded
             readonly
             v-model="selectedRow.name"
-            label="Nome"
+            label="Nome Completo"
+            class="form-input"
+            prefix-icon="person"
           />
           <q-input
             outlined
@@ -315,6 +404,8 @@
             readonly
             v-model="selectedRow.email"
             label="E-mail"
+            class="form-input"
+            prefix-icon="email"
           />
           <q-input
             outlined
@@ -322,38 +413,80 @@
             rounded
             readonly
             :model-value="mapRole(selectedRow.role)"
-            label="Perfil"
+            label="Nível de Acesso"
+            class="form-input"
+            prefix-icon="security"
           />
         </q-card-section>
 
-        <q-card-actions align="right">
+        <q-separator />
+
+        <q-card-actions align="right" class="modal-actions-bottom">
           <q-btn
             flat
             no-caps
             label="Fechar"
             itemid="BtnSobreUsuario"
             @click="showModalSobre = false"
+            class="btn-cancel"
           />
         </q-card-actions>
       </q-card>
     </q-dialog>
 
-    <q-dialog v-model="showModalExcluir" persistent>
-      <q-card class="confirm-card">
-        <q-card-section class="modal-title">Excluir Usuario</q-card-section>
-        <q-card-section>
-          Tem certeza que deseja excluir
-          <strong>{{ deleteTarget?.name }}</strong
-          >?
+    <q-dialog
+      v-model="showModalExcluir"
+      persistent
+      transition-show="scale"
+      transition-hide="scale"
+    >
+      <q-card class="confirm-card modal-animated">
+        <q-linear-progress
+          :value="1"
+          color="negative"
+          class="modal-header-bar"
+        />
+        <q-card-section class="modal-header-section">
+          <div class="modal-title">
+            <q-icon name="warning" size="24px" color="negative" />
+            <span>Confirmar Exclusão</span>
+          </div>
+          <p class="modal-subtitle">Esta ação não pode ser desfeita</p>
         </q-card-section>
-        <q-card-actions align="right">
-          <q-btn flat no-caps label="Cancelar" v-close-popup />
+
+        <q-separator />
+
+        <q-card-section class="modal-content">
+          <div class="delete-warning">
+            <q-icon name="error_outline" size="48px" color="negative" />
+            <p class="delete-message">
+              Tem certeza que deseja excluir
+              <strong>{{ deleteTarget?.name }}</strong
+              >?
+            </p>
+            <p class="delete-note">
+              O usuário será removido permanentemente do sistema.
+            </p>
+          </div>
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-actions align="right" class="modal-actions-bottom">
+          <q-btn
+            flat
+            no-caps
+            label="Cancelar"
+            v-close-popup
+            class="btn-cancel"
+          />
           <q-btn
             unelevated
             no-caps
             color="negative"
-            label="Excluir"
+            label="Excluir Usuário"
             @click="confirmDelete"
+            class="btn-danger"
           />
         </q-card-actions>
       </q-card>
@@ -836,43 +969,177 @@ onMounted(async () => {
 .modal-card {
   width: min(92vw, 540px);
   border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(22, 24, 22, 0.15);
 }
 
 .confirm-card {
   width: min(92vw, 420px);
   border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(22, 24, 22, 0.15);
+}
+
+.modal-animated {
+  animation: modalSlideIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-header-bar {
+  height: 4px;
+  border-radius: 16px 16px 0 0;
+}
+
+.modal-header-section {
+  padding: 24px;
+  background: linear-gradient(135deg, #fafaf8 0%, #ffffff 100%);
 }
 
 .modal-title {
-  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.25rem;
   font-weight: 700;
   color: #222;
-  padding-bottom: 4px;
+  margin: 0;
 }
 
-.modal-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.modal-subtitle {
+  font-size: 0.9rem;
+  color: #6b6b64;
+  margin: 8px 0 0 36px;
+  font-weight: 500;
+}
+
+.modal-content {
+  padding: 24px;
+}
+
+.form-input {
+  margin-bottom: 14px;
+}
+
+.role-section {
+  padding: 12px;
+  background: rgba(31, 114, 44, 0.04);
+  border-radius: 12px;
+  border: 1px solid rgba(31, 114, 44, 0.1);
+}
+
+.role-label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 12px;
 }
 
 .role-group {
   display: flex;
   align-items: center;
-  gap: 18px;
-  padding: 2px 4px;
+  gap: 24px;
+  padding: 8px 0;
+}
+
+.role-radio {
+  margin: 0;
 }
 
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
-  margin-top: 8px;
+  gap: 10px;
+  margin-top: 12px;
 }
 
-.submit-modal-btn {
-  background: #1f722c;
+.modal-actions-bottom {
+  padding: 16px 24px;
+  gap: 10px;
+}
+
+.btn-cancel {
+  color: #6b6b64;
+  font-weight: 600;
+  transition: all 0.25s ease;
+  border-radius: 8px;
+  padding: 8px 20px;
+}
+
+.btn-cancel:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #222;
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, #1f722c 0%, #235f2f 100%);
   color: #fff;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 8px 24px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(31, 114, 44, 0.3);
+}
+
+.btn-submit:hover {
+  box-shadow: 0 6px 16px rgba(31, 114, 44, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 8px 24px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.btn-danger:hover {
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+  transform: translateY(-1px);
+}
+
+.delete-warning {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  text-align: center;
+}
+
+.delete-message {
+  font-size: 1rem;
+  color: #222;
+  margin: 0;
+  font-weight: 600;
+}
+
+.delete-message strong {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.delete-note {
+  font-size: 0.85rem;
+  color: #999;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 @media (max-width: 980px) {
