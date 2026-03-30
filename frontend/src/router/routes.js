@@ -2,12 +2,11 @@
 const LoginLayout = () => import("layouts/LoginLayout.vue");
 const MainLayout = () => import("layouts/MainLayout.vue");
 
-const LoginPage = () => import("pages/auth/LoginPage.vue");
-const RegisterPage = () => import("pages/auth/RegisterPage.vue");
-const RecuperarSenhaPage = () => import("pages/RecuperarSenhaPage.vue");
-const ResetPasswordPage = () => import("pages/ResetPasswordPage.vue");
+const AuthPage = () => import("pages/auth/AuthPage.vue");
+const RecuperarSenhaPage = () => import("pages/auth/RecuperarSenhaPage.vue");
+const ResetPasswordPage = () => import("pages/auth/ResetPasswordPage.vue");
 
-const HomePage = () => import("pages/HomePage.vue");
+const HomePage = () => import("pages/dashboard/HomePage.vue");
 const EditoraPage = () => import("pages/editora/EditoraPage.vue");
 const LivroPage = () => import("pages/livros/LivroPage.vue");
 const LocatarioPage = () => import("pages/locatario/LocatarioPage.vue");
@@ -24,13 +23,17 @@ const routes = [
       {
         path: "",
         name: "login",
-        component: LoginPage,
+        component: AuthPage,
         meta: { title: "Login" },
+      },
+      {
+        path: "login",
+        redirect: { name: "login" },
       },
       {
         path: "register",
         name: "cadastro",
-        component: RegisterPage,
+        component: AuthPage,
         meta: { title: "Cadastro" },
       },
       {
