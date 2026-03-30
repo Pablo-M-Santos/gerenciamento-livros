@@ -27,9 +27,7 @@
             </q-form>
           </div>
 
-          <div class="container-interno">
-            <img src="../assets/logo.png" />
-          </div>
+
         </div>
       </q-page>
     </q-page-container>

@@ -50,9 +50,6 @@
       class="custom-drawer"
     >
       <q-list class="drawer-content">
-        <q-item-label header>
-          <q-img class="logo" src="../assets/logo.png" />
-        </q-item-label>
         <q-item
           v-for="link in linksList"
           :key="link.title"
