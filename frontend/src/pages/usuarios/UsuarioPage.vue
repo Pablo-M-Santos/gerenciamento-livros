@@ -9,21 +9,21 @@
     <!-- Stats Cards -->
     <section class="stats-grid">
       <UserStatsCard
-        card-index="1"
+        :card-index="1"
         icon="groups_2"
         label="Total de Usuarios"
         :value="summary.total"
         type="total"
       />
       <UserStatsCard
-        card-index="2"
+        :card-index="2"
         icon="verified_user"
         label="Administradores"
         :value="summary.admins"
         type="admin"
       />
       <UserStatsCard
-        card-index="3"
+        :card-index="3"
         icon="badge"
         label="Locatarios"
         :value="summary.users"
@@ -43,7 +43,7 @@
 
     <!-- User Table -->
     <UserTable
-      :rows="filteredRows"
+      :rows="rows"
       :loading="loading"
       :admin-id="adminId"
       :is-admin="userRole === 'ADMIN'"
@@ -51,6 +51,19 @@
       @edit="editRow"
       @delete="askDelete"
     />
+
+    <div v-if="totalPages > 1" class="pagination-wrap">
+      <q-pagination
+        :model-value="page"
+        :max="totalPages"
+        direction-links
+        boundary-links
+        color="positive"
+        active-design="unelevated"
+        class="users-pagination"
+        @update:model-value="handlePageChange"
+      />
+    </div>
 
     <!-- Modals -->
     <UserFormModal
@@ -98,11 +111,14 @@ const showModalSobre = ref(false);
 const showModalExcluir = ref(false);
 const loading = ref(false);
 const srch = ref("");
+const page = ref(1);
+const rowsNumber = ref(0);
 
 const userRole = ref(localStorage.getItem("role") || "");
 const adminId = Number(localStorage.getItem("userId") || 0);
 
 const rows = ref([]);
+const pageSize = 8;
 const summary = reactive({
   total: 0,
   admins: 0,
@@ -142,20 +158,25 @@ const metricsConfig = {
   },
 };
 
-const filteredRows = computed(() => {
-  const query = srch.value.trim().toLowerCase();
+const extractPageData = (payload) => {
+  const list = Array.isArray(payload?.content)
+    ? payload.content
+    : Array.isArray(payload)
+    ? payload
+    : [];
 
-  if (!query) {
-    return rows.value;
-  }
+  const total =
+    typeof payload?.totalElements === "number"
+      ? payload.totalElements
+      : list.length;
+  const currentPage =
+    typeof payload?.number === "number" ? payload.number + 1 : 1;
 
-  return rows.value.filter((row) => {
-    return (
-      row.name.toLowerCase().includes(query) ||
-      row.email.toLowerCase().includes(query) ||
-      row.role.toLowerCase().includes(query)
-    );
-  });
+  return { list, total, currentPage };
+};
+
+const totalPages = computed(() => {
+  return Math.max(1, Math.ceil(rowsNumber.value / pageSize));
 });
 
 // Methods
@@ -205,20 +226,26 @@ const loadSummary = async () => {
   }
 };
 
-const loadUsers = async () => {
+const loadUsers = async (targetPage = page.value) => {
   loading.value = true;
 
   try {
     const response = await api.get("/user", {
-      params: { search: srch.value || undefined },
+      params: {
+        search: srch.value || undefined,
+        page: targetPage - 1,
+      },
     });
 
-    const data = response.data?.content || response.data || [];
-    rows.value = Array.isArray(data) ? data.map(normalizeUser) : [];
+    const { list, total, currentPage } = extractPageData(response.data);
+    rows.value = list.map(normalizeUser);
+    rowsNumber.value = total;
+    page.value = currentPage;
     await loadSummary();
   } catch (error) {
     notify("negative", "Erro ao carregar usuarios.");
     rows.value = [];
+    rowsNumber.value = 0;
     updateSummaryFromRows();
   } finally {
     loading.value = false;
@@ -234,12 +261,20 @@ const openRegisterDialog = () => {
 };
 
 const onSearch = () => {
-  loadUsers();
+  page.value = 1;
+  loadUsers(1);
 };
 
 const clearSearch = () => {
   srch.value = "";
-  loadUsers();
+  page.value = 1;
+  loadUsers(1);
+};
+
+const handlePageChange = (newPage) => {
+  if (!newPage || newPage === page.value) return;
+  page.value = newPage;
+  loadUsers(newPage);
 };
 
 const submitFormCadastro = async (formData) => {
@@ -382,6 +417,32 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: repeat(3, minmax(180px, 1fr));
   gap: 16px;
+}
+
+.pagination-wrap {
+  margin: 18px auto 0;
+  width: fit-content;
+  padding: 8px 10px;
+  border: 1px solid #e7e6e2;
+  border-radius: 12px;
+  background: #fff;
+}
+
+:deep(.users-pagination .q-btn) {
+  min-width: 34px;
+  min-height: 34px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+:deep(.users-pagination .q-btn:not(.bg-positive)) {
+  background: #f2f2ef;
+  color: #5f5c54;
+}
+
+:deep(.users-pagination .q-btn.bg-positive) {
+  background: #1f722c !important;
+  box-shadow: 0 3px 10px rgba(31, 114, 44, 0.22);
 }
 
 @keyframes slideInDown {
