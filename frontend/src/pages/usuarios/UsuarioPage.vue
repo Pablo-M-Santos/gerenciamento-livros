@@ -1,12 +1,12 @@
 <template>
   <q-page class="users-page">
-    <section class="users-header">
+    <section class="users-header animate-header">
       <h1>Gerenciamento de Usuarios</h1>
       <p>Gerencie os usuarios da sua biblioteca digital</p>
     </section>
 
     <section class="stats-grid">
-      <q-card flat bordered class="stat-card">
+      <q-card flat bordered class="stat-card stat-card-1">
         <div class="stat-icon stat-icon-total">
           <q-icon name="groups_2" size="20px" />
         </div>
@@ -16,7 +16,7 @@
         </div>
       </q-card>
 
-      <q-card flat bordered class="stat-card">
+      <q-card flat bordered class="stat-card stat-card-2">
         <div class="stat-icon stat-icon-admin">
           <q-icon name="verified_user" size="20px" />
         </div>
@@ -26,7 +26,7 @@
         </div>
       </q-card>
 
-      <q-card flat bordered class="stat-card">
+      <q-card flat bordered class="stat-card stat-card-3">
         <div class="stat-icon stat-icon-user">
           <q-icon name="badge" size="20px" />
         </div>
@@ -37,7 +37,7 @@
       </q-card>
     </section>
 
-    <section class="toolbar-row">
+    <section class="toolbar-row animate-toolbar">
       <q-input
         v-model="srch"
         outlined
@@ -61,15 +61,13 @@
             @click="clearSearch"
           />
         </template>
-
-     
       </q-input>
 
       <q-btn
         v-if="userRole === 'ADMIN'"
         unelevated
         no-caps
-        class="add-user-btn"
+        class="add-user-btn animate-button"
         itemid="cadastroBtnUsuario"
         icon="add"
         label="Adicionar Usuario"
@@ -77,7 +75,7 @@
       />
     </section>
 
-    <q-card flat bordered class="table-card">
+    <q-card flat bordered class="table-card animate-table-enter">
       <q-table
         :rows="filteredRows"
         :columns="columns"
@@ -98,12 +96,6 @@
             >
               {{ mapRole(props.row.role) }}
             </span>
-          </q-td>
-        </template>
-
-        <template #body-cell-createdAt="props">
-          <q-td :props="props">
-            {{ formatDate(props.row.createdAt) }}
           </q-td>
         </template>
 
@@ -444,14 +436,8 @@ const columns = [
     field: "role",
     sortable: true,
   },
-  {
-    name: "createdAt",
-    align: "left",
-    label: "Criado em",
-    field: "createdAt",
-    sortable: true,
-  },
-  { name: "actions", align: "right", label: "Acoes", field: "actions" },
+
+  { name: "actions", align: "center", label: "Acoes", field: "actions" },
 ];
 
 const roleMap = {
@@ -683,7 +669,7 @@ onMounted(async () => {
 
 <style scoped>
 .users-page {
-  padding: 34px 60px; 
+  padding: 34px 60px;
   background: #f5f5f3;
   min-height: 100vh;
   margin: 0 auto;
@@ -697,7 +683,6 @@ onMounted(async () => {
 }
 
 .users-header p {
-  margin: 6px 0 0;
   color: #6b6b64;
   font-size: 1rem;
 }
@@ -718,7 +703,15 @@ onMounted(async () => {
   gap: 16px;
   background: #fff;
   border: 1px solid #dfdfdb;
-  box-shadow: 0 4px 16px rgba(22, 24, 22, 0.05);
+  box-shadow: 0 4px 16px rgba(22, 24, 22, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.stat-card:hover {
+  box-shadow: 0 8px 28px rgba(22, 24, 22, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transform: scale(1.02);
 }
 
 .stat-icon {
@@ -782,6 +775,12 @@ onMounted(async () => {
   background: #1f722c;
   color: #fff;
   font-weight: 700;
+  box-shadow: 0 4px 12px rgba(31, 114, 44, 0.3);
+  transition: box-shadow 0.3s ease;
+}
+
+.add-user-btn:hover {
+  box-shadow: 0 6px 16px rgba(31, 114, 44, 0.4);
 }
 
 .table-card {
@@ -790,7 +789,8 @@ onMounted(async () => {
   border: 1px solid #dfdfdb;
   overflow: hidden;
   background: #fff;
-  box-shadow: 0 5px 22px rgba(22, 24, 22, 0.06);
+  box-shadow: 0 8px 32px rgba(22, 24, 22, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 :deep(.q-table thead tr th) {
@@ -813,8 +813,6 @@ onMounted(async () => {
 :deep(.q-table tbody tr:hover) {
   background: #fafaf8;
 }
-
-
 
 .role-chip {
   display: inline-flex;
@@ -905,5 +903,91 @@ onMounted(async () => {
   .users-header h1 {
     font-size: 1.5rem;
   }
+}
+
+/* Animações de Entrada */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-header {
+  animation: slideInDown 0.35s ease-out forwards;
+}
+
+.stat-card {
+  animation: slideInUp 0.35s ease-out forwards;
+}
+
+.stat-card-1 {
+  animation-delay: 0.08s;
+}
+
+.stat-card-2 {
+  animation-delay: 0.13s;
+}
+
+.stat-card-3 {
+  animation-delay: 0.18s;
+}
+
+.animate-toolbar {
+  animation: slideInUp 0.35s ease-out 0.23s forwards;
+}
+
+.animate-button {
+  animation: slideInUp 0.35s ease-out 0.28s forwards;
+}
+
+.animate-table-enter {
+  animation: fadeInScale 0.4s ease-out 0.33s forwards;
+}
+
+/* Inicialmente oculto para aplicar animação */
+.animate-header,
+.stat-card,
+.animate-toolbar,
+.animate-button,
+.animate-table-enter {
+  opacity: 0;
 }
 </style>
