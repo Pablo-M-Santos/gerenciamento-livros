@@ -39,7 +39,7 @@
     />
 
     <RenterTable
-      :rows="filteredRows"
+      :rows="rows"
       :loading="loading"
       :is-admin="userRole === 'ADMIN'"
       :renters-with-rentals="rentersWithRentals"
@@ -47,6 +47,19 @@
       @edit="editRow"
       @delete="askDelete"
     />
+
+    <div v-if="totalPages > 1" class="pagination-wrap">
+      <q-pagination
+        :model-value="page"
+        :max="totalPages"
+        direction-links
+        boundary-links
+        color="positive"
+        active-design="unelevated"
+        class="renters-pagination"
+        @update:model-value="handlePageChange"
+      />
+    </div>
 
     <RenterFormModal
       v-model="showModalCadastro"
@@ -93,6 +106,9 @@ const router = useRouter();
 const loading = ref(false);
 const userRole = ref(localStorage.getItem("role") || "");
 const searchQuery = ref("");
+const page = ref(1);
+const rowsNumber = ref(0);
+const pageSize = 8;
 
 const rows = ref([]);
 const rentersWithRentals = ref([]);
@@ -158,26 +174,23 @@ const sanitizePayload = (formData) => {
   return payload;
 };
 
-const filteredRows = computed(() => {
-  const query = searchQuery.value.trim().toLowerCase();
-  if (!query) return rows.value;
+const extractPageData = (payload) => {
+  const list = Array.isArray(payload?.content)
+    ? payload.content
+    : Array.isArray(payload)
+      ? payload
+      : [];
 
-  return rows.value.filter((row) => {
-    return (
-      String(row.name).toLowerCase().includes(query) ||
-      String(row.email).toLowerCase().includes(query) ||
-      String(row.telephone).toLowerCase().includes(query) ||
-      String(row.address).toLowerCase().includes(query) ||
-      String(row.cpf || "")
-        .toLowerCase()
-        .includes(query)
-    );
-  });
-});
+  const total =
+    typeof payload?.totalElements === "number" ? payload.totalElements : list.length;
+  const currentPage = typeof payload?.number === "number" ? payload.number + 1 : 1;
+
+  return { list, total, currentPage };
+};
 
 const summary = computed(() => {
   const rentersWithRentSet = new Set(rentersWithRentals.value);
-  const total = rows.value.length;
+  const total = rowsNumber.value;
   const withRentals = rows.value.filter((renter) =>
     rentersWithRentSet.has(renter.id)
   ).length;
@@ -190,17 +203,24 @@ const summary = computed(() => {
   };
 });
 
-const loadRenters = async (search = "") => {
+const totalPages = computed(() => {
+  return Math.max(1, Math.ceil(rowsNumber.value / pageSize));
+});
+
+const loadRenters = async (search = "", targetPage = page.value) => {
   loading.value = true;
   try {
     const response = await api.get("/renter", {
-      params: { search: search || undefined, page: 0 },
+      params: { search: search || undefined, page: targetPage - 1 },
     });
 
-    const data = response.data?.content || response.data || [];
-    rows.value = Array.isArray(data) ? data.map(normalizeRenter) : [];
+    const { list, total, currentPage } = extractPageData(response.data);
+    rows.value = list.map(normalizeRenter);
+    rowsNumber.value = total;
+    page.value = currentPage;
   } catch (error) {
     rows.value = [];
+    rowsNumber.value = 0;
     notify("negative", "Erro ao carregar locatarios.");
   } finally {
     loading.value = false;
@@ -209,11 +229,12 @@ const loadRenters = async (search = "") => {
 
 const loadRentals = async () => {
   try {
-    const response = await api.get("/rent", {
-      params: { search: "", page: 0 },
-    });
-
-    const rentals = response.data?.content || [];
+    const response = await api.get("/rent", { params: { search: "" } });
+    const rentals = Array.isArray(response.data?.content)
+      ? response.data.content
+      : Array.isArray(response.data)
+        ? response.data
+        : [];
     rentersWithRentals.value = [
       ...new Set(
         rentals
@@ -339,12 +360,20 @@ const confirmDelete = async () => {
 };
 
 const handleSearch = () => {
-  loadRenters(searchQuery.value);
+  page.value = 1;
+  loadRenters(searchQuery.value, 1);
 };
 
 const clearSearch = () => {
   searchQuery.value = "";
-  loadRenters();
+  page.value = 1;
+  loadRenters("", 1);
+};
+
+const handlePageChange = (newPage) => {
+  if (!newPage || newPage === page.value) return;
+  page.value = newPage;
+  loadRenters(searchQuery.value, newPage);
 };
 
 onMounted(async () => {
@@ -390,6 +419,32 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: repeat(3, minmax(180px, 1fr));
   gap: 16px;
+}
+
+.pagination-wrap {
+  margin: 18px auto 0;
+  width: fit-content;
+  padding: 8px 10px;
+  border: 1px solid #e7e6e2;
+  border-radius: 12px;
+  background: #fff;
+}
+
+:deep(.renters-pagination .q-btn) {
+  min-width: 34px;
+  min-height: 34px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+:deep(.renters-pagination .q-btn:not(.bg-positive)) {
+  background: #f2f2ef;
+  color: #5f5c54;
+}
+
+:deep(.renters-pagination .q-btn.bg-positive) {
+  background: #1f722c !important;
+  box-shadow: 0 3px 10px rgba(31, 114, 44, 0.22);
 }
 
 @keyframes slideInDown {
