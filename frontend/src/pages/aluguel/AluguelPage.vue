@@ -191,12 +191,15 @@ const extractPageData = (payload) => {
   const list = Array.isArray(payload?.content)
     ? payload.content
     : Array.isArray(payload)
-      ? payload
-      : [];
+    ? payload
+    : [];
 
   const total =
-    typeof payload?.totalElements === "number" ? payload.totalElements : list.length;
-  const currentPage = typeof payload?.number === "number" ? payload.number + 1 : 1;
+    typeof payload?.totalElements === "number"
+      ? payload.totalElements
+      : list.length;
+  const currentPage =
+    typeof payload?.number === "number" ? payload.number + 1 : 1;
 
   return { list, total, currentPage };
 };
