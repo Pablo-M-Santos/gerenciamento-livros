@@ -16,14 +16,14 @@
       <PublisherStatsCard
         :card-index="2"
         icon="library_books"
-        label="Com Livros"
+        label="Ativas"
         :value="summary.withBooks"
         type="with-books"
       />
       <PublisherStatsCard
         :card-index="3"
         icon="menu_book"
-        label="Sem Livros"
+        label="Deletadas"
         :value="summary.withoutBooks"
         type="without-books"
       />
@@ -112,6 +112,10 @@ const pageSize = 8;
 const loading = ref(false);
 const publishersWithBooks = ref([]);
 
+const countActive = ref(0);
+const countDeleted = ref(0);
+const countTotal = ref(0);
+
 const showModalCadastro = ref(false);
 const showModalEditar = ref(false);
 const showModalSobre = ref(false);
@@ -136,17 +140,10 @@ const selectedRow = ref({
 const deleteTarget = ref(null);
 
 const summary = computed(() => {
-  const publisherIdsWithBooks = new Set(publishersWithBooks.value);
-  const total = rowsNumber.value;
-  const withBooks = rows.value.filter((publisher) =>
-    publisherIdsWithBooks.has(publisher.id)
-  ).length;
-  const withoutBooks = Math.max(total - withBooks, 0);
-
   return {
-    total,
-    withBooks,
-    withoutBooks,
+    total: countTotal.value,
+    withBooks: countActive.value,
+    withoutBooks: countDeleted.value,
   };
 });
 
@@ -194,6 +191,41 @@ const loadPublishers = async (search = "", targetPage = page.value) => {
   }
 };
 
+const loadPublisherCounts = async () => {
+  const parseCount = (payload) => {
+    if (typeof payload === "number") return payload;
+    if (typeof payload === "string") {
+      const parsed = Number(payload);
+      return Number.isNaN(parsed) ? 0 : parsed;
+    }
+
+    if (typeof payload?.count === "number") return payload.count;
+    if (typeof payload?.total === "number") return payload.total;
+    if (typeof payload?.value === "number") return payload.value;
+
+    const firstNumeric = Object.values(payload || {}).find(
+      (value) => typeof value === "number"
+    );
+    return typeof firstNumeric === "number" ? firstNumeric : 0;
+  };
+
+  try {
+    const [activeRes, deletedRes, totalRes] = await Promise.all([
+      api.get("/publisher/count/active"),
+      api.get("/publisher/count/deleted"),
+      api.get("/publisher/count/total"),
+    ]);
+
+    countActive.value = parseCount(activeRes.data);
+    countDeleted.value = parseCount(deletedRes.data);
+    countTotal.value = parseCount(totalRes.data);
+  } catch (error) {
+    countActive.value = 0;
+    countDeleted.value = 0;
+    countTotal.value = 0;
+  }
+};
+
 const loadBooks = async () => {
   try {
     const response = await api.get("/book");
@@ -226,7 +258,10 @@ const submitFormCadastro = async (formData) => {
 
     notify("positive", "Editora cadastrada com sucesso.");
     showModalCadastro.value = false;
-    await loadPublishers(searchQuery.value);
+    await Promise.all([
+      loadPublishers(searchQuery.value),
+      loadPublisherCounts(),
+    ]);
   } catch (error) {
     notify(
       "negative",
@@ -257,7 +292,10 @@ const submitFormEditar = async (formData) => {
 
     notify("positive", "Editora atualizada com sucesso.");
     showModalEditar.value = false;
-    await loadPublishers(searchQuery.value);
+    await Promise.all([
+      loadPublishers(searchQuery.value),
+      loadPublisherCounts(),
+    ]);
   } catch (error) {
     notify(
       "negative",
@@ -290,7 +328,10 @@ const confirmDelete = async () => {
     notify("positive", "Editora excluida com sucesso.");
     showModalExcluir.value = false;
     deleteTarget.value = null;
-    await loadPublishers(searchQuery.value);
+    await Promise.all([
+      loadPublishers(searchQuery.value),
+      loadPublisherCounts(),
+    ]);
   } catch (error) {
     notify(
       "negative",
@@ -328,7 +369,7 @@ onMounted(async () => {
   }
 
   userRole.value = localStorage.getItem("role") || "";
-  await Promise.all([loadPublishers(), loadBooks()]);
+  await Promise.all([loadPublishers(), loadBooks(), loadPublisherCounts()]);
 });
 </script>
 
