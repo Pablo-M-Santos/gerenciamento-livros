@@ -54,4 +54,19 @@ public class BookController {
     public ResponseEntity<Object> delete(@PathVariable(value="id") int id){
         return bookServices.delete(id);
     }
+
+    @GetMapping("/book/count/active")
+    public ResponseEntity<Long> getActiveBooksCount() {
+        return ResponseEntity.status(HttpStatus.OK).body(bookServices.getActiveBooksCount());
+    }
+
+    @GetMapping("/book/count/deleted")
+    public ResponseEntity<Long> getDeletedBooksCount() {
+        return ResponseEntity.status(HttpStatus.OK).body(bookServices.getDeletedBooksCount());
+    }
+
+    @GetMapping("/book/count/total")
+    public ResponseEntity<Long> getTotalBooksCount() {
+        return ResponseEntity.status(HttpStatus.OK).body(bookServices.getTotalBooksCount());
+    }
 }

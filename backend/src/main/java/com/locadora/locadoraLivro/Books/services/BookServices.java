@@ -120,4 +120,16 @@ public class BookServices {
 
         return ResponseEntity.status(HttpStatus.OK).body("Livro excluído com sucesso.");
     }
+
+    public long getActiveBooksCount() {
+        return bookRepository.countActiveBooks();
+    }
+
+    public long getDeletedBooksCount() {
+        return bookRepository.countDeletedBooks();
+    }
+
+    public long getTotalBooksCount() {
+        return bookRepository.countTotalBooks();
+    }
 }

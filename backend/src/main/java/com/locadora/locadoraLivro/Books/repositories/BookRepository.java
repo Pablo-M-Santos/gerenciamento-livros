@@ -47,4 +47,13 @@ public interface BookRepository extends JpaRepository<BookModel, Integer> {
             "AND u.isDeleted = false")
     Page<BookModel> findAllByName(@Param("searchTerm") String searchTerm, Pageable pageable);
 
+    @Query("SELECT COUNT(b) FROM BookModel b WHERE b.isDeleted = false")
+    long countActiveBooks();
+
+    @Query("SELECT COUNT(b) FROM BookModel b WHERE b.isDeleted = true")
+    long countDeletedBooks();
+
+    @Query("SELECT COUNT(b) FROM BookModel b")
+    long countTotalBooks();
+
 }
