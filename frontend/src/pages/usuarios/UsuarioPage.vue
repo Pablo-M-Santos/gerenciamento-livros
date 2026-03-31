@@ -3,7 +3,7 @@
     <!-- Header -->
     <section class="users-header animate-header">
       <h1>Gerenciamento de Usuarios</h1>
-      <p>Gerencie os usuarios da sua biblioteca digital</p>
+
     </section>
 
     <!-- Stats Cards -->
@@ -150,11 +150,11 @@ const selectedRow = reactive({
 const deleteTarget = ref(null);
 
 const metricsConfig = {
-  enabled: false,
+  enabled: true,
   endpoints: {
-    total: "/user/metrics/total",
-    admins: "/user/metrics/admins",
-    users: "/user/metrics/users",
+    total: "/user/count/total",
+    admins: "/user/count/admins",
+    users: "/user/count/locatarios",
   },
 };
 
@@ -389,7 +389,7 @@ onMounted(async () => {
 
 <style scoped>
 .users-page {
-  padding: 34px 60px;
+  padding: 0px 60px 34px;
   background: #f5f5f3;
   min-height: 100vh;
   margin: 0 auto;
@@ -405,12 +405,10 @@ onMounted(async () => {
   font-size: 2rem;
   color: #222;
   font-weight: 700;
+  height: 80px;
 }
 
-.users-header p {
-  color: #6b6b64;
-  font-size: 1rem;
-}
+
 
 .stats-grid {
   margin-top: 24px;
