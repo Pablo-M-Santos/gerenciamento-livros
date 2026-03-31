@@ -498,7 +498,12 @@ onMounted(async () => {
   }
 
   userRole.value = localStorage.getItem("role") || "";
-  await Promise.all([loadBooks(), loadPublishers(), loadRents(), loadBookCounts()]);
+  await Promise.all([
+    loadBooks(),
+    loadPublishers(),
+    loadRents(),
+    loadBookCounts(),
+  ]);
 });
 </script>
 
