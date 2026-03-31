@@ -104,4 +104,16 @@ public class PublisherServices {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    public long getActivePublishersCount() {
+        return publisherRepository.countActivePublishers();
+    }
+
+    public long getDeletedPublishersCount() {
+        return publisherRepository.countDeletedPublishers();
+    }
+
+    public long getTotalPublishersCount() {
+        return publisherRepository.countTotalPublishers();
+    }
+
 }

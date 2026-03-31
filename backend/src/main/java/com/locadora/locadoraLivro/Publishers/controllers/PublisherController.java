@@ -49,4 +49,19 @@ public class PublisherController {
     public ResponseEntity<Object> delete(@PathVariable(value = "id") int id){
         return publisherServices.delete(id);
     }
+
+    @GetMapping("/publisher/count/active")
+    public ResponseEntity<Long> getActivePublishersCount() {
+        return ResponseEntity.status(HttpStatus.OK).body(publisherServices.getActivePublishersCount());
+    }
+
+    @GetMapping("/publisher/count/deleted")
+    public ResponseEntity<Long> getDeletedPublishersCount() {
+        return ResponseEntity.status(HttpStatus.OK).body(publisherServices.getDeletedPublishersCount());
+    }
+
+    @GetMapping("/publisher/count/total")
+    public ResponseEntity<Long> getTotalPublishersCount() {
+        return ResponseEntity.status(HttpStatus.OK).body(publisherServices.getTotalPublishersCount());
+    }
 }

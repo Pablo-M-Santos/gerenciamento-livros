@@ -43,7 +43,12 @@ public interface PublisherRepository extends JpaRepository<PublisherModel, Integ
             "AND u.isDeleted = false")
     Page<PublisherModel> findAllBySearchTerm(@Param("searchTerm") String searchTerm, Pageable pageable);
 
+    @Query("SELECT COUNT(u) FROM PublisherModel u WHERE u.isDeleted = false")
+    long countActivePublishers();
 
+    @Query("SELECT COUNT(u) FROM PublisherModel u WHERE u.isDeleted = true")
+    long countDeletedPublishers();
 
-
+    @Query("SELECT COUNT(u) FROM PublisherModel u")
+    long countTotalPublishers();
 }
