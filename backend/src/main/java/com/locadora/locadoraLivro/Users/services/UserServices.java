@@ -157,4 +157,16 @@ public class UserServices {
         }
         return null;
     }
+
+    public long getTotalUsers() {
+        return userRepository.countTotalUsers();
+    }
+
+    public long getTotalAdmins() {
+        return userRepository.countAdmins();
+    }
+
+    public long getTotalLocatarios() {
+        return userRepository.countLocatarios();
+    }
 }

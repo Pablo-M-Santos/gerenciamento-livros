@@ -44,5 +44,14 @@ public interface UserRepository extends JpaRepository<UserModel, Integer> {
     Page<UserModel> findAllBySearch(
             @Param("search") String search,
             Pageable pageable );
+
+    @Query("SELECT COUNT(u) FROM UserModel u")
+    long countTotalUsers();
+
+    @Query("SELECT COUNT(u) FROM UserModel u WHERE u.role = com.locadora.locadoraLivro.Users.models.UserRoleEnum.ADMIN")
+    long countAdmins();
+
+    @Query("SELECT COUNT(u) FROM UserModel u WHERE u.role = com.locadora.locadoraLivro.Users.models.UserRoleEnum.USER")
+    long countLocatarios();
 }
 
