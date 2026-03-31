@@ -16,15 +16,15 @@
       <BookStatsCard
         :card-index="2"
         icon="inventory_2"
-        label="Disponiveis"
-        :value="summary.available"
+        label="Ativos"
+        :value="summary.active"
         type="available"
       />
       <BookStatsCard
         :card-index="3"
         icon="local_library"
-        label="Alugados"
-        :value="summary.rented"
+        label="Deletados"
+        :value="summary.deleted"
         type="rented"
       />
     </section>
@@ -124,6 +124,10 @@ const publisherOptions = ref([]);
 const allPublishers = ref([]);
 const deleteTarget = ref(null);
 
+const countActive = ref(0);
+const countDeleted = ref(0);
+const countTotal = ref(0);
+
 const selectedBook = ref({
   id: null,
   name: "",
@@ -204,21 +208,10 @@ const normalizeBook = (book) => ({
 });
 
 const summary = computed(() => {
-  const total = rowsNumber.value;
-  const available = rows.value.reduce(
-    (acc, row) =>
-      acc + Math.max(Number(row.totalQuantity) - Number(row.totalInUse), 0),
-    0
-  );
-  const rented = rows.value.reduce(
-    (acc, row) => acc + Number(row.totalInUse || 0),
-    0
-  );
-
   return {
-    total,
-    available,
-    rented,
+    total: countTotal.value,
+    active: countActive.value,
+    deleted: countDeleted.value,
   };
 });
 
@@ -243,6 +236,57 @@ const loadBooks = async (search = "", targetPage = page.value) => {
     notify("negative", "Erro ao carregar livros.");
   } finally {
     loading.value = false;
+  }
+};
+
+const loadBookCounts = async () => {
+  const parseCount = (payload) => {
+    if (typeof payload === "number") return payload;
+    if (typeof payload === "string") {
+      const parsed = Number(payload);
+      return Number.isNaN(parsed) ? 0 : parsed;
+    }
+
+    if (typeof payload?.count === "number") return payload.count;
+    if (typeof payload?.total === "number") return payload.total;
+    if (typeof payload?.value === "number") return payload.value;
+
+    const deepFindNumeric = (value) => {
+      if (typeof value === "number") return value;
+      if (typeof value === "string") {
+        const parsed = Number(value);
+        if (!Number.isNaN(parsed)) return parsed;
+      }
+      if (!value || typeof value !== "object") return null;
+
+      for (const nested of Object.values(value)) {
+        const found = deepFindNumeric(nested);
+        if (typeof found === "number") return found;
+      }
+
+      return null;
+    };
+
+    const deepNumeric = deepFindNumeric(payload);
+    return typeof deepNumeric === "number" ? deepNumeric : 0;
+  };
+
+  const [activeRes, deletedRes, totalRes] = await Promise.allSettled([
+    api.get("/book/count/active"),
+    api.get("/book/count/deleted"),
+    api.get("/book/count/total"),
+  ]);
+
+  if (activeRes.status === "fulfilled") {
+    countActive.value = parseCount(activeRes.value.data);
+  }
+
+  if (deletedRes.status === "fulfilled") {
+    countDeleted.value = parseCount(deletedRes.value.data);
+  }
+
+  if (totalRes.status === "fulfilled") {
+    countTotal.value = parseCount(totalRes.value.data);
   }
 };
 
@@ -315,7 +359,7 @@ const submitFormCadastro = async (formData) => {
 
     notify("positive", "Livro criado com sucesso.");
     showModalCadastro.value = false;
-    await loadBooks(searchQuery.value);
+    await Promise.all([loadBooks(searchQuery.value), loadBookCounts()]);
   } catch (error) {
     notify("negative", error.response?.data?.message || "Erro ao criar livro.");
   }
@@ -364,7 +408,7 @@ const submitFormEditar = async (formData) => {
 
     notify("positive", "Livro atualizado com sucesso.");
     showModalEditar.value = false;
-    await loadBooks(searchQuery.value);
+    await Promise.all([loadBooks(searchQuery.value), loadBookCounts()]);
   } catch (error) {
     notify(
       "negative",
@@ -397,7 +441,11 @@ const confirmDelete = async () => {
     notify("positive", "Livro excluido com sucesso.");
     showModalExcluir.value = false;
     deleteTarget.value = null;
-    await Promise.all([loadBooks(searchQuery.value), loadRents()]);
+    await Promise.all([
+      loadBooks(searchQuery.value),
+      loadRents(),
+      loadBookCounts(),
+    ]);
   } catch (error) {
     notify(
       "negative",
@@ -450,7 +498,12 @@ onMounted(async () => {
   }
 
   userRole.value = localStorage.getItem("role") || "";
-  await Promise.all([loadBooks(), loadPublishers(), loadRents()]);
+  await Promise.all([
+    loadBooks(),
+    loadPublishers(),
+    loadRents(),
+    loadBookCounts(),
+  ]);
 });
 </script>
 

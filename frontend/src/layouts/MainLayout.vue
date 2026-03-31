@@ -1,47 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated class="custom-header">
-      <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
-        <q-toolbar-title>{{ pageTitle }}</q-toolbar-title>
-        <div style="margin-right: auto"></div>
-
-        <q-btn flat @click="toggleUserMenu" aria-label="User Menu">
-          <q-avatar style="background-color: #008080; color: white" size="lg">
-            <span class="text-h5">{{ user.initials }}</span>
-            <q-menu
-              v-model="userMenuVisible"
-              @hide="userMenuVisible = false"
-              class="custom-user-menu q-mr-md"
-            >
-              <q-card class="teste">
-                <q-card-section>
-                  <div class="q-mx-auto text-center">
-                    <q-avatar
-                      style="background-color: #008080; color: white"
-                      class="custom-avatar"
-                    >
-                      <span class="text-h5">{{ user.initials }}</span>
-                    </q-avatar>
-                    <h6 class="custom-fullname">{{ user.fullName }}</h6>
-                    <p class="text-caption q-mt-xs">{{ user.email }}</p>
-                    <q-separator class="q-my-md" />
-                    <p>{{ user.role }}</p>
-                  </div>
-                </q-card-section>
-              </q-card>
-            </q-menu>
-          </q-avatar>
-        </q-btn>
-      </q-toolbar>
-    </q-header>
+   
 
     <q-drawer
       v-model="leftDrawerOpen"
