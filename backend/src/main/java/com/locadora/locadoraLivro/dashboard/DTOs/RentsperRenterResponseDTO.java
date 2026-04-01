@@ -10,6 +10,6 @@ public record RentsperRenterResponseDTO(
 
 
         public int getTotalRents() {
-                return rentsQuantity + rentsActive;
+                return rentsQuantity;
         }
 }

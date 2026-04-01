@@ -1,7 +1,5 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-   
-
     <q-drawer
       v-model="leftDrawerOpen"
       show-if-above
@@ -9,9 +7,18 @@
       class="custom-drawer"
     >
       <div class="drawer-header">
-        <div class="drawer-logo">
-          <q-icon name="book" size="28px" color="primary" />
-          <span class="drawer-logo-text">Gerenciamento de Livros</span>
+        <div class="drawer-brand">
+          <div class="brand-logo-wrap">
+            <img
+              :src="brandLogo"
+              alt="Logo Locadora Livros"
+              class="brand-logo"
+            />
+          </div>
+          <div class="brand-texts">
+            <span class="brand-title">Locadora Livros</span>
+            <span class="brand-subtitle">Sistema de Gerenciamento</span>
+          </div>
         </div>
       </div>
 
@@ -68,6 +75,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { api } from "src/boot/axios.js";
+import brandLogo from "src/assets/locadora-logo.svg";
 
 const route = useRoute();
 const router = useRouter();
@@ -181,26 +189,59 @@ function formatRole(role) {
 
 /* Header do Drawer */
 .drawer-header {
-  padding: 24px 16px 16px;
+  padding: 22px 14px 14px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.drawer-logo {
+.drawer-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border-radius: 12px;
+  gap: 12px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
   background: rgba(31, 114, 44, 0.08);
+  border: 1px solid rgba(31, 114, 44, 0.12);
 }
 
-.drawer-logo-text {
+.brand-logo-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(20, 20, 20, 0.08);
+  flex-shrink: 0;
+}
+
+.brand-logo {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.brand-texts {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.brand-title {
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.96rem;
   color: #1f722c;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+.brand-subtitle {
+  margin-top: 1px;
+  font-size: 0.78rem;
+  color: #6b6b64;
   white-space: nowrap;
 }
 

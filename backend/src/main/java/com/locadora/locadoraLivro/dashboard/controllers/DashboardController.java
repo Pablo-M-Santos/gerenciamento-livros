@@ -49,6 +49,11 @@ public class DashboardController {
     @GetMapping("/top3RentsPerRenter")
     public ResponseEntity<Object> getTop3RentsPerRenter() {
         return ResponseEntity.status(HttpStatus.OK).body(dashboardServices.getTop3RentsPerRenter());
-    }   
+    }
+
+    @GetMapping("/overview")
+    public ResponseEntity<Object> getOverview(@RequestParam(defaultValue = "6") Integer numberOfMonths) {
+        return ResponseEntity.status(HttpStatus.OK).body(dashboardServices.getOverview(numberOfMonths));
+    }
 
 }

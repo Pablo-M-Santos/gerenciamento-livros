@@ -68,4 +68,19 @@ public class RentController {
             @PathVariable int id, @RequestBody @Valid UpdateRentRecordDTO data) {
         return rentServices.update(id,data);
     }
+
+    @GetMapping("/rent/count/active")
+    public ResponseEntity<Long> getActiveRentsCount() {
+        return ResponseEntity.status(HttpStatus.OK).body(rentServices.getActiveRentsCount());
+    }
+
+    @GetMapping("/rent/count/deleted")
+    public ResponseEntity<Long> getDeletedRentsCount() {
+        return ResponseEntity.status(HttpStatus.OK).body(rentServices.getDeletedRentsCount());
+    }
+
+    @GetMapping("/rent/count/total")
+    public ResponseEntity<Long> getTotalRentsCount() {
+        return ResponseEntity.status(HttpStatus.OK).body(rentServices.getTotalRentsCount());
+    }
 }

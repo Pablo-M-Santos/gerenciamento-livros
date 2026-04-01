@@ -16,15 +16,15 @@
       <RenterStatsCard
         :card-index="2"
         icon="library_books"
-        label="Com Alugueis"
-        :value="summary.withRentals"
+        label="Ativos"
+        :value="summary.active"
         type="with-rentals"
       />
       <RenterStatsCard
         :card-index="3"
         icon="person_outline"
-        label="Sem Alugueis"
-        :value="summary.withoutRentals"
+        label="Deletados"
+        :value="summary.deleted"
         type="without-rentals"
       />
     </section>
@@ -112,6 +112,9 @@ const pageSize = 8;
 
 const rows = ref([]);
 const rentersWithRentals = ref([]);
+const countActive = ref(0);
+const countDeleted = ref(0);
+const countTotal = ref(0);
 
 const showModalCadastro = ref(false);
 const showModalEditar = ref(false);
@@ -192,17 +195,10 @@ const extractPageData = (payload) => {
 };
 
 const summary = computed(() => {
-  const rentersWithRentSet = new Set(rentersWithRentals.value);
-  const total = rowsNumber.value;
-  const withRentals = rows.value.filter((renter) =>
-    rentersWithRentSet.has(renter.id)
-  ).length;
-  const withoutRentals = Math.max(total - withRentals, 0);
-
   return {
-    total,
-    withRentals,
-    withoutRentals,
+    total: countTotal.value,
+    active: countActive.value,
+    deleted: countDeleted.value,
   };
 });
 
@@ -250,6 +246,57 @@ const loadRentals = async () => {
   }
 };
 
+const loadRenterCounts = async () => {
+  const parseCount = (payload) => {
+    if (typeof payload === "number") return payload;
+    if (typeof payload === "string") {
+      const parsed = Number(payload);
+      return Number.isNaN(parsed) ? 0 : parsed;
+    }
+
+    if (typeof payload?.count === "number") return payload.count;
+    if (typeof payload?.total === "number") return payload.total;
+    if (typeof payload?.value === "number") return payload.value;
+
+    const deepFindNumeric = (value) => {
+      if (typeof value === "number") return value;
+      if (typeof value === "string") {
+        const parsed = Number(value);
+        if (!Number.isNaN(parsed)) return parsed;
+      }
+      if (!value || typeof value !== "object") return null;
+
+      for (const nested of Object.values(value)) {
+        const found = deepFindNumeric(nested);
+        if (typeof found === "number") return found;
+      }
+
+      return null;
+    };
+
+    const deepNumeric = deepFindNumeric(payload);
+    return typeof deepNumeric === "number" ? deepNumeric : 0;
+  };
+
+  const [activeRes, deletedRes, totalRes] = await Promise.allSettled([
+    api.get("/renter/count/active"),
+    api.get("/renter/count/deleted"),
+    api.get("/renter/count/total"),
+  ]);
+
+  if (activeRes.status === "fulfilled") {
+    countActive.value = parseCount(activeRes.value.data);
+  }
+
+  if (deletedRes.status === "fulfilled") {
+    countDeleted.value = parseCount(deletedRes.value.data);
+  }
+
+  if (totalRes.status === "fulfilled") {
+    countTotal.value = parseCount(totalRes.value.data);
+  }
+};
+
 const openRegisterDialog = () => {
   renterCreate.value = {
     id: null,
@@ -277,7 +324,7 @@ const submitFormCadastro = async (formData) => {
     await api.post("/renter", sanitizePayload(formData));
     notify("positive", "Locatario criado com sucesso.");
     showModalCadastro.value = false;
-    await loadRenters(searchQuery.value);
+    await Promise.all([loadRenters(searchQuery.value), loadRenterCounts()]);
   } catch (error) {
     notify(
       "negative",
@@ -320,7 +367,7 @@ const submitFormEditar = async (formData) => {
 
     notify("positive", "Locatario atualizado com sucesso.");
     showModalEditar.value = false;
-    await loadRenters(searchQuery.value);
+    await Promise.all([loadRenters(searchQuery.value), loadRenterCounts()]);
   } catch (error) {
     notify(
       "negative",
@@ -353,7 +400,11 @@ const confirmDelete = async () => {
     notify("positive", "Locatario excluido com sucesso.");
     showModalExcluir.value = false;
     deleteTarget.value = null;
-    await Promise.all([loadRenters(searchQuery.value), loadRentals()]);
+    await Promise.all([
+      loadRenters(searchQuery.value),
+      loadRentals(),
+      loadRenterCounts(),
+    ]);
   } catch (error) {
     notify(
       "negative",
@@ -388,7 +439,7 @@ onMounted(async () => {
   }
 
   userRole.value = localStorage.getItem("role") || "";
-  await Promise.all([loadRenters(), loadRentals()]);
+  await Promise.all([loadRenters(), loadRentals(), loadRenterCounts()]);
 });
 </script>
 

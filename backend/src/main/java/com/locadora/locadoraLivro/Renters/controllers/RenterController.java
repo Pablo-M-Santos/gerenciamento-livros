@@ -48,4 +48,19 @@ public class RenterController {
     public ResponseEntity<Object> delete(@PathVariable(value = "id") int id) {
         return renterServices.delete(id);
     }
+
+    @GetMapping("/renter/count/active")
+    public ResponseEntity<Long> getActiveRentersCount() {
+        return ResponseEntity.status(HttpStatus.OK).body(renterServices.getActiveRentersCount());
+    }
+
+    @GetMapping("/renter/count/deleted")
+    public ResponseEntity<Long> getDeletedRentersCount() {
+        return ResponseEntity.status(HttpStatus.OK).body(renterServices.getDeletedRentersCount());
+    }
+
+    @GetMapping("/renter/count/total")
+    public ResponseEntity<Long> getTotalRentersCount() {
+        return ResponseEntity.status(HttpStatus.OK).body(renterServices.getTotalRentersCount());
+    }
 }
