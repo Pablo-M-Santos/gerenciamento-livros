@@ -103,4 +103,16 @@ public class RenterServices {
 
         return ResponseEntity.status(HttpStatus.OK).body("Locatário excluído com sucesso.");
     }
+
+    public long getActiveRentersCount() {
+        return renterRepository.countActiveRenters();
+    }
+
+    public long getDeletedRentersCount() {
+        return renterRepository.countDeletedRenters();
+    }
+
+    public long getTotalRentersCount() {
+        return renterRepository.countTotalRenters();
+    }
 }

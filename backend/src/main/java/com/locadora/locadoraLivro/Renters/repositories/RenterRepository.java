@@ -43,4 +43,13 @@ public interface RenterRepository extends JpaRepository<RenterModel, Integer> {
             "AND u.isDeleted = false")
     Page<RenterModel> findAllBySearchTerm(@Param("searchTerm") String searchTerm, Pageable pageable);
 
+        @Query("SELECT COUNT(u) FROM RenterModel u WHERE u.isDeleted = false")
+        long countActiveRenters();
+
+        @Query("SELECT COUNT(u) FROM RenterModel u WHERE u.isDeleted = true")
+        long countDeletedRenters();
+
+        @Query("SELECT COUNT(u) FROM RenterModel u")
+        long countTotalRenters();
+
 }
