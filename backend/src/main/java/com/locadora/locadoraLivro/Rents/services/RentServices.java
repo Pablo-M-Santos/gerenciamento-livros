@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -179,6 +180,22 @@ public class RentServices {
         bookRepository.save(newBook);
 
         return ResponseEntity.status(HttpStatus.OK).body("Aluguel atualizado com sucesso");
+    }
+
+    public long getActiveRentsCount() {
+        return rentRepository.countByStatusIn(Arrays.asList(RentStatusEnum.RENTED, RentStatusEnum.LATE));
+    }
+
+    public long getDeletedRentsCount() {
+        return rentRepository.countByStatusIn(Arrays.asList(
+                RentStatusEnum.DELIVERED,
+                RentStatusEnum.DELIVERED_WITH_DELAY,
+                RentStatusEnum.IN_TIME
+        ));
+    }
+
+    public long getTotalRentsCount() {
+        return rentRepository.countTotalRents();
     }
 
 

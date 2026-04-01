@@ -68,4 +68,10 @@ public interface RentRepository extends JpaRepository<RentModel, Integer> {
             "AND LOWER(u.status) = LOWER(:status)")
     Page<RentModel> findAllByRenterNameOrBookNameAndStatus(@Param("search") String search, @Param("status") String status, Pageable pageable);
 
+        @Query("SELECT COUNT(u) FROM RentModel u WHERE u.status IN :statuses")
+        long countByStatusIn(@Param("statuses") List<RentStatusEnum> statuses);
+
+        @Query("SELECT COUNT(u) FROM RentModel u")
+        long countTotalRents();
+
 }
