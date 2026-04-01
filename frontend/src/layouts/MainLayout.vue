@@ -1,7 +1,5 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-   
-
     <q-drawer
       v-model="leftDrawerOpen"
       show-if-above
@@ -11,7 +9,11 @@
       <div class="drawer-header">
         <div class="drawer-brand">
           <div class="brand-logo-wrap">
-            <img :src="brandLogo" alt="Logo Locadora Livros" class="brand-logo" />
+            <img
+              :src="brandLogo"
+              alt="Logo Locadora Livros"
+              class="brand-logo"
+            />
           </div>
           <div class="brand-texts">
             <span class="brand-title">Locadora Livros</span>
