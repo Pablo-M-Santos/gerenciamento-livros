@@ -23,8 +23,8 @@
       <RentStatsCard
         :card-index="3"
         icon="done_all"
-        label="Finalizados"
-        :value="summary.finished"
+        label="Deletados"
+        :value="summary.deleted"
         type="finished"
       />
     </section>
@@ -118,6 +118,9 @@ const rowsNumber = ref(0);
 const pageSize = 8;
 
 const rows = ref([]);
+const countActive = ref(0);
+const countDeleted = ref(0);
+const countTotal = ref(0);
 
 const showModalCadastro = ref(false);
 const showModalEditar = ref(false);
@@ -205,15 +208,11 @@ const extractPageData = (payload) => {
 };
 
 const summary = computed(() => {
-  const total = rowsNumber.value;
-  const active = rows.value.filter((row) =>
-    ["RENTED", "LATE"].includes(row.status)
-  ).length;
-  const finished = rows.value.filter((row) =>
-    ["IN_TIME", "DELIVERED_WITH_DELAY"].includes(row.status)
-  ).length;
-
-  return { total, active, finished };
+  return {
+    total: countTotal.value,
+    active: countActive.value,
+    deleted: countDeleted.value,
+  };
 });
 
 const totalPages = computed(() => {
@@ -283,6 +282,57 @@ const loadBooks = async (search = "") => {
   }
 };
 
+const loadRentCounts = async () => {
+  const parseCount = (payload) => {
+    if (typeof payload === "number") return payload;
+    if (typeof payload === "string") {
+      const parsed = Number(payload);
+      return Number.isNaN(parsed) ? 0 : parsed;
+    }
+
+    if (typeof payload?.count === "number") return payload.count;
+    if (typeof payload?.total === "number") return payload.total;
+    if (typeof payload?.value === "number") return payload.value;
+
+    const deepFindNumeric = (value) => {
+      if (typeof value === "number") return value;
+      if (typeof value === "string") {
+        const parsed = Number(value);
+        if (!Number.isNaN(parsed)) return parsed;
+      }
+      if (!value || typeof value !== "object") return null;
+
+      for (const nested of Object.values(value)) {
+        const found = deepFindNumeric(nested);
+        if (typeof found === "number") return found;
+      }
+
+      return null;
+    };
+
+    const deepNumeric = deepFindNumeric(payload);
+    return typeof deepNumeric === "number" ? deepNumeric : 0;
+  };
+
+  const [activeRes, deletedRes, totalRes] = await Promise.allSettled([
+    api.get("/rent/count/active"),
+    api.get("/rent/count/deleted"),
+    api.get("/rent/count/total"),
+  ]);
+
+  if (activeRes.status === "fulfilled") {
+    countActive.value = parseCount(activeRes.value.data);
+  }
+
+  if (deletedRes.status === "fulfilled") {
+    countDeleted.value = parseCount(deletedRes.value.data);
+  }
+
+  if (totalRes.status === "fulfilled") {
+    countTotal.value = parseCount(totalRes.value.data);
+  }
+};
+
 const openRegisterDialog = () => {
   rentCreate.value = {
     id: null,
@@ -309,7 +359,10 @@ const submitCreate = async (formData) => {
 
     notify("positive", "Aluguel cadastrado com sucesso.");
     showModalCadastro.value = false;
-    await loadRows(searchQuery.value, statusFilter.value);
+    await Promise.all([
+      loadRows(searchQuery.value, statusFilter.value),
+      loadRentCounts(),
+    ]);
   } catch (error) {
     notify(
       "negative",
@@ -349,7 +402,10 @@ const submitEdit = async (formData) => {
 
     notify("positive", "Aluguel atualizado com sucesso.");
     showModalEditar.value = false;
-    await loadRows(searchQuery.value, statusFilter.value);
+    await Promise.all([
+      loadRows(searchQuery.value, statusFilter.value),
+      loadRentCounts(),
+    ]);
   } catch (error) {
     notify(
       "negative",
@@ -379,7 +435,10 @@ const confirmReturn = async () => {
     notify("positive", "Status atualizado com sucesso.");
     showModalDevolucao.value = false;
     returnTarget.value = null;
-    await loadRows(searchQuery.value, statusFilter.value);
+    await Promise.all([
+      loadRows(searchQuery.value, statusFilter.value),
+      loadRentCounts(),
+    ]);
   } catch (error) {
     notify(
       "negative",
@@ -455,7 +514,7 @@ onMounted(async () => {
   }
 
   userRole.value = localStorage.getItem("role") || "";
-  await Promise.all([loadRows(), loadRenters(), loadBooks()]);
+  await Promise.all([loadRows(), loadRenters(), loadBooks(), loadRentCounts()]);
 });
 </script>
 
