@@ -57,54 +57,61 @@ O Locadora Livros centraliza a operação de uma biblioteca locadora em um únic
 
 Esta seção documenta o atendimento dos requisitos obrigatórios definidos no desafio.
 
-| Requisito | Status | Observação |
-|---|---|---|
-| Cadastro de Livro (CRUD, busca, estoque, vínculo com editora) | Atendido | Inclui validações de data de lançamento e estoque. |
-| Regra de edição de estoque (>= quantidade alugada) | Atendido | Regras de integridade de quantidade são aplicadas na camada de validação/serviço. |
-| Regra de exclusão de livro sem exemplar alugado | Atendido | Exclusão bloqueada quando há locação ativa do livro. |
-| Cadastro de Locatário (CRUD, busca por nome, CPF opcional) | Atendido | CPF é opcional e validado quando informado. |
-| Regra de exclusão de locatário com empréstimo ativo | Atendido com regra mais restritiva | Atualmente bloqueia exclusão se houver histórico de aluguel; supera a regra mínima de empréstimo ativo. |
-| Cadastro de Editora (CRUD + busca) | Atendido | Com validações de nome, e-mail, telefone e site. |
-| Cadastro de Aluguel (criar, listar, pesquisar, finalizar) | Atendido | Fluxo completo implementado com devolução e status. |
-| Pesquisa de aluguel por nome de livro, editora, autor, status e usuário | Atendido (foco em livro, usuário, datas e status) | Cobertura principal implementada; filtros podem ser expandidos na V2 para cenários avançados. |
-| Tela de Login (nome, e-mail, senha, autenticação) | Atendido | Autenticação via JWT e persistência de sessão. |
-| Cadastro de usuários e níveis de acesso (editor e leitor) | Atendido (equivalência) | Papéis atuais: `ADMIN` (editor) e `USER` (leitor), com restrições no frontend e backend. |
-| Relatórios e Dashboard obrigatórios | Atendido | Quantidades de alugados, atrasados, devoluções, ranking de livros e locatários por período. |
-| Regra: usuário não pode pegar o mesmo livro com empréstimo ativo | Atendido | Regra de aluguel repetido ativo validada. |
-| Regra: movimentação de aluguel/devolução atualiza estoque | Atendido | Estoque é atualizado na criação e devolução de aluguel. |
-| Regra: prazo máximo de devolução em 30 dias corridos | Atendido | Validação aplicada no cadastro/edição de aluguel. |
+| Requisito                                                               | Status                                            | Observação                                                                                              |
+| ----------------------------------------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Cadastro de Livro (CRUD, busca, estoque, vínculo com editora)           | Atendido                                          | Inclui validações de data de lançamento e estoque.                                                      |
+| Regra de edição de estoque (>= quantidade alugada)                      | Atendido                                          | Regras de integridade de quantidade são aplicadas na camada de validação/serviço.                       |
+| Regra de exclusão de livro sem exemplar alugado                         | Atendido                                          | Exclusão bloqueada quando há locação ativa do livro.                                                    |
+| Cadastro de Locatário (CRUD, busca por nome, CPF opcional)              | Atendido                                          | CPF é opcional e validado quando informado.                                                             |
+| Regra de exclusão de locatário com empréstimo ativo                     | Atendido com regra mais restritiva                | Atualmente bloqueia exclusão se houver histórico de aluguel; supera a regra mínima de empréstimo ativo. |
+| Cadastro de Editora (CRUD + busca)                                      | Atendido                                          | Com validações de nome, e-mail, telefone e site.                                                        |
+| Cadastro de Aluguel (criar, listar, pesquisar, finalizar)               | Atendido                                          | Fluxo completo implementado com devolução e status.                                                     |
+| Pesquisa de aluguel por nome de livro, editora, autor, status e usuário | Atendido (foco em livro, usuário, datas e status) | Cobertura principal implementada; filtros podem ser expandidos na V2 para cenários avançados.           |
+| Tela de Login (nome, e-mail, senha, autenticação)                       | Atendido                                          | Autenticação via JWT e persistência de sessão.                                                          |
+| Cadastro de usuários e níveis de acesso (editor e leitor)               | Atendido (equivalência)                           | Papéis atuais: `ADMIN` (editor) e `USER` (leitor), com restrições no frontend e backend.                |
+| Relatórios e Dashboard obrigatórios                                     | Atendido                                          | Quantidades de alugados, atrasados, devoluções, ranking de livros e locatários por período.             |
+| Regra: usuário não pode pegar o mesmo livro com empréstimo ativo        | Atendido                                          | Regra de aluguel repetido ativo validada.                                                               |
+| Regra: movimentação de aluguel/devolução atualiza estoque               | Atendido                                          | Estoque é atualizado na criação e devolução de aluguel.                                                 |
+| Regra: prazo máximo de devolução em 30 dias corridos                    | Atendido                                          | Validação aplicada no cadastro/edição de aluguel.                                                       |
 
 ### Requisitos funcionais detalhados
 
 1. Cadastro de Livro
+
 - Obrigatórios: nome, autor, editora, data de lançamento, estoque.
 - Operações: criar, listar, pesquisar, editar e deletar com regras de consistência.
 - Controle de estoque: total, em uso e disponível.
 
 2. Cadastro de Locatário
+
 - Obrigatórios: nome, e-mail, celular, endereço.
 - Facultativo: CPF.
 - Operações: criar, listar, pesquisar e editar.
 
 3. Cadastro de Editoras
+
 - Obrigatórios: nome, e-mail, telefone.
 - Facultativo: site.
 - Operações: criar, editar, deletar, listar e pesquisar.
 
 4. Cadastro de Aluguel
+
 - Obrigatórios: usuário e data de devolução.
 - Operações: criar, listar, pesquisar e finalizar.
 
 5. Login e Autenticação
+
 - Cadastro e autenticação de usuário com token JWT.
 
 6. Cadastro de Usuários e Acessos
+
 - Campos: nome, e-mail, senha e nível de permissão.
 - Permissões equivalentes:
-	- Editor -> `ADMIN`
-	- Leitor -> `USER`
+  - Editor -> `ADMIN`
+  - Leitor -> `USER`
 
 7. Relatórios e Dashboard
+
 - Quantidade de livros emprestados.
 - Quantidade de livros atrasados.
 - Quantidade de livros emprestados por usuário.
@@ -240,7 +247,6 @@ npm install
 npm run dev
 ```
 
-
 ## Documentação da API
 
 Com o backend em execução, a documentação OpenAPI fica disponível em:
@@ -289,5 +295,3 @@ Próximos passos sugeridos para V2:
 - Observabilidade (logs estruturados + métricas).
 - Alertas operacionais no dashboard (atrasos críticos e devoluções próximas).
 - Hardening de segurança (refresh token, rate limiting, auditoria).
-
-
