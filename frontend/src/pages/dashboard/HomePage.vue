@@ -391,13 +391,15 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: 1.1fr 1fr;
   gap: 16px;
+  align-items: stretch;
 }
 
 .ranking-grid {
   margin-top: 16px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.1fr 1fr;
   gap: 16px;
+  align-items: stretch;
 }
 
 .panel-card {
@@ -405,6 +407,7 @@ onMounted(async () => {
   border-radius: 14px;
   background: #fff;
   box-shadow: 0 3px 14px rgba(16, 20, 16, 0.05);
+  height: 100%;
 }
 
 .animate-section {
